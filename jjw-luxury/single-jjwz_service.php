@@ -61,11 +61,10 @@ $wa_link     = jjwz_wa_link( 'Book a Session', 'btn btn--primary', 'service-wa-c
                     'posts_per_page' => 4,
                     'post_status'    => 'publish',
                     'tax_query'      => [
-                        'relation' => 'OR',
                         [
-                            'taxonomy' => 'jjwz_portfolio_cat',
-                            'field'    => 'name',
-                            'terms'    => get_the_title(),
+                            'taxonomy' => 'jjwz_service_cat',
+                            'field'    => 'slug',
+                            'terms'    => get_post_field( 'post_name', get_the_ID() ),
                         ]
                     ]
                 ] );

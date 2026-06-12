@@ -162,3 +162,133 @@ add_action( 'admin_init', function() {
         update_option( 'jjwz_blog_seeded', true );
     }
 } );
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CUSTOM REWRITE RULES & TEMPLATE REDIRECTS (Sprint 3)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+add_action( 'init', 'jjwz_add_rewrite_rules' );
+function jjwz_add_rewrite_rules() {
+    add_rewrite_rule(
+        '^([a-z0-9-]+)-photographer-in-([a-z0-9-]+)/?$',
+        'index.php?jjwz_service_slug=$matches[1]&jjwz_location_slug=$matches[2]',
+        'top'
+    );
+}
+
+add_filter( 'query_vars', 'jjwz_register_query_vars' );
+function jjwz_register_query_vars( $vars ) {
+    $vars[] = 'jjwz_service_slug';
+    $vars[] = 'jjwz_location_slug';
+    return $vars;
+}
+
+add_filter( 'template_include', 'jjwz_route_service_location_template' );
+function jjwz_route_service_location_template( $template ) {
+    $service_slug  = get_query_var( 'jjwz_service_slug' );
+    $location_slug = get_query_var( 'jjwz_location_slug' );
+
+    if ( $service_slug && $location_slug ) {
+        $theme_template = locate_template( [ 'landing-service-location.php' ] );
+        if ( $theme_template ) {
+            return $theme_template;
+        }
+    }
+    return $template;
+}
+
+add_filter( 'document_title_parts', 'jjwz_service_location_document_title', 20 );
+function jjwz_service_location_document_title( $title_parts ) {
+    $service_slug  = get_query_var( 'jjwz_service_slug' );
+    $location_slug = get_query_var( 'jjwz_location_slug' );
+
+    if ( $service_slug && $location_slug ) {
+        $seo_raw = get_option( 'jjw_service_city_seo', '[]' );
+        $seo_items = json_decode( $seo_raw, true ) ?: [];
+        $override_title = '';
+        foreach ( $seo_items as $item ) {
+            if ( ( $item['service'] ?? '' ) === $service_slug && ( $item['city'] ?? '' ) === $location_slug ) {
+                if ( ! empty( $item['seo_title'] ) ) {
+                    $override_title = $item['seo_title'];
+                }
+                break;
+            }
+        }
+
+        if ( ! $override_title ) {
+            $service_name = ucwords( str_replace( '-', ' ', $service_slug ) );
+            $location_name = ucwords( str_replace( '-', ' ', $location_slug ) );
+            $override_title = sprintf( 'Luxury %s Photographer in %s', $service_name, $location_name );
+        }
+
+        $title_parts['title'] = $override_title;
+    }
+    return $title_parts;
+}
+
+add_action( 'wp_head', 'jjwz_service_location_meta_description', 1 );
+function jjwz_service_location_meta_description() {
+    $service_slug  = get_query_var( 'jjwz_service_slug' );
+    $location_slug = get_query_var( 'jjwz_location_slug' );
+
+    if ( $service_slug && $location_slug ) {
+        $seo_raw = get_option( 'jjw_service_city_seo', '[]' );
+        $seo_items = json_decode( $seo_raw, true ) ?: [];
+        $override_desc = '';
+        foreach ( $seo_items as $item ) {
+            if ( ( $item['service'] ?? '' ) === $service_slug && ( $item['city'] ?? '' ) === $location_slug ) {
+                if ( ! empty( $item['meta_description'] ) ) {
+                    $override_desc = $item['meta_description'];
+                }
+                break;
+            }
+        }
+
+        if ( ! $override_desc ) {
+            $service_name = ucwords( str_replace( '-', ' ', $service_slug ) );
+            $location_name = ucwords( str_replace( '-', ' ', $location_slug ) );
+            $override_desc = sprintf( 'Looking for a premium %s photographer in %s? Contact JJ WeddingZ Photography for luxury editorial photography and films.', strtolower($service_name), $location_name );
+        }
+
+        // Print custom meta description if SEO plugins are not active to avoid duplication, or force standard description
+        if ( ! isset( $GLOBALS['wp_seo_desc_written'] ) ) {
+            echo '<meta name="description" content="' . esc_attr( $override_desc ) . '">' . "\n";
+            $GLOBALS['wp_seo_desc_written'] = true;
+        }
+    }
+}
+
+add_filter( 'rank_math/frontend/title', 'jjwz_seo_plugin_title_override', 20 );
+add_filter( 'wpseo_title', 'jjwz_seo_plugin_title_override', 20 );
+function jjwz_seo_plugin_title_override( $title ) {
+    $service_slug  = get_query_var( 'jjwz_service_slug' );
+    $location_slug = get_query_var( 'jjwz_location_slug' );
+    if ( $service_slug && $location_slug ) {
+        $title_parts = jjwz_service_location_document_title( [ 'title' => '' ] );
+        return $title_parts['title'];
+    }
+    return $title;
+}
+
+add_filter( 'rank_math/frontend/description', 'jjwz_seo_plugin_desc_override', 20 );
+add_filter( 'wpseo_metadesc', 'jjwz_seo_plugin_desc_override', 20 );
+function jjwz_seo_plugin_desc_override( $desc ) {
+    $service_slug  = get_query_var( 'jjwz_service_slug' );
+    $location_slug = get_query_var( 'jjwz_location_slug' );
+    if ( $service_slug && $location_slug ) {
+        $GLOBALS['wp_seo_desc_written'] = true;
+        $seo_raw = get_option( 'jjw_service_city_seo', '[]' );
+        $seo_items = json_decode( $seo_raw, true ) ?: [];
+        foreach ( $seo_items as $item ) {
+            if ( ( $item['service'] ?? '' ) === $service_slug && ( $item['city'] ?? '' ) === $location_slug ) {
+                if ( ! empty( $item['meta_description'] ) ) {
+                    return $item['meta_description'];
+                }
+            }
+        }
+        $service_name = ucwords( str_replace( '-', ' ', $service_slug ) );
+        $location_name = ucwords( str_replace( '-', ' ', $location_slug ) );
+        return sprintf( 'Looking for a premium %s photographer in %s? Contact JJ WeddingZ Photography for luxury editorial photography and films.', strtolower($service_name), $location_name );
+    }
+    return $desc;
+}

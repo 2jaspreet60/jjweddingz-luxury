@@ -21,9 +21,9 @@ if ( function_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->db-
 $post_id      = get_the_ID();
 $headline     = jjwz_get_option( 'jjwz_about_headline', 'Eleven Years of Uncompromising<br><em>Visual Excellence</em>', $post_id );
 $intro        = jjwz_get_option( 'jjwz_about_intro', '<p>Founded in 2013 by Jaspreet Singh, JJ WeddingZ Photography has spent over a decade establishing itself as the benchmark for luxury wedding, maternity, and newborn photography across Northern India. Operating dual creative branches from Delhi NCR and Amritsar, our team of highly trained visual artists, cinematographers, and post-production specialists brings an internationally refined aesthetic to every single project we undertake.</p>', $post_id );
-$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh', $post_id );
-$founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>', $post_id );
-$founder_img  = jjwz_get_option( 'jjwz_about_founder_img', '', $post_id );
+$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
+$founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>' );
+$founder_img  = jjwz_get_option( 'jjwz_about_founder_img' );
 $founder_img_url = '';
 if ( is_array( $founder_img ) && isset( $founder_img['url'] ) ) {
     $founder_img_url = $founder_img['url'];
@@ -31,6 +31,9 @@ if ( is_array( $founder_img ) && isset( $founder_img['url'] ) ) {
     $founder_img_url = wp_get_attachment_image_url( $founder_img, 'full' );
 } elseif ( is_string( $founder_img ) && ! empty( $founder_img ) ) {
     $founder_img_url = $founder_img;
+}
+if ( empty( $founder_img_url ) ) {
+    $founder_img_url = jjwz_get_option( 'jjw_default_placeholder_founder' );
 }
 if ( empty( $founder_img_url ) ) {
     $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
@@ -123,8 +126,8 @@ if ( empty( $gear_items ) ) {
                 <?php endif; ?>
                 <div class="founder-profile__name-tag">
                     <strong><?php echo esc_html( $founder_name ); ?></strong>
-                    <span>Founder &amp; Lead Photographer</span>
-                    <span>11+ Years Experience</span>
+                    <span><?php echo esc_html( jjwz_get_option( 'jjwz_about_founder_designation', 'Founder &amp; Lead Photographer' ) ); ?></span>
+                    <span><?php echo esc_html( jjwz_get_option( 'jjwz_about_founder_experience', '11+' ) ); ?> Experience</span>
                 </div>
             </div>
             <div class="founder-profile__bio" data-anim="fade-left">
@@ -151,10 +154,85 @@ if ( empty( $gear_items ) ) {
                     </div>
                     <?php endforeach; ?>
                 </div>
+
+                <?php
+                // Load founder contact details
+                $founder_email     = jjwz_get_option( 'jjwz_about_founder_email', '' );
+                $founder_phone     = jjwz_get_option( 'jjwz_about_founder_phone', '' );
+                $founder_whatsapp  = jjwz_get_option( 'jjwz_about_founder_whatsapp', '' );
+                $founder_location  = jjwz_get_option( 'jjwz_about_founder_location', '' );
+
+                $show_email     = jjwz_get_option( 'jjwz_about_founder_show_email', '1' );
+                $show_phone     = jjwz_get_option( 'jjwz_about_founder_show_phone', '1' );
+                $show_whatsapp  = jjwz_get_option( 'jjwz_about_founder_show_whatsapp', '1' );
+                $show_location  = jjwz_get_option( 'jjwz_about_founder_show_location', '1' );
+
+                $show_instagram = jjwz_get_option( 'jjwz_about_founder_show_instagram', '1' );
+                $show_facebook  = jjwz_get_option( 'jjwz_about_founder_show_facebook', '1' );
+                $show_youtube   = jjwz_get_option( 'jjwz_about_founder_show_youtube', '1' );
+                $show_linkedin  = jjwz_get_option( 'jjwz_about_founder_show_linkedin', '1' );
+
+                $instagram = jjwz_get_option( 'jjwz_about_founder_instagram', '' );
+                $facebook  = jjwz_get_option( 'jjwz_about_founder_facebook', '' );
+                $youtube   = jjwz_get_option( 'jjwz_about_founder_youtube', '' );
+                $linkedin  = jjwz_get_option( 'jjwz_about_founder_linkedin', '' );
+
+                if ( ( '1' === $show_email && $founder_email ) || ( '1' === $show_phone && $founder_phone ) || ( '1' === $show_whatsapp && $founder_whatsapp ) || ( '1' === $show_location && $founder_location ) ) :
+                ?>
+                <div class="founder-contact-block" style="margin-top: 2.5rem; border-top: 1px solid var(--clr-border); padding-top: 2rem;">
+                    <h4 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: 1rem; color: var(--clr-obsidian); letter-spacing: -0.01em;">Direct Contact</h4>
+                    <ul class="founder-contact-list" style="display: flex; flex-direction: column; gap: 0.75rem; font-size: var(--text-sm); list-style: none; padding: 0;">
+                        <?php if ( '1' === $show_email && $founder_email ) : ?>
+                            <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--clr-mist);">
+                                <span style="color: var(--clr-gold); font-size: 1.1rem; width: 20px;">✉</span> <a href="mailto:<?php echo esc_attr( $founder_email ); ?>" style="color: inherit; transition: color var(--transition-fast);"><?php echo esc_html( $founder_email ); ?></a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ( '1' === $show_phone && $founder_phone ) : ?>
+                            <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--clr-mist);">
+                                <span style="color: var(--clr-gold); font-size: 1.1rem; width: 20px;">📞</span> <a href="tel:<?php echo esc_attr( preg_replace('/[^0-9+]/', '', $founder_phone) ); ?>" style="color: inherit; transition: color var(--transition-fast);"><?php echo esc_html( $founder_phone ); ?></a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ( '1' === $show_whatsapp && $founder_whatsapp ) : ?>
+                            <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--clr-mist);">
+                                <span style="color: var(--clr-gold); font-size: 1.1rem; width: 20px;">💬</span> <a href="https://wa.me/<?php echo esc_attr( preg_replace('/[^0-9]/', '', $founder_whatsapp) ); ?>" target="_blank" rel="noopener noreferrer" style="color: inherit; transition: color var(--transition-fast);">Chat on WhatsApp</a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ( '1' === $show_location && $founder_location ) : ?>
+                            <li style="display: flex; align-items: center; gap: 0.75rem; color: var(--clr-mist);">
+                                <span style="color: var(--clr-gold); font-size: 1.1rem; width: 20px;">📍</span> <span style="font-weight: 400;"><?php echo esc_html( $founder_location ); ?></span>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                    
+                    <?php
+                    $has_socials = ( '1' === $show_instagram && $instagram ) || ( '1' === $show_facebook && $facebook ) || ( '1' === $show_youtube && $youtube ) || ( '1' === $show_linkedin && $linkedin );
+                    if ( $has_socials ) :
+                    ?>
+                    <div class="founder-socials" style="margin-top: 1.5rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <span style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--clr-fog); font-weight: 500;">Connect:</span>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <?php if ( '1' === $show_instagram && $instagram ) : ?>
+                                <a href="<?php echo esc_url( $instagram ); ?>" target="_blank" rel="noopener noreferrer" class="btn btn--outline" style="padding: 0.35rem 0.75rem; font-size: var(--text-xs); line-height: 1;">Instagram</a>
+                            <?php endif; ?>
+                            <?php if ( '1' === $show_facebook && $facebook ) : ?>
+                                <a href="<?php echo esc_url( $facebook ); ?>" target="_blank" rel="noopener noreferrer" class="btn btn--outline" style="padding: 0.35rem 0.75rem; font-size: var(--text-xs); line-height: 1;">Facebook</a>
+                            <?php endif; ?>
+                            <?php if ( '1' === $show_youtube && $youtube ) : ?>
+                                <a href="<?php echo esc_url( $youtube ); ?>" target="_blank" rel="noopener noreferrer" class="btn btn--outline" style="padding: 0.35rem 0.75rem; font-size: var(--text-xs); line-height: 1;">YouTube</a>
+                            <?php endif; ?>
+                            <?php if ( '1' === $show_linkedin && $linkedin ) : ?>
+                                <a href="<?php echo esc_url( $linkedin ); ?>" target="_blank" rel="noopener noreferrer" class="btn btn--outline" style="padding: 0.35rem 0.75rem; font-size: var(--text-xs); line-height: 1;">LinkedIn</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      DYNAMIC TEAM SECTION (HIDDEN IF EMPTY)
@@ -237,7 +315,7 @@ endif;
                         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--clr-gold)" stroke-width="1" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     <?php endif; ?>
                 </div>
-                <h3 class="gear-card__name"><?php echo esc_html( $gear['gear_name'] ); ?></h3>
+                <h3 class="gear-card__title"><?php echo esc_html( $gear['gear_name'] ); ?></h3>
                 <p class="gear-card__desc"><?php echo esc_html( $gear['gear_desc'] ); ?></p>
             </div>
             <?php endforeach; ?>
@@ -254,24 +332,27 @@ endif;
             <span class="eyebrow" style="color:var(--clr-gold);">Our Journey</span>
             <h2 class="section-title" style="color:var(--clr-warm-white);">Eleven Years of<br><em>Defining Moments</em></h2>
         </div>
-        <div class="timeline">
+        <div class="timeline-wrap">
             <?php
-            $milestones = [
-                [ 'year' => '2013', 'title' => 'Founded in Amritsar',               'desc' => 'JJ WeddingZ Photography established by Jaspreet Singh with a singular focus on authentic, emotion-driven wedding documentation.' ],
-                [ 'year' => '2016', 'title' => 'Delhi NCR Branch Launch',           'desc' => 'Rapid client demand from Delhi and NCR necessitated the launch of a dedicated metropolitan branch, bringing our services to India\'s capital region.' ],
-                [ 'year' => '2018', 'title' => 'Cinematic Department Established',  'desc' => 'Full cinema-grade videography services added using Sony FX3 systems, expanding our offer to include sweeping wedding films.' ],
-                [ 'year' => '2020', 'title' => 'Maternity & Newborn Studio Launch', 'desc' => 'A dedicated, sanitized maternity and newborn photography studio established with medical-grade safety protocols.' ],
-                [ 'year' => '2022', 'title' => 'International Destination Commissions', 'desc' => 'First international destination wedding assignments accepted. JJ WeddingZ now travels globally.' ],
-                [ 'year' => '2024', 'title' => '500+ Weddings Milestone',           'desc' => 'Crossing the 500 premium weddings threshold, JJ WeddingZ cements its status as Northern India\'s most trusted luxury photography house.' ],
-            ];
+            $timeline_raw = jjwz_get_option( 'jjw_timeline', '[]' );
+            $milestones   = json_decode( $timeline_raw, true ) ?: [];
+            if ( empty( $milestones ) ) {
+                $milestones = [
+                    [ 'year' => '2013', 'title' => 'Founded in Amritsar',               'desc' => 'JJ WeddingZ Photography established by Jaspreet Singh with a singular focus on authentic, emotion-driven wedding documentation.' ],
+                    [ 'year' => '2016', 'title' => 'Delhi NCR Branch Launch',           'desc' => 'Rapid client demand from Delhi and NCR necessitated the launch of a dedicated metropolitan branch, bringing our services to India\'s capital region.' ],
+                    [ 'year' => '2018', 'title' => 'Cinematic Department Established',  'desc' => 'Full cinema-grade videography services added using Sony FX3 systems, expanding our offer to include sweeping wedding films.' ],
+                    [ 'year' => '2020', 'title' => 'Maternity & Newborn Studio Launch', 'desc' => 'A dedicated, sanitized maternity and newborn photography studio established with medical-grade safety protocols.' ],
+                    [ 'year' => '2022', 'title' => 'International Destination Commissions', 'desc' => 'First international destination wedding assignments accepted. JJ WeddingZ now travels globally.' ],
+                    [ 'year' => '2024', 'title' => '500+ Weddings Milestone',           'desc' => 'Crossing the 500 premium weddings threshold, JJ WeddingZ cements its status as Northern India\'s most trusted luxury photography house.' ],
+                ];
+            }
             foreach ( $milestones as $m ) :
             ?>
             <div class="timeline-item" data-anim="fade-up">
-                <div class="timeline-item__year"><?php echo esc_html( $m['year'] ); ?></div>
-                <div class="timeline-item__connector"><span class="timeline-dot"></span></div>
-                <div class="timeline-item__content">
-                    <h3 class="timeline-item__title"><?php echo esc_html( $m['title'] ); ?></h3>
-                    <p class="timeline-item__desc"><?php echo esc_html( $m['desc'] ); ?></p>
+                <div class="timeline-year"><?php echo esc_html( $m['year'] ); ?></div>
+                <div class="timeline-content">
+                    <h3><?php echo esc_html( $m['title'] ); ?></h3>
+                    <p><?php echo esc_html( $m['desc'] ); ?></p>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -279,17 +360,6 @@ endif;
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════
-     CTA
-     ═══════════════════════════════════════════════════════════ -->
-<section class="about-cta section--sm" aria-label="Booking CTA">
-    <div class="container text-center">
-        <span class="eyebrow">Begin Your Story</span>
-        <h2 class="section-title" style="margin-bottom:1.5rem;">Ready to Create Something<br><em>Timeless Together?</em></h2>
-        <a href="<?php echo esc_url( $wa_link ); ?>" class="btn btn--primary" id="about-wa-cta" target="_blank" rel="noopener noreferrer">
-            Inquire About Your Date
-        </a>
-    </div>
-</section>
+
 
 <?php get_footer(); ?>

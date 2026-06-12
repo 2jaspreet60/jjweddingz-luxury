@@ -437,8 +437,13 @@ $founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began hi
 $founder_img  = jjwz_get_option( 'jjwz_about_founder_img' );
 $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric( $founder_img ) ? wp_get_attachment_image_url( $founder_img, 'full' ) : $founder_img );
 if ( empty( $founder_img_url ) ) {
+    $founder_img_url = jjwz_get_option( 'jjw_default_placeholder_founder' );
+}
+if ( empty( $founder_img_url ) ) {
     $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
 }
+$enable_home = jjwz_get_option( 'jjwz_about_founder_enable_homepage', '1' );
+if ( '1' === $enable_home ) :
 ?>
 <section class="founder-section section" id="founder" aria-label="About our founder">
     <div class="container">
@@ -453,20 +458,28 @@ if ( empty( $founder_img_url ) ) {
                 <?php endif; ?>
             </div>
             <div class="founder-section__content" data-anim="fade-left">
-                <span class="eyebrow">The Visionary Behind the Lens</span>
+                <span class="eyebrow"><?php echo esc_html( jjwz_get_option( 'jjwz_about_founder_short_title', 'The Visionary Behind the Lens' ) ); ?></span>
                 <h2 class="section-title">Meet <em><?php echo esc_html( $founder_name ); ?></em></h2>
                 <div class="founder-bio">
                     <?php echo wp_kses_post( $founder_bio ); ?>
                 </div>
                 <div class="founder-sig-wrapper">
-                    <div class="founder-signature">Jaspreet Singh</div>
+                    <?php 
+                    $signature_img = jjwz_get_option( 'jjwz_about_founder_signature' );
+                    if ( ! empty( $signature_img ) ) : 
+                    ?>
+                        <img src="<?php echo esc_url( $signature_img ); ?>" alt="Founder Signature" class="founder-sig-img" style="max-height: 80px; width: auto; display: block; margin-bottom: 0.5rem;">
+                    <?php else : ?>
+                        <div class="founder-signature"><?php echo esc_html( $founder_name ); ?></div>
+                    <?php endif; ?>
                     <div class="founder-sig-line"></div>
-                    <div class="founder-sig-role">Founder & Lead Photographer</div>
+                    <div class="founder-sig-role"><?php echo esc_html( jjwz_get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' ) ); ?></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 9 — WHY CHOOSE US (100% IDENTITY PROMISE)
@@ -611,34 +624,43 @@ if ( $blog_q->have_posts() ) :
             </a>
         </div>
 
-        <div class="blog-preview__grid">
+        <div class="blog-grid">
         <?php
         while ( $blog_q->have_posts() ) :
             $blog_q->the_post();
             $cats     = get_the_category();
             $cat_name = $cats ? $cats[0]->name : 'Photography';
             $thumb    = get_the_post_thumbnail_url( null, 'jjwz-blog-card' );
+            if ( empty( $thumb ) ) {
+                $thumb = jjwz_get_option( 'jjw_default_placeholder_blog' );
+            }
+            if ( empty( $thumb ) ) {
+                $thumb = get_template_directory_uri() . '/assets/images/placeholder-blog.png';
+            }
+            $word_count = str_word_count( get_the_content() );
+            $read_time  = max( 1, ceil( $word_count / 200 ) );
             ?>
-            <article class="blog-card" id="post-<?php the_ID(); ?>">
-                <a href="<?php the_permalink(); ?>" class="blog-card__link" aria-label="<?php the_title_attribute(); ?>">
-                    <div class="blog-card__media">
-                        <?php if ( $thumb ) : ?>
-                            <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
-                        <?php else : ?>
-                            <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
-                        <?php endif; ?>
+            <article id="post-<?php the_ID(); ?>" <?php post_class( 'blog-card' ); ?>>
+                <div class="blog-card__media">
+                    <a href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
+                        <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" width="800" height="480">
+                    </a>
+                </div>
+                <div class="blog-card__body">
+                    <span class="blog-card__cat"><?php echo esc_html( $cat_name ); ?></span>
+                    <h3 class="blog-card__title">
+                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                    </h3>
+                    <p class="blog-card__excerpt"><?php echo wp_strip_all_tags( get_the_excerpt() ); ?></p>
+                    <div class="flex-between" style="margin-top: auto; border-top: 1px solid var(--clr-border); padding-top: var(--sp-md);">
+                        <span class="text-mist" style="font-size: var(--text-xs); font-weight: 500;">
+                            <?php echo get_the_date( 'M j, Y' ); ?> &bull; <?php echo $read_time; ?> min read
+                        </span>
+                        <a href="<?php the_permalink(); ?>" class="blog-card__link" aria-label="<?php esc_attr_e( 'Read post', 'jjweddingz' ); ?>">
+                            Read
+                        </a>
                     </div>
-                    <div class="blog-card__body">
-                        <span class="blog-card__cat"><?php echo esc_html( $cat_name ); ?></span>
-                        <h3 class="blog-card__title"><?php the_title(); ?></h3>
-                        <p class="blog-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20, '…' ) ); ?></p>
-                        <div class="blog-card__meta">
-                            <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo get_the_date( 'M j, Y' ); ?></time>
-                            <span>·</span>
-                            <span><?php echo ceil( str_word_count( get_the_content() ) / 200 ); ?> min read</span>
-                        </div>
-                    </div>
-                </a>
+                </div>
             </article>
             <?php
         endwhile;

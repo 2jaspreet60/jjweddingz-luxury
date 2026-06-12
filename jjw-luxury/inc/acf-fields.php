@@ -79,10 +79,16 @@ function jjwz_register_acf_fields() {
         'fields' => [
             [ 'key' => 'field_svc_icon',         'label' => 'Icon Emoji',            'name' => 'svc_icon',         'type' => 'text', 'placeholder' => '💍' ],
             [ 'key' => 'field_svc_hero_image',   'label' => 'Hero Image',            'name' => 'svc_hero_image',   'type' => 'image', 'return_format' => 'array' ],
+            [ 'key' => 'field_svc_gallery',      'label' => 'Service Gallery',       'name' => 'svc_gallery',      'type' => 'gallery', 'return_format' => 'array' ],
             [ 'key' => 'field_svc_short_desc',   'label' => 'Short Description',     'name' => 'svc_short_desc',   'type' => 'textarea', 'rows' => 3 ],
             [ 'key' => 'field_svc_seo_content',  'label' => 'Full SEO Content',      'name' => 'svc_seo_content',  'type' => 'wysiwyg' ],
+            [ 'key' => 'field_svc_pricing_title','label' => 'Pricing Section Title', 'name' => 'svc_pricing_title', 'type' => 'text', 'placeholder' => 'Exclusive Packages' ],
+            [ 'key' => 'field_svc_pricing_desc', 'label' => 'Pricing Section Desc',  'name' => 'svc_pricing_desc',  'type' => 'textarea', 'rows' => 3 ],
+            [ 'key' => 'field_svc_faqs',         'label' => 'Map Related FAQs',      'name' => 'svc_faqs',         'type' => 'post_object', 'post_type' => [ 'jjwz_faq' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
             [ 'key' => 'field_svc_featured',     'label' => 'Featured on Home',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
             [ 'key' => 'field_svc_display_order','label' => 'Display Order',         'name' => 'svc_display_order','type' => 'number', 'default_value' => 0 ],
+            [ 'key' => 'field_svc_seo_title',    'label' => 'Service SEO Title',     'name' => 'svc_seo_title',    'type' => 'text' ],
+            [ 'key' => 'field_svc_seo_desc',     'label' => 'Service SEO Meta Desc', 'name' => 'svc_seo_desc',     'type' => 'textarea', 'rows' => 3 ],
         ],
         'location' => [ [ [ 'param' => 'post_type', 'operator' => '==', 'value' => 'jjwz_service' ] ] ],
     ] );

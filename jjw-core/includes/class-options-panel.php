@@ -92,14 +92,17 @@ class JJWZ_Options_Panel {
             <nav class="jjwz-tabs" aria-label="Settings tabs">
                 <?php
                 $tabs = [
-                    'brand'     => '🏠 Branding & Contact',
-                    'branches'  => '🏢 Branches',
-                    'social'    => '🔗 Social Media',
-                    'watermark' => '🖼️ Watermark',
-                    'whatsapp'  => '💬 WhatsApp Config',
-                    'payments'  => '💳 Payment APIs',
-                    'crm'       => '📊 CRM & Leads',
-                    'seeder'    => '📝 Blog Seeder',
+                    'brand'            => '🏠 Branding & Contact',
+                    'branches'         => '🏢 Branches',
+                    'social'           => '🔗 Social Media',
+                    'founder'          => '👤 Founder Settings',
+                    'service_city_seo' => '🗺️ Service + City SEO',
+                    'gallery_delivery' => '📸 Gallery Delivery (Future)',
+                    'watermark'        => '🖼️ Watermark',
+                    'whatsapp'         => '💬 WhatsApp Config',
+                    'payments'         => '💳 Payment APIs',
+                    'crm'              => '📊 CRM & Leads',
+                    'seeder'           => '📝 Blog Seeder',
                 ];
                 foreach ( $tabs as $slug => $label ) :
                     $active = ( $tab === $slug ) ? ' jjwz-tab--active' : '';
@@ -119,14 +122,17 @@ class JJWZ_Options_Panel {
 
                     <?php
                     switch ( $tab ) {
-                        case 'brand':     $this->render_brand_tab();     break;
-                        case 'branches':  $this->render_branches_tab();  break;
-                        case 'social':    $this->render_social_tab();    break;
-                        case 'watermark': $this->render_watermark_tab(); break;
-                        case 'whatsapp':  $this->render_whatsapp_tab();  break;
-                        case 'payments':  $this->render_payments_tab();  break;
-                        case 'crm':       $this->render_crm_tab();       break;
-                        case 'seeder':    $this->render_seeder_tab();    break;
+                        case 'brand':            $this->render_brand_tab();            break;
+                        case 'branches':         $this->render_branches_tab();         break;
+                        case 'social':           $this->render_social_tab();           break;
+                        case 'founder':          $this->render_founder_tab();          break;
+                        case 'service_city_seo': $this->render_service_city_seo_tab(); break;
+                        case 'gallery_delivery': $this->render_gallery_delivery_tab(); break;
+                        case 'watermark':        $this->render_watermark_tab();        break;
+                        case 'whatsapp':         $this->render_whatsapp_tab();         break;
+                        case 'payments':         $this->render_payments_tab();         break;
+                        case 'crm':              $this->render_crm_tab();              break;
+                        case 'seeder':           $this->render_seeder_tab();           break;
                     }
                     ?>
 
@@ -152,6 +158,11 @@ class JJWZ_Options_Panel {
             'jjw_logo_light'  => 'Light Logo',
             'jjw_logo_mobile' => 'Mobile Logo',
             'jjw_favicon'     => 'Favicon',
+            'jjw_default_placeholder_founder'     => 'Default Founder Placeholder',
+            'jjw_default_placeholder_service'     => 'Default Service Placeholder',
+            'jjw_default_placeholder_portfolio'   => 'Default Portfolio Placeholder',
+            'jjw_default_placeholder_testimonial' => 'Default Testimonial Placeholder',
+            'jjw_default_placeholder_blog'        => 'Default Blog Placeholder',
         ];
 
         $contact_fields = [
@@ -551,6 +562,411 @@ class JJWZ_Options_Panel {
         <?php
     }
 
+    /* ─── FOUNDER SETTINGS TAB ───────────────────────────────────────────── */
+
+    private function render_founder_tab(): void {
+        $name            = get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
+        $designation     = get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' );
+        $short_title     = get_option( 'jjwz_about_founder_short_title', 'The Visionary Behind the Lens' );
+        $bio             = get_option( 'jjwz_about_founder_bio', '' );
+        $secondary_bio   = get_option( 'jjwz_about_founder_secondary_bio', '' );
+        $portrait        = get_option( 'jjwz_about_founder_img', '' );
+        $signature       = get_option( 'jjwz_about_founder_signature', '' );
+        $badge           = get_option( 'jjwz_about_founder_badge', '100% Identity Retained' );
+
+        $email           = get_option( 'jjwz_about_founder_email', '' );
+        $phone           = get_option( 'jjwz_about_founder_phone', '' );
+        $whatsapp        = get_option( 'jjwz_about_founder_whatsapp', '' );
+        $location        = get_option( 'jjwz_about_founder_location', '' );
+
+        $instagram       = get_option( 'jjwz_about_founder_instagram', '' );
+        $facebook        = get_option( 'jjwz_about_founder_facebook', '' );
+        $youtube         = get_option( 'jjwz_about_founder_youtube', '' );
+        $linkedin        = get_option( 'jjwz_about_founder_linkedin', '' );
+        $pinterest       = get_option( 'jjwz_about_founder_pinterest', '' );
+        $twitter         = get_option( 'jjwz_about_founder_twitter', '' );
+
+        $ach_1           = get_option( 'jjwz_about_founder_achievement_1', '' );
+        $ach_2           = get_option( 'jjwz_about_founder_achievement_2', '' );
+        $ach_3           = get_option( 'jjwz_about_founder_achievement_3', '' );
+        $ach_4           = get_option( 'jjwz_about_founder_achievement_4', '' );
+
+        $exp             = get_option( 'jjwz_about_founder_experience', '11+' );
+        $weddings        = get_option( 'jjwz_about_founder_weddings', '500+' );
+        $countries       = get_option( 'jjwz_about_founder_countries', '5+' );
+        $awards          = get_option( 'jjwz_about_founder_awards', '15+' );
+
+        $show_email      = get_option( 'jjwz_about_founder_show_email', '1' );
+        $show_phone      = get_option( 'jjwz_about_founder_show_phone', '1' );
+        $show_whatsapp   = get_option( 'jjwz_about_founder_show_whatsapp', '1' );
+        $show_location   = get_option( 'jjwz_about_founder_show_location', '1' );
+        $show_instagram  = get_option( 'jjwz_about_founder_show_instagram', '1' );
+        $show_facebook   = get_option( 'jjwz_about_founder_show_facebook', '1' );
+        $show_youtube    = get_option( 'jjwz_about_founder_show_youtube', '1' );
+        $show_linkedin   = get_option( 'jjwz_about_founder_show_linkedin', '1' );
+        $show_pinterest  = get_option( 'jjwz_about_founder_show_pinterest', '1' );
+        $show_twitter    = get_option( 'jjwz_about_founder_show_twitter', '1' );
+
+        $enable_home     = get_option( 'jjwz_about_founder_enable_homepage', '1' );
+        $enable_about    = get_option( 'jjwz_about_founder_enable_about', '1' );
+        $enable_sig_foot = get_option( 'jjwz_about_founder_enable_signature_footer', '1' );
+
+        $layout          = get_option( 'jjwz_about_founder_layout', 'classic' );
+        $timeline_raw    = get_option( 'jjw_timeline', '[]' );
+        $timeline        = json_decode( $timeline_raw, true ) ?: [];
+        ?>
+        <div class="jjwz-tab-content">
+            <h2 class="jjwz-section-title">👤 Founder Portrait & Profile Settings</h2>
+            <p class="jjwz-section-desc">Manage bio descriptions, portraits, achievements, timeline highlights, and display settings for Jaspreet Singh.</p>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2rem;">General Information</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_name" class="jjwz-label">Founder Name</label>
+                    <input type="text" id="jjwz_about_founder_name" name="jjwz_about_founder_name" value="<?php echo esc_attr( $name ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_designation" class="jjwz-label">Designation</label>
+                    <input type="text" id="jjwz_about_founder_designation" name="jjwz_about_founder_designation" value="<?php echo esc_attr( $designation ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_short_title" class="jjwz-label">Intro Eyebrow / Short Title</label>
+                    <input type="text" id="jjwz_about_founder_short_title" name="jjwz_about_founder_short_title" value="<?php echo esc_attr( $short_title ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_badge" class="jjwz-label">Badge Text</label>
+                    <input type="text" id="jjwz_about_founder_badge" name="jjwz_about_founder_badge" value="<?php echo esc_attr( $badge ); ?>" class="jjwz-input">
+                </div>
+            </div>
+
+            <div class="jjwz-fields-grid" style="margin-top:1.5rem;">
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Portrait Image</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="jjwz_about_founder_img" name="jjwz_about_founder_img" value="<?php echo esc_attr( $portrait ); ?>" class="jjwz-input media-url" style="flex:1;">
+                        <button type="button" class="button jjwz-media-upload-btn" data-target="jjwz_about_founder_img">Upload Image</button>
+                    </div>
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Signature Image Asset</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="jjwz_about_founder_signature" name="jjwz_about_founder_signature" value="<?php echo esc_attr( $signature ); ?>" class="jjwz-input media-url" style="flex:1;">
+                        <button type="button" class="button jjwz-media-upload-btn" data-target="jjwz_about_founder_signature">Upload Signature</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="jjwz-field-group" style="margin-top:1.5rem;">
+                <label for="jjwz_about_founder_bio" class="jjwz-label">Short Biography (Main Body)</label>
+                <textarea id="jjwz_about_founder_bio" name="jjwz_about_founder_bio" class="jjwz-textarea" rows="4"><?php echo esc_textarea( $bio ); ?></textarea>
+            </div>
+            <div class="jjwz-field-group" style="margin-top:1.5rem;">
+                <label for="jjwz_about_founder_secondary_bio" class="jjwz-label">Secondary / Long Biography</label>
+                <textarea id="jjwz_about_founder_secondary_bio" name="jjwz_about_founder_secondary_bio" class="jjwz-textarea" rows="4"><?php echo esc_textarea( $secondary_bio ); ?></textarea>
+            </div>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">Credentials & Statistics</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_experience" class="jjwz-label">Years of Experience</label>
+                    <input type="text" id="jjwz_about_founder_experience" name="jjwz_about_founder_experience" value="<?php echo esc_attr( $exp ); ?>" class="jjwz-input" placeholder="e.g. 11+">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_weddings" class="jjwz-label">Weddings Photographed</label>
+                    <input type="text" id="jjwz_about_founder_weddings" name="jjwz_about_founder_weddings" value="<?php echo esc_attr( $weddings ); ?>" class="jjwz-input" placeholder="e.g. 500+">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_countries" class="jjwz-label">Countries Served</label>
+                    <input type="text" id="jjwz_about_founder_countries" name="jjwz_about_founder_countries" value="<?php echo esc_attr( $countries ); ?>" class="jjwz-input" placeholder="e.g. 5+">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_awards" class="jjwz-label">Awards Won</label>
+                    <input type="text" id="jjwz_about_founder_awards" name="jjwz_about_founder_awards" value="<?php echo esc_attr( $awards ); ?>" class="jjwz-input" placeholder="e.g. 15+">
+                </div>
+            </div>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">Achievements & Accolades</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_achievement_1" class="jjwz-label">Achievement 1</label>
+                    <input type="text" id="jjwz_about_founder_achievement_1" name="jjwz_about_founder_achievement_1" value="<?php echo esc_attr( $ach_1 ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_achievement_2" class="jjwz-label">Achievement 2</label>
+                    <input type="text" id="jjwz_about_founder_achievement_2" name="jjwz_about_founder_achievement_2" value="<?php echo esc_attr( $ach_2 ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_achievement_3" class="jjwz-label">Achievement 3</label>
+                    <input type="text" id="jjwz_about_founder_achievement_3" name="jjwz_about_founder_achievement_3" value="<?php echo esc_attr( $ach_3 ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_achievement_4" class="jjwz-label">Achievement 4</label>
+                    <input type="text" id="jjwz_about_founder_achievement_4" name="jjwz_about_founder_achievement_4" value="<?php echo esc_attr( $ach_4 ); ?>" class="jjwz-input">
+                </div>
+            </div>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">Contact Information</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_email" class="jjwz-label">Direct Email</label>
+                    <input type="email" id="jjwz_about_founder_email" name="jjwz_about_founder_email" value="<?php echo esc_attr( $email ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_phone" class="jjwz-label">Direct Phone</label>
+                    <input type="text" id="jjwz_about_founder_phone" name="jjwz_about_founder_phone" value="<?php echo esc_attr( $phone ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_whatsapp" class="jjwz-label">WhatsApp Number</label>
+                    <input type="text" id="jjwz_about_founder_whatsapp" name="jjwz_about_founder_whatsapp" value="<?php echo esc_attr( $whatsapp ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_location" class="jjwz-label">Base Location</label>
+                    <input type="text" id="jjwz_about_founder_location" name="jjwz_about_founder_location" value="<?php echo esc_attr( $location ); ?>" class="jjwz-input">
+                </div>
+            </div>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">Social Profiles</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_instagram" class="jjwz-label">Instagram Profile URL</label>
+                    <input type="url" id="jjwz_about_founder_instagram" name="jjwz_about_founder_instagram" value="<?php echo esc_attr( $instagram ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_facebook" class="jjwz-label">Facebook Profile URL</label>
+                    <input type="url" id="jjwz_about_founder_facebook" name="jjwz_about_founder_facebook" value="<?php echo esc_attr( $facebook ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_youtube" class="jjwz-label">YouTube Channel URL</label>
+                    <input type="url" id="jjwz_about_founder_youtube" name="jjwz_about_founder_youtube" value="<?php echo esc_attr( $youtube ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_linkedin" class="jjwz-label">LinkedIn Profile URL</label>
+                    <input type="url" id="jjwz_about_founder_linkedin" name="jjwz_about_founder_linkedin" value="<?php echo esc_attr( $linkedin ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_pinterest" class="jjwz-label">Pinterest Profile URL</label>
+                    <input type="url" id="jjwz_about_founder_pinterest" name="jjwz_about_founder_pinterest" value="<?php echo esc_attr( $pinterest ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_twitter" class="jjwz-label">X/Twitter Profile URL</label>
+                    <input type="url" id="jjwz_about_founder_twitter" name="jjwz_about_founder_twitter" value="<?php echo esc_attr( $twitter ); ?>" class="jjwz-input">
+                </div>
+            </div>
+
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">Section Toggles & Layout</h3>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_layout" class="jjwz-label">Founder Grid Layout Style</label>
+                    <select id="jjwz_about_founder_layout" name="jjwz_about_founder_layout" class="jjwz-select">
+                        <option value="classic" <?php selected( $layout, 'classic' ); ?>>Classic Editorial Layout</option>
+                        <option value="magazine" <?php selected( $layout, 'magazine' ); ?>>Luxury Magazine Layout</option>
+                        <option value="split-left" <?php selected( $layout, 'split-left' ); ?>>Split Layout - Image Left</option>
+                        <option value="split-right" <?php selected( $layout, 'split-right' ); ?>>Split Layout - Image Right</option>
+                        <option value="centered" <?php selected( $layout, 'centered' ); ?>>Centered Minimal layout</option>
+                    </select>
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Global Section Status Visibility</label>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                        <label><input type="checkbox" name="jjwz_about_founder_enable_homepage" value="1" <?php checked( $enable_home, '1' ); ?>> Show Founder Block on Frontpage</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_enable_about" value="1" <?php checked( $enable_about, '1' ); ?>> Show Founder Profile on About Page</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_enable_signature_footer" value="1" <?php checked( $enable_sig_foot, '1' ); ?>> Include Founder Signature in Site Footer</label>
+                    </div>
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Contact Visibility Controls</label>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                        <label><input type="checkbox" name="jjwz_about_founder_show_email" value="1" <?php checked( $show_email, '1' ); ?>> Show Direct Email</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_phone" value="1" <?php checked( $show_phone, '1' ); ?>> Show Direct Phone</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_whatsapp" value="1" <?php checked( $show_whatsapp, '1' ); ?>> Show WhatsApp Chat Link</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_location" value="1" <?php checked( $show_location, '1' ); ?>> Show Base Location</label>
+                    </div>
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Social Visibility Controls</label>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                        <label><input type="checkbox" name="jjwz_about_founder_show_instagram" value="1" <?php checked( $show_instagram, '1' ); ?>> Show Instagram</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_facebook" value="1" <?php checked( $show_facebook, '1' ); ?>> Show Facebook</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_youtube" value="1" <?php checked( $show_youtube, '1' ); ?>> Show YouTube</label>
+                        <label><input type="checkbox" name="jjwz_about_founder_show_linkedin" value="1" <?php checked( $show_linkedin, '1' ); ?>> Show LinkedIn</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- Dynamic Timeline Repeater Manager --- -->
+            <h3 class="jjwz-section-title" style="font-size:16px; margin-top:2.5rem;">📅 Founder Milestones Timeline Manager</h3>
+            <p class="jjwz-section-desc">Manage historical milestones. These items render dynamically on the About timeline showcase.</p>
+            <input type="hidden" name="jjw_timeline" id="jjw-timeline-data" value="<?php echo esc_attr( $timeline_raw ); ?>">
+
+            <div class="jjw-repeater-container" id="timeline-repeater-container">
+                <table class="wp-list-table widefat fixed striped" style="margin-bottom:1.5rem;">
+                    <thead>
+                        <tr>
+                            <th style="width:15%;">Year</th>
+                            <th style="width:30%;">Milestone Title</th>
+                            <th>Description Narrative</th>
+                            <th style="width:80px;text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeline-tbody">
+                        <?php if ( ! empty( $timeline ) ) : ?>
+                            <?php foreach ( $timeline as $i => $m ) : ?>
+                            <tr class="repeater-row">
+                                <td><input type="text" class="row-year jjwz-input" value="<?php echo esc_attr( $m['year'] ?? '' ); ?>" required></td>
+                                <td><input type="text" class="row-title jjwz-input" value="<?php echo esc_attr( $m['title'] ?? '' ); ?>" required></td>
+                                <td><textarea class="row-desc jjwz-input" rows="2"><?php echo esc_textarea( $m['desc'] ?? '' ); ?></textarea></td>
+                                <td style="text-align:center;"><button type="button" class="button button-link-delete delete-row-btn">Remove</button></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <button type="button" class="button button-secondary" id="add-timeline-btn">＋ Add Timeline Milestone</button>
+            </div>
+        </div>
+        <?php
+    }
+
+    /* ─── SERVICE + CITY SEO REPEATER TAB ────────────────────────────────── */
+
+    private function render_service_city_seo_tab(): void {
+        $seo_raw = get_option( 'jjw_service_city_seo', '[]' );
+        $seo_items = json_decode( $seo_raw, true ) ?: [];
+        ?>
+        <div class="jjwz-tab-content">
+            <h2 class="jjwz-section-title">🗺️ Service + City SEO Landing Page Controls</h2>
+            <p class="jjwz-section-desc">Manage specific layout, title, intro, CTA and FAQ content overrides for combinations of Services and Cities.</p>
+
+            <input type="hidden" name="jjw_service_city_seo" id="jjw-service-city-seo-data" value="<?php echo esc_attr( $seo_raw ); ?>">
+
+            <div class="jjw-repeater-container" id="seo-repeater-container">
+                <table class="wp-list-table widefat fixed striped" style="margin-bottom:1.5rem;">
+                    <thead>
+                        <tr>
+                            <th style="width:18%;">Service Category</th>
+                            <th style="width:15%;">City/Location</th>
+                            <th>SEO Title Override</th>
+                            <th>Meta Description</th>
+                            <th>Intro Narrative</th>
+                            <th>FAQ Custom Narrative</th>
+                            <th>CTA Content Override</th>
+                            <th style="width:80px;text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seo-tbody">
+                        <?php if ( ! empty( $seo_items ) ) : ?>
+                            <?php foreach ( $seo_items as $item ) : ?>
+                            <tr class="repeater-row">
+                                <td>
+                                    <select class="row-service jjwz-select" style="width:100%;">
+                                        <?php
+                                        $services_opts = ['wedding' => 'Wedding', 'pre-wedding' => 'Pre-Wedding', 'maternity' => 'Maternity', 'newborn' => 'Newborn', 'baby' => 'Baby Shoot', 'cake-smash' => 'Cake Smash', 'birthday' => 'Birthday', 'anniversary' => 'Anniversary', 'family' => 'Family', 'films' => 'Films'];
+                                        foreach ($services_opts as $slug => $name) {
+                                            $selected = (($item['service'] ?? '') === $slug) ? 'selected' : '';
+                                            echo '<option value="'.esc_attr($slug).'" '.$selected.'>'.esc_html($name).'</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="row-city jjwz-select" style="width:100%;">
+                                        <?php
+                                        $cities_opts = ['amritsar' => 'Amritsar', 'delhi' => 'Delhi NCR', 'ludhiana' => 'Ludhiana', 'jalandhar' => 'Jalandhar', 'mohali' => 'Mohali', 'chandigarh' => 'Chandigarh', 'patiala' => 'Patiala', 'bathinda' => 'Bathinda'];
+                                        foreach ($cities_opts as $slug => $name) {
+                                            $selected = (($item['city'] ?? '') === $slug) ? 'selected' : '';
+                                            echo '<option value="'.esc_attr($slug).'" '.$selected.'>'.esc_html($name).'</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td><input type="text" class="row-seo-title jjwz-input" value="<?php echo esc_attr( $item['seo_title'] ?? '' ); ?>" placeholder="Luxury Wedding Photographer in Amritsar"></td>
+                                <td><textarea class="row-meta-desc jjwz-input" rows="2" placeholder="Luxury wedding photography..."><?php echo esc_textarea( $item['meta_description'] ?? '' ); ?></textarea></td>
+                                <td><textarea class="row-intro jjwz-input" rows="2" placeholder="Intro copy here..."><?php echo esc_textarea( $item['intro_content'] ?? '' ); ?></textarea></td>
+                                <td><textarea class="row-faq jjwz-input" rows="2" placeholder="FAQ custom narrative or questions..."><?php echo esc_textarea( $item['faq_content'] ?? '' ); ?></textarea></td>
+                                <td><textarea class="row-cta jjwz-input" rows="2" placeholder="Inquire about Amritsar dates..."><?php echo esc_textarea( $item['cta_content'] ?? '' ); ?></textarea></td>
+                                <td style="text-align:center;"><button type="button" class="button button-link-delete delete-row-btn">Remove</button></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <button type="button" class="button button-secondary" id="add-seo-btn">＋ Add Custom SEO Combination</button>
+            </div>
+        </div>
+        <?php
+    }
+
+    /* ─── GALLERY DELIVERY TAB (FUTURE ARCHITECTURE PREP) ────────────────── */
+
+    private function render_gallery_delivery_tab(): void {
+        $pw_enable = get_option( 'jjw_gallery_password_protection_enable', '0' );
+        $cp_enable = get_option( 'jjw_gallery_client_portals_enable', '0' );
+        $wm_enable = get_option( 'jjw_gallery_watermark_all_enable', '0' );
+        $dl_enable = get_option( 'jjw_gallery_download_controls_enable', '0' );
+        $del_mode  = get_option( 'jjw_gallery_delivery_mode', 'dashboard' );
+        ?>
+        <div class="jjwz-tab-content">
+            <h2 class="jjwz-section-title">📸 Future Gallery Delivery System (Architecture Prep)</h2>
+            <p class="jjwz-section-desc">Configure parameters for client portal, watermarking workflows, and secure digital media delivery modules (to be finalized in Sprint 4).</p>
+
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Security & Authentication</label>
+                    <div class="jjwz-toggle-wrap">
+                        <label class="jjwz-toggle">
+                            <input type="checkbox" name="jjw_gallery_password_protection_enable" value="1" <?php checked( $pw_enable, '1' ); ?>>
+                            <span class="jjwz-toggle__slider"></span>
+                        </label>
+                        <span>Require password protection keys to access custom client galleries.</span>
+                    </div>
+                </div>
+
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Portal Experience</label>
+                    <div class="jjwz-toggle-wrap">
+                        <label class="jjwz-toggle">
+                            <input type="checkbox" name="jjw_gallery_client_portals_enable" value="1" <?php checked( $cp_enable, '1' ); ?>>
+                            <span class="jjwz-toggle__slider"></span>
+                        </label>
+                        <span>Enable dedicated, client-facing photography portal dashboard.</span>
+                    </div>
+                </div>
+
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Watermark Previews</label>
+                    <div class="jjwz-toggle-wrap">
+                        <label class="jjwz-toggle">
+                            <input type="checkbox" name="jjw_gallery_watermark_all_enable" value="1" <?php checked( $wm_enable, '1' ); ?>>
+                            <span class="jjwz-toggle__slider"></span>
+                        </label>
+                        <span>Auto-apply default watermark overlay previews for non-downloadable images.</span>
+                    </div>
+                </div>
+
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Download Control Settings</label>
+                    <div class="jjwz-toggle-wrap">
+                        <label class="jjwz-toggle">
+                            <input type="checkbox" name="jjw_gallery_download_controls_enable" value="1" <?php checked( $dl_enable, '1' ); ?>>
+                            <span class="jjwz-toggle__slider"></span>
+                        </label>
+                        <span>Restrict downloads of raw/high-res files based on invoice payment status.</span>
+                    </div>
+                </div>
+
+                <div class="jjwz-field-group">
+                    <label for="jjw_gallery_delivery_mode" class="jjwz-label">Delivery Mechanism</label>
+                    <select id="jjw_gallery_delivery_mode" name="jjw_gallery_delivery_mode" class="jjwz-select">
+                        <option value="direct" <?php selected( $del_mode, 'direct' ); ?>>Direct ZIP Download Links</option>
+                        <option value="dashboard" <?php selected( $del_mode, 'dashboard' ); ?>>Interactive Grid Dashboard (Default)</option>
+                        <option value="private" <?php selected( $del_mode, 'private' ); ?>>Private Unlisted Webpages</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
     /* ─── Handle Save ────────────────────────────────────────────────────── */
 
     public function handle_save(): void {
@@ -561,11 +977,43 @@ class JJWZ_Options_Panel {
 
         $plain_text_fields = [
             'jjw_logo', 'jjw_logo_dark', 'jjw_logo_light', 'jjw_logo_mobile', 'jjw_favicon',
+            'jjw_default_placeholder_founder', 'jjw_default_placeholder_service',
+            'jjw_default_placeholder_portfolio', 'jjw_default_placeholder_testimonial',
+            'jjw_default_placeholder_blog',
             'jjw_primary_phone', 'jjw_secondary_phone', 'jjw_primary_whatsapp', 'jjw_secondary_whatsapp',
             'jjw_email', 'jjw_support_email', 'jjwz_copyright_text',
             'jjw_watermark_enable', 'jjw_watermark_text', 'jjw_watermark_opacity', 'jjw_watermark_position',
             'jjwz_whatsapp_number', 'jjwz_whatsapp_mode', 'jjwz_wa_api_endpoint', 'jjwz_wa_json_payload',
             'jjwz_razorpay_key_id',
+            'jjwz_about_founder_name', 'jjwz_about_founder_designation', 'jjwz_about_founder_short_title',
+            'jjwz_about_founder_badge', 'jjwz_about_founder_img', 'jjwz_about_founder_signature',
+            'jjwz_about_founder_experience', 'jjwz_about_founder_weddings', 'jjwz_about_founder_countries',
+            'jjwz_about_founder_awards', 'jjwz_about_founder_achievement_1', 'jjwz_about_founder_achievement_2',
+            'jjwz_about_founder_achievement_3', 'jjwz_about_founder_achievement_4', 'jjwz_about_founder_email',
+            'jjwz_about_founder_phone', 'jjwz_about_founder_whatsapp', 'jjwz_about_founder_location',
+            'jjwz_about_founder_instagram', 'jjwz_about_founder_facebook', 'jjwz_about_founder_youtube',
+            'jjwz_about_founder_linkedin', 'jjwz_about_founder_pinterest', 'jjwz_about_founder_twitter',
+            'jjwz_about_founder_layout', 'jjw_gallery_delivery_mode'
+        ];
+
+        $checkbox_fields = [
+            'jjw_gallery_password_protection_enable',
+            'jjw_gallery_client_portals_enable',
+            'jjw_gallery_watermark_all_enable',
+            'jjw_gallery_download_controls_enable',
+            'jjwz_about_founder_show_email',
+            'jjwz_about_founder_show_phone',
+            'jjwz_about_founder_show_whatsapp',
+            'jjwz_about_founder_show_location',
+            'jjwz_about_founder_show_instagram',
+            'jjwz_about_founder_show_facebook',
+            'jjwz_about_founder_show_youtube',
+            'jjwz_about_founder_show_linkedin',
+            'jjwz_about_founder_show_pinterest',
+            'jjwz_about_founder_show_twitter',
+            'jjwz_about_founder_enable_homepage',
+            'jjwz_about_founder_enable_about',
+            'jjwz_about_founder_enable_signature_footer'
         ];
 
         $encrypted_fields = [
@@ -582,10 +1030,21 @@ class JJWZ_Options_Panel {
             }
         }
 
+        foreach ( $checkbox_fields as $f ) {
+            update_option( $f, isset( $_POST[ $f ] ) ? '1' : '0' );
+        }
+
         foreach ( $encrypted_fields as $f ) {
             if ( isset( $_POST[ $f ] ) && ! empty( $_POST[ $f ] ) ) {
                 update_option( $f, $this->encrypt_value( sanitize_text_field( $_POST[ $f ] ) ) );
             }
+        }
+
+        if ( isset( $_POST['jjwz_about_founder_bio'] ) ) {
+            update_option( 'jjwz_about_founder_bio', wp_kses_post( wp_unslash( $_POST['jjwz_about_founder_bio'] ) ) );
+        }
+        if ( isset( $_POST['jjwz_about_founder_secondary_bio'] ) ) {
+            update_option( 'jjwz_about_founder_secondary_bio', wp_kses_post( wp_unslash( $_POST['jjwz_about_founder_secondary_bio'] ) ) );
         }
 
         // Save dynamic repeaters
@@ -624,6 +1083,46 @@ class JJWZ_Options_Panel {
                 }
             }
             update_option( 'jjw_social_media', wp_json_encode( $sanitized_social ) );
+        }
+
+        if ( isset( $_POST['jjw_timeline'] ) ) {
+            $timeline_raw = wp_unslash( $_POST['jjw_timeline'] );
+            $timeline_arr = json_decode( $timeline_raw, true );
+            $sanitized_timeline = [];
+            if ( is_array( $timeline_arr ) ) {
+                foreach ( $timeline_arr as $row ) {
+                    $sanitized_timeline[] = [
+                        'year'  => sanitize_text_field( $row['year'] ?? '' ),
+                        'title' => sanitize_text_field( $row['title'] ?? '' ),
+                        'desc'  => sanitize_textarea_field( $row['desc'] ?? '' ),
+                    ];
+                }
+            }
+            update_option( 'jjw_timeline', wp_json_encode( $sanitized_timeline ) );
+        }
+
+        if ( isset( $_POST['jjw_service_city_seo'] ) ) {
+            $seo_raw = wp_unslash( $_POST['jjw_service_city_seo'] );
+            $seo_arr = json_decode( $seo_raw, true );
+            $sanitized_seo = [];
+            if ( is_array( $seo_arr ) ) {
+                foreach ( $seo_arr as $row ) {
+                    $sanitized_seo[] = [
+                        'service'          => sanitize_key( $row['service'] ?? '' ),
+                        'city'             => sanitize_key( $row['city'] ?? '' ),
+                        'seo_title'        => sanitize_text_field( $row['seo_title'] ?? '' ),
+                        'meta_description' => sanitize_textarea_field( $row['meta_description'] ?? '' ),
+                        'intro_content'    => sanitize_textarea_field( $row['intro_content'] ?? '' ),
+                        'faq_content'      => sanitize_textarea_field( $row['faq_content'] ?? '' ),
+                        'cta_content'      => sanitize_textarea_field( $row['cta_content'] ?? '' ),
+                    ];
+                }
+            }
+            update_option( 'jjw_service_city_seo', wp_json_encode( $sanitized_seo ) );
+        }
+
+        if ( 'service_city_seo' === $tab ) {
+            flush_rewrite_rules();
         }
 
         wp_safe_redirect( admin_url( 'admin.php?page=' . $this->menu_slug . '&jjwz_tab=' . $tab . '&jjwz_saved=1' ) );
@@ -854,6 +1353,122 @@ class JJWZ_Options_Panel {
                     if (e.target.classList.contains('delete-row-btn')) {
                         e.target.closest('.repeater-row').remove();
                         serializeSocial();
+                    }
+                });
+            }
+
+            // --- Timeline Repeater JS ---
+            const addTimelineBtn = document.getElementById('add-timeline-btn');
+            const timelineTbody = document.getElementById('timeline-tbody');
+            const timelineDataInput = document.getElementById('jjw-timeline-data');
+
+            function serializeTimeline() {
+                if (!timelineTbody) return;
+                const rows = timelineTbody.querySelectorAll('.repeater-row');
+                const data = [];
+                rows.forEach(row => {
+                    data.push({
+                        year: row.querySelector('.row-year').value,
+                        title: row.querySelector('.row-title').value,
+                        desc: row.querySelector('.row-desc').value,
+                    });
+                });
+                timelineDataInput.value = JSON.stringify(data);
+            }
+
+            if (addTimelineBtn && timelineTbody) {
+                addTimelineBtn.addEventListener('click', function() {
+                    const rowHtml = `
+                    <tr class="repeater-row">
+                        <td><input type="text" class="row-year jjwz-input" placeholder="e.g. 2013" required></td>
+                        <td><input type="text" class="row-title jjwz-input" placeholder="Founded in..." required></td>
+                        <td><textarea class="row-desc jjwz-input" rows="2" placeholder="Milestone details"></textarea></td>
+                        <td style="text-align:center;"><button type="button" class="button button-link-delete delete-row-btn">Remove</button></td>
+                    </tr>`;
+                    timelineTbody.insertAdjacentHTML('beforeend', rowHtml);
+                    serializeTimeline();
+                });
+
+                timelineTbody.addEventListener('input', serializeTimeline);
+                timelineTbody.addEventListener('change', serializeTimeline);
+                timelineTbody.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('delete-row-btn')) {
+                        e.target.closest('.repeater-row').remove();
+                        serializeTimeline();
+                    }
+                });
+            }
+
+            // --- Service + City SEO Repeater JS ---
+            const addSeoBtn = document.getElementById('add-seo-btn');
+            const seoTbody = document.getElementById('seo-tbody');
+            const seoDataInput = document.getElementById('jjw-service-city-seo-data');
+
+            function serializeSeo() {
+                if (!seoTbody) return;
+                const rows = seoTbody.querySelectorAll('.repeater-row');
+                const data = [];
+                rows.forEach(row => {
+                    data.push({
+                        service: row.querySelector('.row-service').value,
+                        city: row.querySelector('.row-city').value,
+                        seo_title: row.querySelector('.row-seo-title').value,
+                        meta_description: row.querySelector('.row-meta-desc').value,
+                        intro_content: row.querySelector('.row-intro').value,
+                        faq_content: row.querySelector('.row-faq').value,
+                        cta_content: row.querySelector('.row-cta').value,
+                    });
+                });
+                seoDataInput.value = JSON.stringify(data);
+            }
+
+            if (addSeoBtn && seoTbody) {
+                addSeoBtn.addEventListener('click', function() {
+                    const rowHtml = `
+                    <tr class="repeater-row">
+                        <td>
+                            <select class="row-service jjwz-select" style="width:100%;">
+                                <option value="wedding">Wedding</option>
+                                <option value="pre-wedding">Pre-Wedding</option>
+                                <option value="maternity">Maternity</option>
+                                <option value="newborn">Newborn</option>
+                                <option value="baby">Baby Shoot</option>
+                                <option value="cake-smash">Cake Smash</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="anniversary">Anniversary</option>
+                                <option value="family">Family</option>
+                                <option value="films">Films</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="row-city jjwz-select" style="width:100%;">
+                                <option value="amritsar">Amritsar</option>
+                                <option value="delhi">Delhi NCR</option>
+                                <option value="ludhiana">Ludhiana</option>
+                                <option value="jalandhar">Jalandhar</option>
+                                <option value="mohali">Mohali</option>
+                                <option value="chandigarh">Chandigarh</option>
+                                <option value="patiala">Patiala</option>
+                                <option value="bathinda">Bathinda</option>
+                            </select>
+                        </td>
+                        <td><input type="text" class="row-seo-title jjwz-input" placeholder="Luxury Wedding Photographer in Amritsar"></td>
+                        <td><textarea class="row-meta-desc jjwz-input" rows="2" placeholder="Luxury wedding photography..."></textarea></td>
+                        <td><textarea class="row-intro jjwz-input" rows="2" placeholder="Intro copy here..."></textarea></td>
+                        <td><textarea class="row-faq jjwz-input" rows="2" placeholder="FAQ custom narrative or questions..."></textarea></td>
+                        <td><textarea class="row-cta jjwz-input" rows="2" placeholder="Inquire about Amritsar dates..."></textarea></td>
+                        <td style="text-align:center;"><button type="button" class="button button-link-delete delete-row-btn">Remove</button></td>
+                    </tr>`;
+                    seoTbody.insertAdjacentHTML('beforeend', rowHtml);
+                    serializeSeo();
+                });
+
+                seoTbody.addEventListener('input', serializeSeo);
+                seoTbody.addEventListener('change', serializeSeo);
+                seoTbody.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('delete-row-btn')) {
+                        e.target.closest('.repeater-row').remove();
+                        serializeSeo();
                     }
                 });
             }

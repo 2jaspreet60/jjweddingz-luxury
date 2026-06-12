@@ -281,6 +281,23 @@ if ( ! is_array( $branches ) ) {
 
 		<!-- Footer Bottom Bar -->
 		<div class="footer__bottom">
+			<?php
+			$enable_sig_footer = jjwz_get_option( 'jjwz_about_founder_enable_signature_footer', '1' );
+			if ( '1' === $enable_sig_footer ) :
+				$sig_img = jjwz_get_option( 'jjwz_about_founder_signature' );
+				$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
+				$designation = jjwz_get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' );
+			?>
+			<div class="footer__signature-block" style="text-align: center; margin-bottom: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+				<?php if ( ! empty( $sig_img ) ) : ?>
+					<img src="<?php echo esc_url( $sig_img ); ?>" alt="Founder Signature" style="max-height: 60px; width: auto; filter: brightness(0) invert(1); display: block; margin: 0 auto;">
+				<?php else : ?>
+					<span style="font-family: var(--font-display); font-style: italic; color: var(--clr-gold); font-size: 1.6rem; letter-spacing: 0.05em;"><?php echo esc_html( $founder_name ); ?></span>
+				<?php endif; ?>
+				<span style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--clr-fog);"><?php echo esc_html( $designation ); ?></span>
+			</div>
+			<?php endif; ?>
+
 			<p class="footer__copyright"><?php echo wp_kses_post( $copyright_text ); ?></p>
 			<p class="footer__credit">
 				<?php echo wp_kses_post( __( 'Led by <strong>Jaspreet Singh</strong> — 11 Years of Luxury Photography Excellence', 'jjw-luxury' ) ); ?>

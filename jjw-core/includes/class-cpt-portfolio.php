@@ -71,8 +71,8 @@ class JJWZ_CPT_Portfolio {
             'rewrite'           => [ 'slug' => 'portfolio-category' ],
         ] );
 
-        // 2. Session Types
-        register_taxonomy( 'jjwz_session_type', [ 'jjwz_portfolio' ], [
+        // 2. Session Types (Linked to Services, Portfolio, Locations, and Galleries)
+        register_taxonomy( 'jjwz_session_type', [ 'jjwz_service', 'jjwz_portfolio', 'jjwz_location', 'jjwz_gallery' ], [
             'labels' => [
                 'name'              => __( 'Session Types', 'jjw-core' ),
                 'singular_name'     => __( 'Session Type',   'jjw-core' ),
@@ -109,8 +109,8 @@ class JJWZ_CPT_Portfolio {
             'rewrite'           => [ 'slug' => 'portfolio-theme' ],
         ] );
 
-        // 4. Locations (Linked to Portfolio and Locations CPT)
-        register_taxonomy( 'jjwz_location_tax', [ 'jjwz_portfolio', 'jjwz_location' ], [
+        // 4. Locations (Linked to Portfolio, Services, Blog Posts, Galleries, and Locations CPT)
+        register_taxonomy( 'jjwz_location_tax', [ 'jjwz_portfolio', 'jjwz_service', 'post', 'jjwz_gallery', 'jjwz_location' ], [
             'labels' => [
                 'name'              => __( 'Locations (Taxonomy)', 'jjw-core' ),
                 'singular_name'     => __( 'Location (Taxonomy)',   'jjw-core' ),
@@ -126,6 +126,25 @@ class JJWZ_CPT_Portfolio {
             'show_admin_column' => true,
             'show_in_rest'      => true,
             'rewrite'           => [ 'slug' => 'portfolio-location' ],
+        ] );
+
+        // 5. Service Categories (Linked to Services, Portfolios, Galleries, FAQs, and Blog Posts)
+        register_taxonomy( 'jjwz_service_cat', [ 'jjwz_service', 'jjwz_portfolio', 'jjwz_gallery', 'jjwz_faq', 'post' ], [
+            'labels' => [
+                'name'              => __( 'Service Categories', 'jjw-core' ),
+                'singular_name'     => __( 'Service Category',   'jjw-core' ),
+                'search_items'      => __( 'Search Service Categories', 'jjw-core' ),
+                'all_items'         => __( 'All Service Categories',    'jjw-core' ),
+                'edit_item'         => __( 'Edit Service Category',    'jjw-core' ),
+                'update_item'       => __( 'Update Service Category',  'jjw-core' ),
+                'add_new_item'      => __( 'Add New Service Category', 'jjw-core' ),
+                'menu_name'         => __( 'Service Categories',        'jjw-core' ),
+            ],
+            'hierarchical'      => true,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'show_in_rest'      => true,
+            'rewrite'           => [ 'slug' => 'service-category' ],
         ] );
     }
 
@@ -146,6 +165,10 @@ class JJWZ_CPT_Portfolio {
             ],
             'jjwz_location_tax' => [
                 'Amritsar', 'Delhi', 'Ludhiana', 'Jalandhar', 'Mohali', 'Chandigarh', 'Patiala', 'Bathinda'
+            ],
+            'jjwz_service_cat' => [
+                'Wedding', 'Pre Wedding', 'Maternity', 'Newborn', 'Baby', 
+                'Cake Smash', 'Birthday', 'Anniversary', 'Family', 'Films'
             ],
         ];
 

@@ -69,10 +69,6 @@ $wa_link     = jjwz_wa_link( 'Book a Consultation', 'btn btn--primary', 'locatio
 
                 <!-- Related Portfolios shot at this Location -->
                 <?php
-                // Try to find portfolio items matching the Location taxonomy
-                $location_name = get_the_title();
-                $clean_loc_name = preg_replace( '/\s+Studio|\s+Branch/i', '', $location_name );
-
                 $related_portfolio = new WP_Query( [
                     'post_type'      => 'jjwz_portfolio',
                     'posts_per_page' => 4,
@@ -80,8 +76,8 @@ $wa_link     = jjwz_wa_link( 'Book a Consultation', 'btn btn--primary', 'locatio
                     'tax_query'      => [
                         [
                             'taxonomy' => 'jjwz_location_tax',
-                            'field'    => 'name',
-                            'terms'    => $clean_loc_name,
+                            'field'    => 'slug',
+                            'terms'    => get_post_field( 'post_name', get_the_ID() ),
                         ]
                     ]
                 ] );
