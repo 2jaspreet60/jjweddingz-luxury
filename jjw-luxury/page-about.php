@@ -21,9 +21,11 @@ if ( function_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->db-
 $post_id      = get_the_ID();
 $headline     = jjwz_get_option( 'jjwz_about_headline', 'Eleven Years of Uncompromising<br><em>Visual Excellence</em>', $post_id );
 $intro        = jjwz_get_option( 'jjwz_about_intro', '<p>Founded in 2013 by Jaspreet Singh, JJ WeddingZ Photography has spent over a decade establishing itself as the benchmark for luxury wedding, maternity, and newborn photography across Northern India. Operating dual creative branches from Delhi NCR and Amritsar, our team of highly trained visual artists, cinematographers, and post-production specialists brings an internationally refined aesthetic to every single project we undertake.</p>', $post_id );
-$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh', $post_id );
-$founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>', $post_id );
-$founder_img  = jjwz_get_option( 'jjwz_about_founder_img', '', $post_id );
+$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
+$founder_desig = jjwz_get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' );
+$founder_exp   = jjwz_get_option( 'jjwz_about_founder_experience', '11' );
+$founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>' );
+$founder_img  = jjwz_get_option( 'jjwz_about_founder_img', '' );
 $founder_img_url = '';
 if ( is_array( $founder_img ) && isset( $founder_img['url'] ) ) {
     $founder_img_url = $founder_img['url'];

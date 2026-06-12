@@ -95,6 +95,7 @@ class JJWZ_Options_Panel {
                     'brand'     => '🏠 Branding & Contact',
                     'branches'  => '🏢 Branches',
                     'social'    => '🔗 Social Media',
+                    'founder'   => '👤 Founder Settings',
                     'watermark' => '🖼️ Watermark',
                     'whatsapp'  => '💬 WhatsApp Config',
                     'payments'  => '💳 Payment APIs',
@@ -122,6 +123,7 @@ class JJWZ_Options_Panel {
                         case 'brand':     $this->render_brand_tab();     break;
                         case 'branches':  $this->render_branches_tab();  break;
                         case 'social':    $this->render_social_tab();    break;
+                        case 'founder':   $this->render_founder_tab();   break;
                         case 'watermark': $this->render_watermark_tab(); break;
                         case 'whatsapp':  $this->render_whatsapp_tab();  break;
                         case 'payments':  $this->render_payments_tab();  break;
@@ -194,6 +196,86 @@ class JJWZ_Options_Panel {
                            class="jjwz-input">
                 </div>
                 <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /* ─── FOUNDER SETTINGS TAB ───────────────────────────────────────────── */
+
+    private function render_founder_tab(): void {
+        ?>
+        <div class="jjwz-tab-content">
+            <h2 class="jjwz-section-title">👤 Founder Details</h2>
+            <p class="jjwz-section-desc">Manage profiles, bios, media assets, and social channels for the studio founder.</p>
+            <div class="jjwz-fields-grid" style="margin-bottom: 2rem;">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_name" class="jjwz-label">Founder Name</label>
+                    <input type="text" id="jjwz_about_founder_name" name="jjwz_about_founder_name"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_designation" class="jjwz-label">Founder Designation</label>
+                    <input type="text" id="jjwz_about_founder_designation" name="jjwz_about_founder_designation"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_experience" class="jjwz-label">Years of Experience</label>
+                    <input type="text" id="jjwz_about_founder_experience" name="jjwz_about_founder_experience"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_experience', '11' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_awards" class="jjwz-label">Awards / Recognition</label>
+                    <input type="text" id="jjwz_about_founder_awards" name="jjwz_about_founder_awards"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_awards', 'Best Luxury Wedding Photographer Northern India' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Founder Image</label>
+                    <div class="jjwz-media-upload" style="display:flex; gap:10px;">
+                        <input type="text" id="jjwz_about_founder_img" name="jjwz_about_founder_img"
+                               value="<?php echo esc_attr( get_option( 'jjwz_about_founder_img', '' ) ); ?>" class="jjwz-input media-url" style="flex:1;">
+                        <button type="button" class="button jjwz-media-upload-btn" data-target="jjwz_about_founder_img">Choose Image</button>
+                    </div>
+                </div>
+                <div class="jjwz-field-group">
+                    <label class="jjwz-label">Founder Signature Asset</label>
+                    <div class="jjwz-media-upload" style="display:flex; gap:10px;">
+                        <input type="text" id="jjwz_about_founder_signature" name="jjwz_about_founder_signature"
+                               value="<?php echo esc_attr( get_option( 'jjwz_about_founder_signature', '' ) ); ?>" class="jjwz-input media-url" style="flex:1;">
+                        <button type="button" class="button jjwz-media-upload-btn" data-target="jjwz_about_founder_signature">Choose Image</button>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="jjwz-section-title">✍️ Biography Texts</h2>
+            <p class="jjwz-section-desc">Add short text summaries for previews, and full histories for biography panels.</p>
+            <div class="jjwz-field-group" style="margin-bottom: 1.5rem;">
+                <label for="jjwz_about_founder_short_bio" class="jjwz-label">Founder Short Bio</label>
+                <textarea id="jjwz_about_founder_short_bio" name="jjwz_about_founder_short_bio" class="jjwz-textarea" rows="4"><?php echo esc_textarea( get_option( 'jjwz_about_founder_short_bio', '' ) ); ?></textarea>
+            </div>
+            <div class="jjwz-field-group" style="margin-bottom: 2rem;">
+                <label for="jjwz_about_founder_bio" class="jjwz-label">Founder Long Bio</label>
+                <textarea id="jjwz_about_founder_bio" name="jjwz_about_founder_bio" class="jjwz-textarea" rows="8"><?php echo esc_textarea( get_option( 'jjwz_about_founder_bio', '' ) ); ?></textarea>
+            </div>
+
+            <h2 class="jjwz-section-title">🔗 Social Profiles</h2>
+            <p class="jjwz-section-desc">Specify personal social links for the founder.</p>
+            <div class="jjwz-fields-grid">
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_instagram" class="jjwz-label">Instagram Link</label>
+                    <input type="url" id="jjwz_about_founder_instagram" name="jjwz_about_founder_instagram"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_instagram', '' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_facebook" class="jjwz-label">Facebook Link</label>
+                    <input type="url" id="jjwz_about_founder_facebook" name="jjwz_about_founder_facebook"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_facebook', '' ) ); ?>" class="jjwz-input">
+                </div>
+                <div class="jjwz-field-group">
+                    <label for="jjwz_about_founder_youtube" class="jjwz-label">YouTube Link</label>
+                    <input type="url" id="jjwz_about_founder_youtube" name="jjwz_about_founder_youtube"
+                           value="<?php echo esc_attr( get_option( 'jjwz_about_founder_youtube', '' ) ); ?>" class="jjwz-input">
+                </div>
             </div>
         </div>
         <?php
@@ -566,6 +648,9 @@ class JJWZ_Options_Panel {
             'jjw_watermark_enable', 'jjw_watermark_text', 'jjw_watermark_opacity', 'jjw_watermark_position',
             'jjwz_whatsapp_number', 'jjwz_whatsapp_mode', 'jjwz_wa_api_endpoint', 'jjwz_wa_json_payload',
             'jjwz_razorpay_key_id',
+            'jjwz_about_founder_name', 'jjwz_about_founder_designation', 'jjwz_about_founder_experience',
+            'jjwz_about_founder_awards', 'jjwz_about_founder_img', 'jjwz_about_founder_signature',
+            'jjwz_about_founder_instagram', 'jjwz_about_founder_facebook', 'jjwz_about_founder_youtube',
         ];
 
         $encrypted_fields = [
@@ -579,6 +664,16 @@ class JJWZ_Options_Panel {
                 if ( $f === 'jjw_watermark_enable' ) {
                     update_option( $f, '0' );
                 }
+            }
+        }
+
+        $html_fields = [
+            'jjwz_about_founder_short_bio',
+            'jjwz_about_founder_bio',
+        ];
+        foreach ( $html_fields as $f ) {
+            if ( isset( $_POST[ $f ] ) ) {
+                update_option( $f, wp_kses_post( wp_unslash( $_POST[ $f ] ) ) );
             }
         }
 

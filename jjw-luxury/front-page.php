@@ -433,11 +433,32 @@ if ( $films_q->have_posts() ) :
      ═══════════════════════════════════════════════════════════ -->
 <?php
 $founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
+$founder_desig = jjwz_get_option( 'jjwz_about_founder_designation', 'Founder & Lead Photographer' );
+$founder_short_bio = jjwz_get_option( 'jjwz_about_founder_short_bio' );
 $founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p>' );
+$display_bio = ! empty( $founder_short_bio ) ? $founder_short_bio : $founder_bio;
+
 $founder_img  = jjwz_get_option( 'jjwz_about_founder_img' );
-$founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric( $founder_img ) ? wp_get_attachment_image_url( $founder_img, 'full' ) : $founder_img );
+$founder_img_url = '';
+if ( is_array( $founder_img ) && isset( $founder_img['url'] ) ) {
+    $founder_img_url = $founder_img['url'];
+} elseif ( is_numeric( $founder_img ) ) {
+    $founder_img_url = wp_get_attachment_image_url( $founder_img, 'full' );
+} elseif ( is_string( $founder_img ) && ! empty( $founder_img ) ) {
+    $founder_img_url = $founder_img;
+}
 if ( empty( $founder_img_url ) ) {
     $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
+}
+
+$founder_sig = jjwz_get_option( 'jjwz_about_founder_signature' );
+$founder_sig_url = '';
+if ( is_array( $founder_sig ) && isset( $founder_sig['url'] ) ) {
+    $founder_sig_url = $founder_sig['url'];
+} elseif ( is_numeric( $founder_sig ) ) {
+    $founder_sig_url = wp_get_attachment_image_url( $founder_sig, 'full' );
+} elseif ( is_string( $founder_sig ) && ! empty( $founder_sig ) ) {
+    $founder_sig_url = $founder_sig;
 }
 ?>
 <section class="founder-section section" id="founder" aria-label="About our founder">
@@ -456,12 +477,18 @@ if ( empty( $founder_img_url ) ) {
                 <span class="eyebrow">The Visionary Behind the Lens</span>
                 <h2 class="section-title">Meet <em><?php echo esc_html( $founder_name ); ?></em></h2>
                 <div class="founder-bio">
-                    <?php echo wp_kses_post( $founder_bio ); ?>
+                    <?php echo wp_kses_post( $display_bio ); ?>
                 </div>
                 <div class="founder-sig-wrapper">
-                    <div class="founder-signature">Jaspreet Singh</div>
+                    <?php if ( ! empty( $founder_sig_url ) && ( strpos( $founder_sig_url, 'http' ) === 0 || strpos( $founder_sig_url, '/' ) === 0 ) ) : ?>
+                        <div class="founder-signature">
+                            <img src="<?php echo esc_url( $founder_sig_url ); ?>" alt="<?php echo esc_attr( $founder_name ); ?> Signature" style="max-height: 48px; width: auto; object-fit: contain;">
+                        </div>
+                    <?php else : ?>
+                        <div class="founder-signature"><?php echo esc_html( ! empty( $founder_sig ) ? $founder_sig : $founder_name ); ?></div>
+                    <?php endif; ?>
                     <div class="founder-sig-line"></div>
-                    <div class="founder-sig-role">Founder & Lead Photographer</div>
+                    <div class="founder-sig-role"><?php echo esc_html( $founder_desig ); ?></div>
                 </div>
             </div>
         </div>
