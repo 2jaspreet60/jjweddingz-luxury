@@ -1801,10 +1801,25 @@
   font-size: var(--text-sm);
   color: rgba(255,255,255,0.65);
   transition: color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .footer__link:hover {
   color: var(--clr-gold);
+}
+
+.footer__note {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.4);
+}
+
+.footer__credit {
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.4);
 }
 
 .footer__bottom {
@@ -1874,7 +1889,7 @@
 }
 
 /* ==========================================================================
-   SPRINT 2 RESPONSIVE STYLING & COMPONENT POLISHING
+   SPRINT 2 & 2A RESPONSIVE STYLING & COMPONENT POLISHING
    ========================================================================== */
 
 /* 1. PORTFOLIO FILTER HORIZONTAL SCROLL ON MOBILE */
@@ -1898,7 +1913,209 @@
   }
 }
 
-/* 2. FOUNDER SECTION RESPONSIVENESS & ABOUT PROFILE */
+/* 2. BRANCH CARDS GRID & BACKGROUND PLACEHOLDERS */
+.branch-card__bg-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #161616 0%, #222 100%);
+  position: relative;
+}
+.branch-card__bg-placeholder::after {
+  content: '🏛️';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  opacity: 0.12;
+}
+.branch-card--delhi .branch-card__bg-placeholder {
+  background: linear-gradient(135deg, #161616 0%, #2d261e 100%);
+}
+.branch-card--delhi .branch-card__bg-placeholder::after {
+  content: '⚜️';
+}
+.branch-card--amritsar .branch-card__bg-placeholder {
+  background: linear-gradient(135deg, #161616 0%, #1e2a2d 100%);
+}
+.branch-card--amritsar .branch-card__bg-placeholder::after {
+  content: '✨';
+}
+.branch-card__footer {
+  margin-top: auto;
+  border-top: 1px solid var(--clr-border);
+  padding-top: var(--sp-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .branch-hub__grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--sp-xl) !important;
+  }
+  .branch-card__body {
+    padding: var(--sp-xl) !important;
+  }
+  .branch-card__title {
+    font-size: var(--text-xl) !important;
+  }
+}
+
+/* 3. SERVICES SECTION GRIDS */
+.services-overview {
+  background-color: var(--clr-ivory);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-xl);
+  margin-top: var(--sp-2xl);
+}
+
+.service-card {
+  background: var(--clr-warm-white);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  height: 100%;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--clr-gold);
+}
+
+.service-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--sp-md);
+  color: var(--clr-gold);
+  line-height: 1;
+}
+
+.service-card__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--clr-obsidian);
+  margin-bottom: var(--sp-sm);
+  font-weight: 500;
+}
+
+.service-card__desc {
+  font-size: var(--text-sm);
+  color: var(--clr-mist);
+  line-height: 1.6;
+  margin-bottom: var(--sp-lg);
+  flex-grow: 1;
+}
+
+.service-card__link {
+  margin-top: auto;
+}
+
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-lg);
+  }
+}
+
+@media (max-width: 600px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-md);
+  }
+  .service-card {
+    padding: var(--sp-lg);
+  }
+}
+
+/* 4. FOUNDER SECTION RESPONSIVENESS & ABOUT PROFILE */
+.founder-section {
+  background-color: var(--clr-cream);
+}
+
+.founder-section__media {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  box-shadow: var(--shadow-md);
+  background-color: var(--clr-obsidian);
+}
+
+.founder-section__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.founder-section__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #111, #2d2d2d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.founder-section__placeholder svg {
+  stroke: rgba(201, 169, 110, 0.3);
+}
+
+.founder-section__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.founder-section__content .section-title {
+  margin-bottom: var(--sp-lg);
+}
+
+.founder-bio {
+  font-size: var(--text-md);
+  line-height: 1.8;
+  color: var(--clr-mist);
+  margin-bottom: var(--sp-xl);
+}
+
+.founder-sig-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-lg);
+}
+
+.founder-signature {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--clr-gold);
+  font-style: italic;
+  line-height: 1;
+}
+
+.founder-sig-line {
+  width: 40px;
+  height: 1px;
+  background: var(--clr-gold);
+}
+
+.founder-sig-role {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--clr-fog);
+}
+
 .founder-profile__grid {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -1992,21 +2209,102 @@
 
 @media (max-width: 768px) {
   .founder-section .grid-2 {
-    gap: var(--sp-lg);
+    gap: var(--sp-lg) !important;
   }
   .founder-section__media {
-    aspect-ratio: 4 / 5;
-    margin-bottom: var(--sp-md);
+    max-width: 380px;
+    margin-inline: auto;
+    margin-bottom: var(--sp-xl);
   }
   .founder-section__content {
-    text-align: left;
+    text-align: center;
+    align-items: center;
   }
-  .founder-section__content .founder-signature {
-    font-size: 1.6rem !important;
+  .founder-sig-wrapper {
+    flex-direction: column;
+    gap: var(--sp-xs);
+  }
+  .founder-sig-line {
+    display: none;
   }
 }
 
-/* 3. TESTIMONIALS SLIDER DETAILS & AVATAR */
+/* 5. WHY CHOOSE US & ACCORDION LAYOUTS */
+.why-us-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-xl);
+  margin-top: var(--sp-2xl);
+}
+
+.why-us-card {
+  background: var(--clr-warm-white);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-2xl) var(--sp-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.why-us-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.why-us-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--sp-md);
+  line-height: 1;
+}
+
+.why-us-card__title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--sp-sm);
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.why-us-card__desc {
+  font-size: var(--text-sm);
+  color: var(--clr-mist);
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.faq-preview__grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--sp-3xl);
+  align-items: flex-start;
+}
+
+@media (max-width: 992px) {
+  .why-us-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-lg);
+  }
+  .faq-preview__grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-2xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .accordion__trigger {
+    padding: var(--sp-lg) var(--sp-md) !important;
+    font-size: var(--text-md) !important;
+  }
+  .accordion__inner {
+    padding: 0 var(--sp-md) var(--sp-lg) var(--sp-md) !important;
+    font-size: var(--text-sm) !important;
+  }
+}
+
+/* 6. TESTIMONIALS SLIDER DETAILS & AVATAR */
 .testi-avatar {
   width: 72px;
   height: 72px;
@@ -2046,7 +2344,83 @@
   }
 }
 
-/* 4. TEAM SECTION STYLING */
+/* 7. BLOG MOBILE STACK LAYOUTS */
+@media (max-width: 768px) {
+  .blog-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--sp-2xl) !important;
+  }
+  .blog-card__media {
+    aspect-ratio: 16 / 9 !important;
+  }
+  .blog-card__title {
+    font-size: var(--text-lg) !important;
+  }
+}
+
+/* 8. INQUIRY FORM SPACING & FIELD STYLES */
+.booking-section__header {
+  margin-bottom: var(--sp-2xl);
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
+}
+
+.booking-form__honey {
+  display: none !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-md);
+}
+
+.form-select {
+  appearance: auto !important;
+  background-color: var(--clr-warm-white) !important;
+}
+
+.booking-form__submit {
+  margin-top: var(--sp-md);
+  align-self: center;
+  min-width: 240px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-form__submit {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+/* 9. FOOTER SECTION MOBILE STACKING */
+@media (max-width: 768px) {
+  .footer__grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--sp-2xl) !important;
+    text-align: center;
+    padding-block: var(--sp-3xl) var(--sp-xl) !important;
+  }
+  .footer__col {
+    align-items: center !important;
+  }
+  .footer__socials {
+    justify-content: center !important;
+  }
+}
+
+/* 10. TEAM SECTION STYLING */
 .team-section {
   background-color: var(--clr-warm-white);
 }
@@ -2141,4 +2515,54 @@
   text-transform: uppercase;
   color: var(--clr-gold);
   letter-spacing: 0.08em;
+}
+
+/* 11. SPRINT 2A CLEANUP - ADDED GLOBAL UTILITIES & REMOVED INLINE STYLES */
+.section-header {
+  margin-bottom: var(--sp-3xl);
+}
+@media (max-width: 768px) {
+  .section-header {
+    margin-bottom: var(--sp-xl);
+  }
+}
+.section-header__desc {
+  margin-inline: auto;
+  margin-top: var(--sp-md);
+}
+.films-grid {
+  row-gap: 3.5rem;
+}
+.film-card__body {
+  padding-top: var(--sp-lg);
+}
+.film-card__title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--sp-xs);
+  font-family: var(--font-display);
+}
+.film-card__desc {
+  font-size: var(--text-sm);
+  color: var(--clr-mist);
+  line-height: 1.6;
+}
+.testimonial-card__rating {
+  color: var(--clr-gold);
+  margin-bottom: var(--sp-md);
+}
+.faq-preview__lead {
+  margin-top: var(--sp-md);
+}
+.faq-preview__btn {
+  margin-top: var(--sp-lg);
+}
+.archive-pagination {
+  margin-top: 4.5rem;
+  text-align: center;
+}
+.archive-empty {
+  padding: 4rem 2rem;
+}
+.archive-empty__btn {
+  margin-top: 1.5rem;
 }

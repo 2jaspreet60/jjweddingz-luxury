@@ -254,24 +254,24 @@ if ( ! is_array( $branches ) ) {
 				<h3><?php esc_html_e( 'Get In Touch', 'jjw-luxury' ); ?></h3>
 				<ul class="footer__links">
 					<li>
-						<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone_number ) ); ?>" class="footer__link" id="footer-phone-link" style="display:flex; align-items:center; gap:8px;">
+						<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone_number ) ); ?>" class="footer__link" id="footer-phone-link">
 							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.8 19.79 19.79 0 0 1 .1 1.14 2 2 0 0 1 2.11 0h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L6.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 14.92z"/></svg>
 							<?php echo esc_html( $phone_number ); ?>
 						</a>
 					</li>
 					<li>
-						<a href="<?php echo esc_url( $wa_link ); ?>" class="footer__link" id="footer-wa-link" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:8px;">
+						<a href="<?php echo esc_url( $wa_link ); ?>" class="footer__link" id="footer-wa-link" target="_blank" rel="noopener noreferrer">
 							<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.003 2a9.987 9.987 0 00-8.59 15.04L2 22l5.115-1.34A9.993 9.993 0 0012.003 22c5.514 0 10-4.486 10-10s-4.486-10-9.997-10zm0 18.212a8.184 8.184 0 01-4.17-1.146l-.3-.178-3.09.81.824-3.01-.195-.31A8.198 8.198 0 013.802 12c0-4.517 3.676-8.195 8.2-8.195 4.517 0 8.196 3.678 8.196 8.195 0 4.52-3.68 8.212-8.196 8.212z"/></svg>
 							<?php esc_html_e( 'WhatsApp Inquiries', 'jjw-luxury' ); ?>
 						</a>
 					</li>
 					<li>
-						<a href="mailto:<?php echo esc_attr( $email_address ); ?>" class="footer__link" style="display:flex; align-items:center; gap:8px;">
+						<a href="mailto:<?php echo esc_attr( $email_address ); ?>" class="footer__link">
 							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
 							<?php echo esc_html( $email_address ); ?>
 						</a>
 					</li>
-					<li style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.4);">
+					<li class="footer__note">
 						<?php esc_html_e( 'Operating in Delhi NCR, Punjab, and destinations worldwide.', 'jjw-luxury' ); ?>
 					</li>
 				</ul>
@@ -282,7 +282,7 @@ if ( ! is_array( $branches ) ) {
 		<!-- Footer Bottom Bar -->
 		<div class="footer__bottom">
 			<p class="footer__copyright"><?php echo wp_kses_post( $copyright_text ); ?></p>
-			<p class="footer__credit" style="font-size: var(--text-xs); color: rgba(255,255,255,0.4);">
+			<p class="footer__credit">
 				<?php echo wp_kses_post( __( 'Led by <strong>Jaspreet Singh</strong> — 11 Years of Luxury Photography Excellence', 'jjw-luxury' ) ); ?>
 			</p>
 		</div>

@@ -167,7 +167,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
      ═══════════════════════════════════════════════════════════ -->
 <section class="branch-hub section--sm" aria-label="Our branches">
     <div class="container">
-        <div class="text-center" style="margin-bottom: 3rem;">
+        <div class="text-center branch-hub__header">
             <span class="eyebrow">Serving Northern India</span>
             <h2 class="section-title">Our <em>Branches</em></h2>
         </div>
@@ -180,36 +180,45 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                     $branch_class = ( $i % 2 === 0 ) ? 'branch-card--delhi' : 'branch-card--amritsar';
                 ?>
                 <a href="<?php echo esc_url( $branch_maps ); ?>" class="branch-card <?php echo esc_attr( $branch_class ); ?>" id="branch-<?php echo esc_attr( sanitize_title( $branch_name ) ); ?>" target="_blank" rel="noopener noreferrer">
-                    <div class="branch-card__bg" aria-hidden="true"></div>
-                    <div class="branch-card__overlay"></div>
-                    <div class="branch-card__content">
+                    <div class="branch-card__media">
+                        <div class="branch-card__bg-placeholder"></div>
+                    </div>
+                    <div class="branch-card__body">
                         <span class="branch-card__tag eyebrow"><?php echo $i === 0 ? 'Primary Branch' : 'Studio Branch'; ?></span>
                         <h3 class="branch-card__title"><?php echo esc_html( $branch_name ); ?> Studio</h3>
                         <p class="branch-card__desc"><?php echo esc_html( $branch_address ); ?></p>
-                        <span class="branch-card__cta btn btn--outline-white">Find Us on Map →</span>
+                        <div class="branch-card__footer">
+                            <span class="branch-card__cta btn btn--outline">Find Us on Map →</span>
+                        </div>
                     </div>
                 </a>
                 <?php endforeach; ?>
             <?php else : ?>
                 <!-- Fallback defaults if options are empty -->
                 <a href="#" class="branch-card branch-card--delhi" id="branch-delhi">
-                    <div class="branch-card__bg" aria-hidden="true"></div>
-                    <div class="branch-card__overlay"></div>
-                    <div class="branch-card__content">
+                    <div class="branch-card__media">
+                        <div class="branch-card__bg-placeholder"></div>
+                    </div>
+                    <div class="branch-card__body">
                         <span class="branch-card__tag eyebrow">Primary Branch</span>
                         <h3 class="branch-card__title">Delhi NCR Studio</h3>
                         <p class="branch-card__desc">Serving Gurugram, Delhi NCR, and surrounding districts.</p>
-                        <span class="branch-card__cta btn btn--outline-white">Explore Branch →</span>
+                        <div class="branch-card__footer">
+                            <span class="branch-card__cta btn btn--outline">Explore Branch →</span>
+                        </div>
                     </div>
                 </a>
                 <a href="#" class="branch-card branch-card--amritsar" id="branch-amritsar">
-                    <div class="branch-card__bg" aria-hidden="true"></div>
-                    <div class="branch-card__overlay"></div>
-                    <div class="branch-card__content">
+                    <div class="branch-card__media">
+                        <div class="branch-card__bg-placeholder"></div>
+                    </div>
+                    <div class="branch-card__body">
                         <span class="branch-card__tag eyebrow">Punjab Branch</span>
                         <h3 class="branch-card__title">Amritsar Studio</h3>
                         <p class="branch-card__desc">Serving Amritsar, Ranjit Avenue, and surrounding Punjab cities.</p>
-                        <span class="branch-card__cta btn btn--outline-white">Explore Branch →</span>
+                        <div class="branch-card__footer">
+                            <span class="branch-card__cta btn btn--outline">Explore Branch →</span>
+                        </div>
                     </div>
                 </a>
             <?php endif; ?>
@@ -222,7 +231,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
      ═══════════════════════════════════════════════════════════ -->
 <section class="services-overview section" aria-label="Our services">
     <div class="container">
-        <div class="section-header text-center" style="margin-bottom:3.5rem;">
+        <div class="section-header text-center">
             <span class="eyebrow">What We Offer</span>
             <h2 class="section-title">Crafted for <em>Every Milestone</em></h2>
         </div>
@@ -403,10 +412,10 @@ if ( $films_q->have_posts() ) :
                              style="background-image: url('<?php echo esc_url( $thumb ); ?>');"
                          <?php endif; ?>>
                     </div>
-                    <div class="film-card__body" style="padding-top:1.5rem;">
-                        <h3 class="film-card__title" style="font-size:1.5rem; margin-bottom:0.5rem;"><?php the_title(); ?></h3>
+                    <div class="film-card__body">
+                        <h3 class="film-card__title"><?php the_title(); ?></h3>
                         <?php if ( $desc ) : ?>
-                            <p class="film-card__desc" style="font-size:0.9rem; color:var(--clr-mist);"><?php echo esc_html( $desc ); ?></p>
+                            <p class="film-card__desc"><?php echo esc_html( $desc ); ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -431,28 +440,28 @@ if ( empty( $founder_img_url ) ) {
     $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
 }
 ?>
-<section class="founder-section section" id="founder" aria-label="About our founder" style="background-color: var(--clr-cream);">
+<section class="founder-section section" id="founder" aria-label="About our founder">
     <div class="container">
         <div class="grid-2 align-items-center">
-            <div class="founder-section__media" data-anim="fade-right" style="position:relative; border-radius:var(--radius-xl); overflow:hidden; aspect-ratio:4/5; box-shadow:var(--shadow-md);">
+            <div class="founder-section__media" data-anim="fade-right">
                 <?php if ( $founder_img_url ) : ?>
-                    <img src="<?php echo esc_url( $founder_img_url ); ?>" alt="<?php echo esc_attr( $founder_name ); ?>" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="<?php echo esc_url( $founder_img_url ); ?>" alt="<?php echo esc_attr( $founder_name ); ?>">
                 <?php else : ?>
-                    <div style="width:100%; height:100%; background:linear-gradient(135deg, #111, #2d2d2d); display:flex; align-items:center; justify-content:center;">
-                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,0.3)" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <div class="founder-section__placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                 <?php endif; ?>
             </div>
             <div class="founder-section__content" data-anim="fade-left">
                 <span class="eyebrow">The Visionary Behind the Lens</span>
-                <h2 class="section-title" style="margin-bottom:1.5rem;">Meet <em><?php echo esc_html( $founder_name ); ?></em></h2>
-                <div class="founder-bio" style="font-size:1.1rem; line-height:1.8; color:var(--clr-mist); margin-bottom:2rem;">
+                <h2 class="section-title">Meet <em><?php echo esc_html( $founder_name ); ?></em></h2>
+                <div class="founder-bio">
                     <?php echo wp_kses_post( $founder_bio ); ?>
                 </div>
-                <div style="display:flex; align-items:center; gap:1.5rem;">
-                    <div class="founder-signature" style="font-family:var(--font-display); font-size:2rem; color:var(--clr-gold); font-style:italic;">Jaspreet Singh</div>
-                    <div style="width:40px; height:1px; background:var(--clr-gold);"></div>
-                    <div style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--clr-fog);">Founder & Lead Photographer</div>
+                <div class="founder-sig-wrapper">
+                    <div class="founder-signature">Jaspreet Singh</div>
+                    <div class="founder-sig-line"></div>
+                    <div class="founder-sig-role">Founder & Lead Photographer</div>
                 </div>
             </div>
         </div>
@@ -464,10 +473,10 @@ if ( empty( $founder_img_url ) ) {
      ═══════════════════════════════════════════════════════════ -->
 <section class="why-us-section section" id="why-choose-us" aria-label="Why choose JJ WeddingZ">
     <div class="container">
-        <div class="text-center" style="margin-bottom: 4rem;">
+        <div class="section-header text-center">
             <span class="eyebrow">The JJ WeddingZ Promise</span>
             <h2 class="section-title">Why Couples <em>Choose Us</em></h2>
-            <p class="lead text-center" style="margin-inline:auto; margin-top:1rem;">We merge international luxury editorial styling with non-negotiable technical and safety standards.</p>
+            <p class="lead text-center section-header__desc">We merge international luxury editorial styling with non-negotiable technical and safety standards.</p>
         </div>
 
         <div class="why-us-grid">
@@ -504,7 +513,7 @@ if ( $testimonials_q->have_posts() ) :
 ?>
 <section class="testimonials-section section" aria-label="Client testimonials">
     <div class="container">
-        <div class="text-center" style="margin-bottom:3rem;">
+        <div class="section-header text-center">
             <span class="eyebrow">Client Love</span>
             <h2 class="section-title">What Our Couples <em>Say</em></h2>
         </div>
@@ -530,7 +539,7 @@ if ( $testimonials_q->have_posts() ) :
                         <div class="testi-avatar">
                             <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
                         </div>
-                        <div class="testimonial-card__rating" style="color: var(--clr-gold); margin-bottom: var(--sp-md);" aria-label="<?php echo esc_attr( $rating ); ?> out of 5 stars">
+                        <div class="testimonial-card__rating" aria-label="<?php echo esc_attr( $rating ); ?> out of 5 stars">
                             <?php for ( $s = 0; $s < (int)$rating; $s++ ) echo '★'; ?>
                         </div>
                         <blockquote class="testi-quote">"<?php echo esc_html( $review ); ?>"</blockquote>
@@ -569,8 +578,8 @@ if ( $testimonials_q->have_posts() ) :
             <div class="faq-preview__left" data-anim="fade-right">
                 <span class="eyebrow">Common Questions</span>
                 <h2 class="section-title">Everything You<br>Need to <em>Know</em></h2>
-                <p class="lead" style="margin-top:1rem;">We believe an informed client is a relaxed client. Here are answers to the questions we hear most often.</p>
-                <a href="<?php echo esc_url( home_url( '/faqs' ) ); ?>" class="btn btn--outline" style="margin-top:1.5rem;" id="view-all-faqs">
+                <p class="lead faq-preview__lead">We believe an informed client is a relaxed client. Here are answers to the questions we hear most often.</p>
+                <a href="<?php echo esc_url( home_url( '/faqs' ) ); ?>" class="btn btn--outline faq-preview__btn" id="view-all-faqs">
                     View All FAQs
                 </a>
             </div>
@@ -646,15 +655,15 @@ if ( $blog_q->have_posts() ) :
 <section class="booking-section section" id="booking" aria-label="Book your date">
     <div class="container container--narrow">
         <div class="contact-form-wrap" data-anim="fade-up">
-            <div class="text-center" style="margin-bottom: 2.5rem;">
+            <div class="text-center booking-section__header">
                 <span class="eyebrow">Check Availability</span>
                 <h2 class="section-title">Inquire About <em>Your Date</em></h2>
-                <p class="lead text-center" style="margin-top:0.5rem; font-size:1rem; margin-inline:auto;">We only accept 20 luxury wedding commissions per year. Secure your consultation today.</p>
+                <p class="lead text-center">We only accept 20 luxury wedding commissions per year. Secure your consultation today.</p>
             </div>
             
-            <form id="jjwz-contact-form" class="flex" style="flex-direction: column; gap: var(--sp-lg);">
+            <form id="jjwz-contact-form" class="booking-form">
                 <!-- Honeypot -->
-                <div style="display:none;">
+                <div class="booking-form__honey">
                     <input type="text" name="jjwz_honey">
                 </div>
 
@@ -665,7 +674,7 @@ if ( $blog_q->have_posts() ) :
                 </div>
 
                 <!-- Email & Phone Grid -->
-                <div class="grid-2" style="gap: var(--sp-md);">
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="form-email" class="form-label">Email Address <span class="text-gold">*</span></label>
                         <input type="email" id="form-email" name="email" class="form-control" placeholder="E.g. priya@example.com" required autocomplete="email">
@@ -677,14 +686,14 @@ if ( $blog_q->have_posts() ) :
                 </div>
 
                 <!-- Date & Service Grid -->
-                <div class="grid-2" style="gap: var(--sp-md);">
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="form-date" class="form-label">Event / Shoot Date <span class="text-gold">*</span></label>
                         <input type="text" id="form-date" name="event_date" class="form-control" placeholder="E.g. 18/12/2026" required>
                     </div>
                     <div class="form-group">
                         <label for="form-service" class="form-label">Captured Milestone</label>
-                        <select id="form-service" name="service" class="form-control" style="appearance: auto; background: #fff;">
+                        <select id="form-service" name="service" class="form-control form-select">
                             <option value="Wedding Photography">Wedding Photography</option>
                             <option value="Pre-Wedding Shoot">Pre-Wedding Shoot</option>
                             <option value="Cinematography / Film">Cinematography / Film</option>
@@ -703,7 +712,7 @@ if ( $blog_q->have_posts() ) :
 
                 <input type="hidden" name="source" value="<?php echo esc_url( home_url() ); ?>">
 
-                <button type="submit" class="btn btn--primary" style="margin-top:1rem; align-self:center; min-width:240px;">
+                <button type="submit" class="btn btn--primary booking-form__submit">
                     Send Booking Inquiry
                 </button>
 

@@ -33,7 +33,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
             <?php jjwz_breadcrumb(); ?>
             <span class="eyebrow"><?php esc_html_e( 'Cinematography', 'jjweddingz' ); ?></span>
             <h1 class="display-title text-gold"><?php esc_html_e( 'Cinematic Wedding & Milestone Films', 'jjweddingz' ); ?></h1>
-            <p class="lead text-center" style="margin-inline: auto; margin-top: var(--sp-md);">
+            <p class="lead text-center">
                 <?php esc_html_e( 'Sweeping visual narratives captured on cinema-grade systems, optimized for editorial elegance and authentic emotion.', 'jjweddingz' ); ?>
             </p>
         </div>
@@ -43,7 +43,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
     <section class="section" aria-label="Films grid">
         <div class="container">
             <?php if ( have_posts() ) : ?>
-                <div class="films-grid grid-3" style="row-gap: 3.5rem;">
+                <div class="films-grid grid-3">
                     <?php
                     while ( have_posts() ) : the_post();
                         $post_id     = get_the_ID();
@@ -70,10 +70,10 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                                      style="background-image: url('<?php echo esc_url( $thumb ); ?>');"
                                  <?php endif; ?>>
                             </div>
-                            <div class="film-card__body" style="padding-top:1.5rem;">
-                                <h2 class="film-card__title" style="font-size:1.45rem; font-family:var(--font-display); margin-bottom:0.5rem;"><?php the_title(); ?></h2>
+                            <div class="film-card__body">
+                                <h2 class="film-card__title"><?php the_title(); ?></h2>
                                 <?php if ( $desc ) : ?>
-                                    <p class="film-card__desc" style="font-size:0.9rem; color:var(--clr-mist); line-height:1.6;"><?php echo esc_html( $desc ); ?></p>
+                                    <p class="film-card__desc"><?php echo esc_html( $desc ); ?></p>
                                 <?php endif; ?>
                             </div>
                         </article>
@@ -83,7 +83,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                 </div>
 
                 <!-- Pagination -->
-                <div class="archive-pagination" style="margin-top: 4.5rem; text-align: center;">
+                <div class="archive-pagination">
                     <?php
                     echo paginate_links( [
                         'prev_text' => '<span class="pagination-arrow">← Prev</span>',
@@ -93,9 +93,9 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                 </div>
 
             <?php else : ?>
-                <div class="text-center" style="padding: 4rem 2rem;">
-                    <p class="lead" style="margin-inline:auto;"><?php esc_html_e( 'Our cinematic film reels are currently being curated. Check back soon.', 'jjweddingz' ); ?></p>
-                    <a href="<?php echo esc_url( home_url() ); ?>" class="btn btn--primary" style="margin-top:1.5rem;"><?php esc_html_e( 'Back to Home', 'jjweddingz' ); ?></a>
+                <div class="archive-empty text-center">
+                    <p class="lead"><?php esc_html_e( 'Our cinematic film reels are currently being curated. Check back soon.', 'jjweddingz' ); ?></p>
+                    <a href="<?php echo esc_url( home_url() ); ?>" class="btn btn--primary archive-empty__btn"><?php esc_html_e( 'Back to Home', 'jjweddingz' ); ?></a>
                 </div>
             <?php endif; ?>
         </div>
