@@ -296,6 +296,16 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
     </div>
 </section>
 
+<?php
+$portfolio_check_q = new WP_Query( [
+    'post_type'      => 'jjwz_portfolio',
+    'posts_per_page' => 1,
+    'post_status'    => 'publish',
+] );
+
+if ( $portfolio_check_q->have_posts() ) :
+    wp_reset_postdata();
+?>
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 6 — FEATURED PORTFOLIO MASONRY
      ═══════════════════════════════════════════════════════════ -->
@@ -325,7 +335,32 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
 
     </div>
 </section>
+<?php endif; ?>
 
+<?php
+$films_args = [
+    'post_type'      => 'jjwz_film',
+    'posts_per_page' => 3,
+    'post_status'    => 'publish',
+];
+
+// Try featured first
+$films_q = new WP_Query( array_merge( $films_args, [
+    'meta_query' => [
+        [
+            'key'     => 'film_featured',
+            'value'   => '1',
+            'compare' => '=',
+        ]
+    ]
+] ) );
+
+if ( ! $films_q->have_posts() ) {
+    $films_q = new WP_Query( $films_args );
+}
+
+if ( $films_q->have_posts() ) :
+?>
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 7 — FEATURED FILMS
      ═══════════════════════════════════════════════════════════ -->
@@ -343,84 +378,46 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
 
         <div class="films-grid grid-3">
             <?php
-            $films_args = [
-                'post_type'      => 'jjwz_film',
-                'posts_per_page' => 3,
-                'post_status'    => 'publish',
-            ];
-            
-            // Try featured first
-            $films_q = new WP_Query( array_merge( $films_args, [
-                'meta_query' => [
-                    [
-                        'key'     => 'film_featured',
-                        'value'   => '1',
-                        'compare' => '=',
-                    ]
-                ]
-            ] ) );
-
-            if ( ! $films_q->have_posts() ) {
-                $films_q = new WP_Query( $films_args );
-            }
-
-            if ( $films_q->have_posts() ) :
-                while ( $films_q->have_posts() ) : $films_q->the_post();
-                    $post_id     = get_the_ID();
-                    $youtube_url = jjwz_get_option( 'film_youtube_url', '', $post_id );
-                    $vimeo_url   = jjwz_get_option( 'film_vimeo_url', '', $post_id );
-                    $desc        = jjwz_get_option( 'film_description', '', $post_id );
-                    
-                    $video_type = 'youtube';
-                    $video_id   = '';
-                    if ( $vimeo_url ) {
-                        $video_type = 'vimeo';
-                        $video_id   = jjwz_get_vimeo_id( $vimeo_url );
-                    } else {
-                        $video_id   = jjwz_get_youtube_id( $youtube_url );
-                    }
-                    
-                    $thumb = get_the_post_thumbnail_url( $post_id, 'jjwz-portfolio' );
-                    ?>
-                    <div class="film-card" data-anim="fade-up">
-                        <div class="film-card__video jjwz-video-wrap jjwz-video-wrap--16-9" 
-                             data-video-type="<?php echo esc_attr( $video_type ); ?>" 
-                             data-video-id="<?php echo esc_attr( $video_id ); ?>"
-                             <?php if ( $thumb ) : ?>
-                                 style="background-image: url('<?php echo esc_url( $thumb ); ?>');"
-                             <?php endif; ?>>
-                        </div>
-                        <div class="film-card__body" style="padding-top:1.5rem;">
-                            <h3 class="film-card__title" style="font-size:1.5rem; margin-bottom:0.5rem;"><?php the_title(); ?></h3>
-                            <?php if ( $desc ) : ?>
-                                <p class="film-card__desc" style="font-size:0.9rem; color:var(--clr-mist);"><?php echo esc_html( $desc ); ?></p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php
-                endwhile;
-                wp_reset_postdata();
-            else :
-                // Placeholder Rick Astley re-embed details
-                for ( $i = 1; $i <= 3; $i++ ) :
+            while ( $films_q->have_posts() ) : $films_q->the_post();
+                $post_id     = get_the_ID();
+                $youtube_url = jjwz_get_option( 'film_youtube_url', '', $post_id );
+                $vimeo_url   = jjwz_get_option( 'film_vimeo_url', '', $post_id );
+                $desc        = jjwz_get_option( 'film_description', '', $post_id );
+                
+                $video_type = 'youtube';
+                $video_id   = '';
+                if ( $vimeo_url ) {
+                    $video_type = 'vimeo';
+                    $video_id   = jjwz_get_vimeo_id( $vimeo_url );
+                } else {
+                    $video_id   = jjwz_get_youtube_id( $youtube_url );
+                }
+                
+                $thumb = get_the_post_thumbnail_url( $post_id, 'jjwz-portfolio' );
                 ?>
                 <div class="film-card" data-anim="fade-up">
                     <div class="film-card__video jjwz-video-wrap jjwz-video-wrap--16-9" 
-                         data-video-type="youtube" 
-                         data-video-id="dQw4w9WgXcQ">
+                         data-video-type="<?php echo esc_attr( $video_type ); ?>" 
+                         data-video-id="<?php echo esc_attr( $video_id ); ?>"
+                         <?php if ( $thumb ) : ?>
+                             style="background-image: url('<?php echo esc_url( $thumb ); ?>');"
+                         <?php endif; ?>>
                     </div>
                     <div class="film-card__body" style="padding-top:1.5rem;">
-                        <h3 class="film-card__title" style="font-size:1.5rem; margin-bottom:0.5rem;">Cinematic Wedding Film #<?php echo $i; ?></h3>
-                        <p class="film-card__desc" style="font-size:0.9rem; color:var(--clr-mist);">A breathtaking cinematic wedding reel captured by our lead directors.</p>
+                        <h3 class="film-card__title" style="font-size:1.5rem; margin-bottom:0.5rem;"><?php the_title(); ?></h3>
+                        <?php if ( $desc ) : ?>
+                            <p class="film-card__desc" style="font-size:0.9rem; color:var(--clr-mist);"><?php echo esc_html( $desc ); ?></p>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php
-                endfor;
-            endif;
+            endwhile;
+            wp_reset_postdata();
             ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 8 — ABOUT FOUNDER (JASPREET SINGH)
@@ -430,6 +427,9 @@ $founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh' );
 $founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p>' );
 $founder_img  = jjwz_get_option( 'jjwz_about_founder_img' );
 $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric( $founder_img ) ? wp_get_attachment_image_url( $founder_img, 'full' ) : $founder_img );
+if ( empty( $founder_img_url ) ) {
+    $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
+}
 ?>
 <section class="founder-section section" id="founder" aria-label="About our founder" style="background-color: var(--clr-cream);">
     <div class="container">
@@ -493,21 +493,24 @@ $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 10 — TESTIMONIALS CAROUSEL
      ═══════════════════════════════════════════════════════════ -->
-<section class="testimonials-section section" style="background-color: var(--clr-cream);" aria-label="Client testimonials">
+<?php
+$testimonials_q = new WP_Query( [
+    'post_type'      => 'jjwz_testimonial',
+    'posts_per_page' => 6,
+    'post_status'    => 'publish',
+] );
+
+if ( $testimonials_q->have_posts() ) :
+?>
+<section class="testimonials-section section" aria-label="Client testimonials">
     <div class="container">
         <div class="text-center" style="margin-bottom:3rem;">
             <span class="eyebrow">Client Love</span>
             <h2 class="section-title">What Our Couples <em>Say</em></h2>
         </div>
-        <div class="testimonials-track" id="testimonials-track" aria-live="polite">
-            <?php
-            $testimonials_q = new WP_Query( [
-                'post_type'      => 'jjwz_testimonial',
-                'posts_per_page' => 6,
-                'post_status'    => 'publish',
-            ] );
-
-            if ( $testimonials_q->have_posts() ) :
+        <div class="testimonials-slider">
+            <div class="testimonials-track" id="testimonials-track" aria-live="polite">
+                <?php
                 $i = 0;
                 while ( $testimonials_q->have_posts() ) : $testimonials_q->the_post();
                     $post_id  = get_the_ID();
@@ -518,56 +521,43 @@ $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric
                     if ( empty( $review ) ) {
                         $review = get_the_excerpt();
                     }
+                    $avatar_url = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
+                    if ( empty( $avatar_url ) ) {
+                        $avatar_url = get_template_directory_uri() . '/assets/images/placeholder-testimonial.png';
+                    }
                     ?>
                     <div class="testimonial-card" data-testimonial="<?php echo $i; ?>">
-                        <div class="testimonial-card__rating" aria-label="<?php echo esc_attr( $rating ); ?> out of 5 stars">
+                        <div class="testi-avatar">
+                            <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+                        </div>
+                        <div class="testimonial-card__rating" style="color: var(--clr-gold); margin-bottom: var(--sp-md);" aria-label="<?php echo esc_attr( $rating ); ?> out of 5 stars">
                             <?php for ( $s = 0; $s < (int)$rating; $s++ ) echo '★'; ?>
                         </div>
-                        <blockquote class="testimonial-card__text">"<?php echo esc_html( $review ); ?>"</blockquote>
-                        <cite class="testimonial-card__author">
-                            <span class="testimonial-card__name"><?php the_title(); ?></span>
-                            <span class="testimonial-card__location"><?php echo esc_html( $location ); ?> <?php if ( $service ) { echo '· ' . esc_html( $service ); } ?></span>
+                        <blockquote class="testi-quote">"<?php echo esc_html( $review ); ?>"</blockquote>
+                        <cite class="testi-author">
+                            <strong><?php the_title(); ?></strong>
+                            <span><?php echo esc_html( $location ); ?> <?php if ( $service ) { echo '· ' . esc_html( $service ); } ?></span>
                         </cite>
                     </div>
                     <?php
                     $i++;
                 endwhile;
                 wp_reset_postdata();
-            else :
-                // Render defaults
-                $default_testimonials = [
-                    [ 'name' => 'Priya & Arjun Sharma', 'location' => 'Delhi', 'rating' => 5, 'text' => 'JJ WeddingZ captured our wedding with such authenticity. Every emotion, every candid moment — perfectly preserved. The team is incredibly discreet and professional.' ],
-                    [ 'name' => 'Simran & Harpreet Gill', 'location' => 'Amritsar', 'rating' => 5, 'text' => 'Our pre-wedding shoot at Fort Gobindgarh was magical. Jaspreet and his team have an incredible eye for detail and light. The photos are beyond our expectations.' ],
-                    [ 'name' => 'Neha & Rohit Kapoor', 'location' => 'Gurugram', 'rating' => 5, 'text' => 'The maternity shoot was a dream. So patient, so caring — they made me feel completely at ease. The final gallery is absolutely stunning. Highly recommend!' ],
-                ];
-                foreach ( $default_testimonials as $i => $t ) :
                 ?>
-                <div class="testimonial-card" data-testimonial="<?php echo $i; ?>">
-                    <div class="testimonial-card__rating" aria-label="<?php echo $t['rating']; ?> out of 5 stars">
-                        <?php for ( $s = 0; $s < $t['rating']; $s++ ) echo '★'; ?>
-                    </div>
-                    <blockquote class="testimonial-card__text">"<?php echo esc_html( $t['text'] ); ?>"</blockquote>
-                    <cite class="testimonial-card__author">
-                        <span class="testimonial-card__name"><?php echo esc_html( $t['name'] ); ?></span>
-                        <span class="testimonial-card__location"><?php echo esc_html( $t['location'] ); ?></span>
-                    </cite>
-                </div>
-                <?php
-                endforeach;
-            endif;
-            ?>
+            </div>
         </div>
-        <div class="testimonials-nav" aria-label="Testimonial navigation">
-            <button class="testi-nav-btn" id="testi-prev" aria-label="Previous testimonial">
+        <div class="testi-nav" aria-label="Testimonial navigation">
+            <button class="testi-btn" id="testi-prev" aria-label="Previous testimonial">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div class="testi-dots" id="testi-dots" aria-hidden="true"></div>
-            <button class="testi-nav-btn" id="testi-next" aria-label="Next testimonial">
+            <button class="testi-btn" id="testi-next" aria-label="Next testimonial">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 8 (FAQ Preview) & SECTION 9 (Blog Preview)
@@ -591,6 +581,15 @@ $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric
     </div>
 </section>
 
+<?php
+$blog_q = new WP_Query( [
+    'post_type'      => 'post',
+    'posts_per_page' => 3,
+    'post_status'    => 'publish',
+] );
+
+if ( $blog_q->have_posts() ) :
+?>
 <section class="blog-preview section" aria-label="Latest articles">
     <div class="container">
         <div class="section-header portfolio-section__header">
@@ -603,53 +602,43 @@ $founder_img_url = is_array( $founder_img ) ? $founder_img['url'] : ( is_numeric
             </a>
         </div>
 
-        <?php
-        $blog_q = new WP_Query( [
-            'post_type'      => 'post',
-            'posts_per_page' => 3,
-            'post_status'    => 'publish',
-        ] );
-        ?>
         <div class="blog-preview__grid">
         <?php
-        if ( $blog_q->have_posts() ) :
-            while ( $blog_q->have_posts() ) :
-                $blog_q->the_post();
-                $cats     = get_the_category();
-                $cat_name = $cats ? $cats[0]->name : 'Photography';
-                $thumb    = get_the_post_thumbnail_url( null, 'jjwz-blog-card' );
-                ?>
-                <article class="blog-card" id="post-<?php the_ID(); ?>">
-                    <a href="<?php the_permalink(); ?>" class="blog-card__link" aria-label="<?php the_title_attribute(); ?>">
-                        <div class="blog-card__media">
-                            <?php if ( $thumb ) : ?>
-                                <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
-                            <?php else : ?>
-                                <div class="blog-card__media-placeholder"></div>
-                            <?php endif; ?>
+        while ( $blog_q->have_posts() ) :
+            $blog_q->the_post();
+            $cats     = get_the_category();
+            $cat_name = $cats ? $cats[0]->name : 'Photography';
+            $thumb    = get_the_post_thumbnail_url( null, 'jjwz-blog-card' );
+            ?>
+            <article class="blog-card" id="post-<?php the_ID(); ?>">
+                <a href="<?php the_permalink(); ?>" class="blog-card__link" aria-label="<?php the_title_attribute(); ?>">
+                    <div class="blog-card__media">
+                        <?php if ( $thumb ) : ?>
+                            <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+                        <?php else : ?>
+                            <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+                        <?php endif; ?>
+                    </div>
+                    <div class="blog-card__body">
+                        <span class="blog-card__cat"><?php echo esc_html( $cat_name ); ?></span>
+                        <h3 class="blog-card__title"><?php the_title(); ?></h3>
+                        <p class="blog-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20, '…' ) ); ?></p>
+                        <div class="blog-card__meta">
+                            <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo get_the_date( 'M j, Y' ); ?></time>
+                            <span>·</span>
+                            <span><?php echo ceil( str_word_count( get_the_content() ) / 200 ); ?> min read</span>
                         </div>
-                        <div class="blog-card__body">
-                            <span class="blog-card__cat"><?php echo esc_html( $cat_name ); ?></span>
-                            <h3 class="blog-card__title"><?php the_title(); ?></h3>
-                            <p class="blog-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20, '…' ) ); ?></p>
-                            <div class="blog-card__meta">
-                                <time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo get_the_date( 'M j, Y' ); ?></time>
-                                <span>·</span>
-                                <span><?php echo ceil( str_word_count( get_the_content() ) / 200 ); ?> min read</span>
-                            </div>
-                        </div>
-                    </a>
-                </article>
-                <?php
-            endwhile;
-            wp_reset_postdata();
-        else :
+                    </div>
+                </a>
+            </article>
+            <?php
+        endwhile;
+        wp_reset_postdata();
         ?>
-            <p class="text-center" style="grid-column:1/-1;color:var(--clr-fog);">Our editorial blog is launching soon — check back for luxury wedding inspiration.</p>
-        <?php endif; ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      SECTION 11 — DATE AVAILABILITY BOOKING FORM

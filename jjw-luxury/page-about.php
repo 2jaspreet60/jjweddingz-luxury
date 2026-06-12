@@ -24,6 +24,17 @@ $intro        = jjwz_get_option( 'jjwz_about_intro', '<p>Founded in 2013 by Jasp
 $founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh', $post_id );
 $founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>', $post_id );
 $founder_img  = jjwz_get_option( 'jjwz_about_founder_img', '', $post_id );
+$founder_img_url = '';
+if ( is_array( $founder_img ) && isset( $founder_img['url'] ) ) {
+    $founder_img_url = $founder_img['url'];
+} elseif ( is_numeric( $founder_img ) ) {
+    $founder_img_url = wp_get_attachment_image_url( $founder_img, 'full' );
+} elseif ( is_string( $founder_img ) && ! empty( $founder_img ) ) {
+    $founder_img_url = $founder_img;
+}
+if ( empty( $founder_img_url ) ) {
+    $founder_img_url = get_template_directory_uri() . '/assets/images/placeholder-founder.png';
+}
 $hero_img     = jjwz_get_option( 'jjwz_about_hero_img', '', $post_id );
 $gear_items   = jjwz_get_option( 'jjwz_about_gear', [], $post_id );
 $wa_link      = 'https://wa.me/' . preg_replace( '/[^0-9]/', '', jjwz_get_option( 'jjwz_whatsapp_number', '919876543210' ) );
@@ -105,17 +116,10 @@ if ( empty( $gear_items ) ) {
     <div class="container">
         <div class="founder-profile__grid">
             <div class="founder-profile__portrait" data-anim="fade-right">
-                <?php if ( $founder_img && isset( $founder_img['url'] ) ) : ?>
-                    <img src="<?php echo esc_url( $founder_img['url'] ); ?>"
+                <?php if ( $founder_img_url ) : ?>
+                    <img src="<?php echo esc_url( $founder_img_url ); ?>"
                          alt="<?php echo esc_attr( $founder_name ); ?> — Founder, JJ WeddingZ Photography"
                          loading="lazy">
-                <?php else : ?>
-                    <div class="founder-profile__portrait-placeholder">
-                        <div class="founder-placeholder__icon">
-                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,0.3)" stroke-width="0.75" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        </div>
-                        <p class="founder-placeholder__note">Portrait of <?php echo esc_html( $founder_name ); ?></p>
-                    </div>
                 <?php endif; ?>
                 <div class="founder-profile__name-tag">
                     <strong><?php echo esc_html( $founder_name ); ?></strong>
@@ -151,6 +155,67 @@ if ( empty( $gear_items ) ) {
         </div>
     </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DYNAMIC TEAM SECTION (HIDDEN IF EMPTY)
+     ═══════════════════════════════════════════════════════════ -->
+<?php
+$team_q = new WP_Query( [
+    'post_type'      => 'jjwz_team',
+    'posts_per_page' => -1,
+    'post_status'    => 'publish',
+] );
+
+if ( $team_q->have_posts() ) :
+?>
+<section class="team-section section" aria-label="Our Team" style="background-color: var(--clr-warm-white);">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:3.5rem;">
+            <span class="eyebrow">Creative Team</span>
+            <h2 class="section-title">The Masters Behind <em>the Lens</em></h2>
+            <p class="lead" style="margin-top:1rem;margin-inline:auto;">Collaborating under Jaspreet's guidance to document your story with singular vision and uncompromising technical standards.</p>
+        </div>
+        <div class="team-grid">
+            <?php 
+            while ( $team_q->have_posts() ) : 
+                $team_q->the_post();
+                $member_id    = get_the_ID();
+                $designation  = jjwz_get_option( 'team_designation', '', $member_id );
+                $experience   = jjwz_get_option( 'team_experience', '', $member_id );
+                $instagram_url = jjwz_get_option( 'team_instagram', '', $member_id );
+                $thumb        = get_the_post_thumbnail_url( $member_id, 'medium_large' );
+                ?>
+                <div class="team-card" data-anim="fade-up">
+                    <div class="team-card__media">
+                        <?php if ( $thumb ) : ?>
+                            <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>">
+                        <?php else : ?>
+                            <div class="team-placeholder">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span><?php esc_html_e( 'Visual Artist', 'jjw-luxury' ); ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="team-card__body">
+                        <h3 class="team-card__name"><?php the_title(); ?></h3>
+                        <div class="team-card__meta">
+                            <span class="team-card__role"><?php echo esc_html( $designation ); ?></span>
+                            <?php if ( $experience ) : ?>
+                                <span class="team-card__exp"><?php echo esc_html( $experience ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php 
+            endwhile; 
+            wp_reset_postdata(); 
+            ?>
+        </div>
+    </div>
+</section>
+<?php 
+endif; 
+?>
 
 <!-- ═══════════════════════════════════════════════════════════
      GEAR SHOWCASE

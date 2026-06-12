@@ -68,9 +68,21 @@ function jjwz_portfolio_masonry_grid( int $count = 12, string $css_class = '' ) 
 }
 
 function jjwz_masonry_card( $id, $thumb, $title, $label, $link ) {
-    $img = $thumb
-        ? '<img src="' . esc_url( $thumb ) . '" alt="' . esc_attr( $title ) . '" loading="lazy">'
-        : '<div class="masonry-card__placeholder-img"></div>';
+    if ( $thumb ) {
+        $img = '<img src="' . esc_url( $thumb ) . '" alt="' . esc_attr( $title ) . '" loading="lazy">';
+    } else {
+        $clean_label = strtolower( trim( $label ) );
+        $fallback_img = 'placeholder-category-default.png';
+        if ( strpos( $clean_label, 'wedding' ) !== false ) {
+            $fallback_img = 'placeholder-category-wedding.png';
+        } elseif ( strpos( $clean_label, 'baby' ) !== false || strpos( $clean_label, 'newborn' ) !== false ) {
+            $fallback_img = 'placeholder-category-baby.png';
+        } elseif ( strpos( $clean_label, 'maternity' ) !== false ) {
+            $fallback_img = 'placeholder-category-maternity.png';
+        }
+        $img_url = get_template_directory_uri() . '/assets/images/' . $fallback_img;
+        $img = '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" loading="lazy">';
+    }
     return '
     <div class="masonry-card" data-category="' . esc_attr( strtolower( $label ) ) . '">
         <a href="' . esc_url( $link ) . '" class="masonry-card__link">

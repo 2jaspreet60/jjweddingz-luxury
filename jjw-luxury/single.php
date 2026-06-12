@@ -26,12 +26,14 @@ $tags         = get_the_tags();
          POST HERO
          ═══════════════════════════════ -->
     <header class="post-hero" aria-label="Article header">
-        <?php if ( $thumb ) : ?>
         <div class="post-hero__bg" aria-hidden="true">
-            <img src="<?php echo esc_url( $thumb ); ?>" alt="" class="post-hero__img" fetchpriority="high" decoding="sync">
+            <?php if ( $thumb ) : ?>
+                <img src="<?php echo esc_url( $thumb ); ?>" alt="" class="post-hero__img" fetchpriority="high" decoding="sync">
+            <?php else : ?>
+                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="" class="post-hero__img" fetchpriority="high" decoding="sync">
+            <?php endif; ?>
             <div class="post-hero__overlay"></div>
         </div>
-        <?php endif; ?>
         <div class="container post-hero__content">
             <?php jjwz_breadcrumb(); ?>
             <?php if ( $cat_name ) : ?>
@@ -150,7 +152,7 @@ $tags         = get_the_tags();
                             <?php if ( $rt ) : ?>
                                 <img src="<?php echo esc_url( $rt ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
                             <?php else : ?>
-                                <div class="related-post-card__placeholder"></div>
+                                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
                             <?php endif; ?>
                         </div>
                         <div class="related-post-card__body">

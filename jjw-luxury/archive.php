@@ -48,9 +48,7 @@ get_header();
                                 <?php if ( $thumb ) : ?>
                                     <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" width="800" height="480">
                                 <?php else : ?>
-                                    <div class="ratio-16-9 bg-cream flex-center" style="background: var(--clr-border);">
-                                        <span class="text-gold" style="font-family: var(--font-display); font-size: var(--text-2xl);">JJ</span>
-                                    </div>
+                                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" width="800" height="480" style="width:100%; height:100%; object-fit:cover;">
                                 <?php endif; ?>
                             </a>
                         </div>
