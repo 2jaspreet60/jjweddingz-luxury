@@ -132,6 +132,37 @@ function jjwz_core_activate() {
     require_once JJWZ_CORE_DIR . 'includes/class-crm-forms.php';
     JJWZ_CRM_Forms::create_leads_table();
 
+    // Seed default timeline repeater if not set
+    if ( ! get_option( 'jjw_timeline' ) ) {
+        $default_timeline = [
+            [ 'year' => '2013', 'title' => 'Founded in Amritsar', 'desc' => 'JJ WeddingZ Photography established by Jaspreet Singh with a focus on authentic, emotion-driven wedding documentation.' ],
+            [ 'year' => '2016', 'title' => 'Delhi NCR Branch Launch', 'desc' => 'Rapid client demand from Delhi and NCR necessitated the launch of a dedicated metropolitan branch, bringing our services to India\'s capital region.' ],
+            [ 'year' => '2018', 'title' => 'Cinematic Department Established', 'desc' => 'Full cinema-grade videography services added using Sony FX3 systems, expanding our offer to include sweeping wedding films.' ],
+            [ 'year' => '2020', 'title' => 'Maternity & Newborn Studio Launch', 'desc' => 'A dedicated, sanitized maternity and newborn photography studio established with medical-grade safety protocols.' ],
+            [ 'year' => '2022', 'title' => 'International Destination Commissions', 'desc' => 'First international destination wedding assignments accepted. JJ WeddingZ now travels globally.' ],
+            [ 'year' => '2024', 'title' => '500+ Weddings Milestone', 'desc' => 'Crossing the 500 premium weddings threshold, JJ WeddingZ cements its status as Northern India\'s most trusted luxury photography house.' ]
+        ];
+        update_option( 'jjw_timeline', wp_json_encode( $default_timeline ) );
+    }
+
+    // Seed default placeholders if not set
+    $placeholder_base = content_url( '/themes/jjw-luxury/assets/images/' );
+    if ( ! get_option( 'jjw_default_placeholder_founder' ) ) {
+        update_option( 'jjw_default_placeholder_founder', $placeholder_base . 'placeholder-founder.png' );
+    }
+    if ( ! get_option( 'jjw_default_placeholder_service' ) ) {
+        update_option( 'jjw_default_placeholder_service', $placeholder_base . 'placeholder-category-default.png' );
+    }
+    if ( ! get_option( 'jjw_default_placeholder_portfolio' ) ) {
+        update_option( 'jjw_default_placeholder_portfolio', $placeholder_base . 'placeholder-category-default.png' );
+    }
+    if ( ! get_option( 'jjw_default_placeholder_testimonial' ) ) {
+        update_option( 'jjw_default_placeholder_testimonial', $placeholder_base . 'placeholder-testimonial.png' );
+    }
+    if ( ! get_option( 'jjw_default_placeholder_blog' ) ) {
+        update_option( 'jjw_default_placeholder_blog', $placeholder_base . 'placeholder-blog.png' );
+    }
+
     flush_rewrite_rules();
 
     // Mark plugin as freshly activated — seeder will run once on next admin page load
@@ -292,3 +323,28 @@ function jjwz_seo_plugin_desc_override( $desc ) {
     }
     return $desc;
 }
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SITEMAP INTEGRATION FOR DYNAMIC CAMPAIGN PAGES
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+add_filter( 'rank_math/sitemap/custom_links', 'jjwz_add_dynamic_landing_pages_to_rankmath_sitemap' );
+function jjwz_add_dynamic_landing_pages_to_rankmath_sitemap( $links ) {
+    $seo_raw = get_option( 'jjw_service_city_seo', '[]' );
+    $seo_items = json_decode( $seo_raw, true ) ?: [];
+    foreach ( $seo_items as $item ) {
+        $service = $item['service'] ?? '';
+        $city = $item['city'] ?? '';
+        if ( $service && $city ) {
+            $links[] = [
+                'loc' => home_url( '/' . $service . '-photographer-in-' . $city . '/' ),
+                'mod' => date( 'c' ),
+                'chg' => 'weekly',
+                'pri' => '0.8',
+            ];
+        }
+    }
+    return $links;
+}
+

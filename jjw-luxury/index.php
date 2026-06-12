@@ -34,6 +34,12 @@ get_header();
                 <div class="blog-grid" data-anim="fade-in">
                     <?php while ( have_posts() ) : the_post();
                         $thumb      = get_the_post_thumbnail_url( null, 'jjwz-blog-card' );
+                        if ( empty( $thumb ) ) {
+                            $thumb = jjwz_get_option( 'jjw_default_placeholder_blog' );
+                        }
+                        if ( empty( $thumb ) ) {
+                            $thumb = get_template_directory_uri() . '/assets/images/placeholder-blog.png';
+                        }
                         $cats       = get_the_category();
                         $cat_name   = $cats ? $cats[0]->name : '';
                         $word_count = str_word_count( get_the_content() );
@@ -44,8 +50,6 @@ get_header();
                             <a href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
                                 <?php if ( $thumb ) : ?>
                                     <img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" width="800" height="480">
-                                <?php else : ?>
-                                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" width="800" height="480" style="width:100%; height:100%; object-fit:cover;">
                                 <?php endif; ?>
                             </a>
                         </div>

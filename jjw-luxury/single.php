@@ -10,6 +10,12 @@ get_header();
 the_post();
 
 $thumb        = get_the_post_thumbnail_url( null, 'jjwz-blog-hero' );
+if ( empty( $thumb ) ) {
+    $thumb = jjwz_get_option( 'jjw_default_placeholder_blog' );
+}
+if ( empty( $thumb ) ) {
+    $thumb = get_template_directory_uri() . '/assets/images/placeholder-blog.png';
+}
 $cats         = get_the_category();
 $cat_name     = $cats ? $cats[0]->name : '';
 $cat_link     = $cats ? get_category_link( $cats[0]->term_id ) : '';
@@ -29,8 +35,6 @@ $tags         = get_the_tags();
         <div class="post-hero__bg" aria-hidden="true">
             <?php if ( $thumb ) : ?>
                 <img src="<?php echo esc_url( $thumb ); ?>" alt="" class="post-hero__img" fetchpriority="high" decoding="sync">
-            <?php else : ?>
-                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="" class="post-hero__img" fetchpriority="high" decoding="sync">
             <?php endif; ?>
             <div class="post-hero__overlay"></div>
         </div>
@@ -144,6 +148,12 @@ $tags         = get_the_tags();
                 <div class="related-posts__grid">
                     <?php while ( $related->have_posts() ) : $related->the_post();
                         $rt      = get_the_post_thumbnail_url( null, 'jjwz-blog-card' );
+                        if ( empty( $rt ) ) {
+                            $rt = jjwz_get_option( 'jjw_default_placeholder_blog' );
+                        }
+                        if ( empty( $rt ) ) {
+                            $rt = get_template_directory_uri() . '/assets/images/placeholder-blog.png';
+                        }
                         $rc      = get_the_category();
                         $rc_name = $rc ? $rc[0]->name : '';
                     ?>
@@ -151,8 +161,6 @@ $tags         = get_the_tags();
                         <div class="related-post-card__media">
                             <?php if ( $rt ) : ?>
                                 <img src="<?php echo esc_url( $rt ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
-                            <?php else : ?>
-                                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/placeholder-blog.png' ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
                             <?php endif; ?>
                         </div>
                         <div class="related-post-card__body">

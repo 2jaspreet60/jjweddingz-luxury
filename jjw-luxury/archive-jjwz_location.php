@@ -39,7 +39,7 @@ get_header();
                         
                         $hero_img_url = is_array( $hero_img ) ? $hero_img['url'] : ( is_numeric( $hero_img ) ? wp_get_attachment_image_url( $hero_img, 'large' ) : $hero_img );
                         if ( ! $hero_img_url ) {
-                            $hero_img_url = get_option( 'jjw_default_placeholder_portfolio', '' );
+                            $hero_img_url = jjwz_get_option( 'jjw_default_placeholder_portfolio' );
                         }
                         if ( ! $hero_img_url ) {
                             $hero_img_url = get_template_directory_uri() . '/assets/images/placeholder-category-wedding.png';

@@ -144,17 +144,19 @@ $service_icons = [ '💍', '🎬', '🎥', '👶' ];
             <!-- Image / Placeholder -->
             <div class="service-block__media" data-anim="fade-left">
                 <div class="service-block__image-wrap">
-                    <?php if ( $img ) : ?>
-                        <img src="<?php echo esc_url( $img ); ?>"
-                             alt="<?php echo esc_attr( $img_alt ); ?>"
-                             loading="<?php echo $idx === 0 ? 'eager' : 'lazy'; ?>"
-                             class="service-block__img">
-                    <?php else : ?>
-                        <div class="service-block__placeholder" aria-hidden="true">
-                            <div class="service-placeholder__icon"><?php echo $service_icons[ $idx ] ?? '📸'; ?></div>
-                            <span class="service-placeholder__label"><?php echo esc_html( $svc['svc_title'] ); ?></span>
-                        </div>
-                    <?php endif; ?>
+                    <?php 
+                    $service_img_url = $img;
+                    if ( empty( $service_img_url ) ) {
+                        $service_img_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+                    }
+                    if ( empty( $service_img_url ) ) {
+                        $service_img_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+                    }
+                    ?>
+                    <img src="<?php echo esc_url( $service_img_url ); ?>"
+                         alt="<?php echo esc_attr( $img_alt ); ?>"
+                         loading="<?php echo $idx === 0 ? 'eager' : 'lazy'; ?>"
+                         class="service-block__img">
                     <div class="service-block__image-tag">
                         <span><?php echo esc_html( $svc['svc_title'] ); ?></span>
                     </div>

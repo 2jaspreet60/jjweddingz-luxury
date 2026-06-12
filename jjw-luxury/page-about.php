@@ -336,17 +336,8 @@ endif;
             <?php
             $timeline_raw = jjwz_get_option( 'jjw_timeline', '[]' );
             $milestones   = json_decode( $timeline_raw, true ) ?: [];
-            if ( empty( $milestones ) ) {
-                $milestones = [
-                    [ 'year' => '2013', 'title' => 'Founded in Amritsar',               'desc' => 'JJ WeddingZ Photography established by Jaspreet Singh with a singular focus on authentic, emotion-driven wedding documentation.' ],
-                    [ 'year' => '2016', 'title' => 'Delhi NCR Branch Launch',           'desc' => 'Rapid client demand from Delhi and NCR necessitated the launch of a dedicated metropolitan branch, bringing our services to India\'s capital region.' ],
-                    [ 'year' => '2018', 'title' => 'Cinematic Department Established',  'desc' => 'Full cinema-grade videography services added using Sony FX3 systems, expanding our offer to include sweeping wedding films.' ],
-                    [ 'year' => '2020', 'title' => 'Maternity & Newborn Studio Launch', 'desc' => 'A dedicated, sanitized maternity and newborn photography studio established with medical-grade safety protocols.' ],
-                    [ 'year' => '2022', 'title' => 'International Destination Commissions', 'desc' => 'First international destination wedding assignments accepted. JJ WeddingZ now travels globally.' ],
-                    [ 'year' => '2024', 'title' => '500+ Weddings Milestone',           'desc' => 'Crossing the 500 premium weddings threshold, JJ WeddingZ cements its status as Northern India\'s most trusted luxury photography house.' ],
-                ];
-            }
-            foreach ( $milestones as $m ) :
+            if ( ! empty( $milestones ) ) :
+                foreach ( $milestones as $m ) :
             ?>
             <div class="timeline-item" data-anim="fade-up">
                 <div class="timeline-year"><?php echo esc_html( $m['year'] ); ?></div>
@@ -355,7 +346,10 @@ endif;
                     <p><?php echo esc_html( $m['desc'] ); ?></p>
                 </div>
             </div>
-            <?php endforeach; ?>
+            <?php 
+                endforeach;
+            endif;
+            ?>
         </div>
     </div>
 </section>

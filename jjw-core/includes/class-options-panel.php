@@ -165,6 +165,14 @@ class JJWZ_Options_Panel {
             'jjw_default_placeholder_blog'        => 'Default Blog Placeholder',
         ];
 
+        $default_values = [
+            'jjw_default_placeholder_founder'     => content_url( '/themes/jjw-luxury/assets/images/placeholder-founder.png' ),
+            'jjw_default_placeholder_service'     => content_url( '/themes/jjw-luxury/assets/images/placeholder-category-default.png' ),
+            'jjw_default_placeholder_portfolio'   => content_url( '/themes/jjw-luxury/assets/images/placeholder-category-default.png' ),
+            'jjw_default_placeholder_testimonial' => content_url( '/themes/jjw-luxury/assets/images/placeholder-testimonial.png' ),
+            'jjw_default_placeholder_blog'        => content_url( '/themes/jjw-luxury/assets/images/placeholder-blog.png' ),
+        ];
+
         $contact_fields = [
             'jjw_primary_phone'      => [ 'label' => 'Primary Phone Number',   'type' => 'text', 'placeholder' => '+91 98765 43210' ],
             'jjw_secondary_phone'    => [ 'label' => 'Secondary Phone Number', 'type' => 'text', 'placeholder' => '+91 98765 43210' ],
@@ -184,7 +192,7 @@ class JJWZ_Options_Panel {
                     <label class="jjwz-label"><?php echo esc_html( $label ); ?></label>
                     <div class="jjwz-media-upload" style="display:flex; gap:10px;">
                         <input type="text" id="<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( $key ); ?>"
-                               value="<?php echo esc_attr( get_option( $key, '' ) ); ?>" class="jjwz-input media-url" style="flex:1;">
+                               value="<?php echo esc_attr( get_option( $key, $default_values[ $key ] ?? '' ) ); ?>" class="jjwz-input media-url" style="flex:1;">
                         <button type="button" class="button jjwz-media-upload-btn" data-target="<?php echo esc_attr( $key ); ?>">Choose File</button>
                     </div>
                 </div>

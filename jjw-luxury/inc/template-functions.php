@@ -80,7 +80,10 @@ function jjwz_masonry_card( $id, $thumb, $title, $label, $link ) {
         } elseif ( strpos( $clean_label, 'maternity' ) !== false ) {
             $fallback_img = 'placeholder-category-maternity.png';
         }
-        $img_url = get_template_directory_uri() . '/assets/images/' . $fallback_img;
+        $img_url = jjwz_get_option( 'jjw_default_placeholder_portfolio' );
+        if ( empty( $img_url ) ) {
+            $img_url = get_template_directory_uri() . '/assets/images/' . $fallback_img;
+        }
         $img = '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '" loading="lazy">';
     }
     return '

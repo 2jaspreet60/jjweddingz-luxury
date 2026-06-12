@@ -81,7 +81,7 @@ if ( ! $hero_bg_url ) {
 }
 
 if ( ! $hero_bg_url ) {
-    $hero_bg_url = get_option( 'jjw_default_placeholder_portfolio', '' );
+    $hero_bg_url = jjwz_get_option( 'jjw_default_placeholder_portfolio' );
 }
 
 if ( ! $hero_bg_url ) {
@@ -181,7 +181,7 @@ $wa_link = jjwz_wa_link( 'Check Availability', 'btn btn--primary', 'seo-landing-
                 <?php while ( $portfolio_query->have_posts() ) : $portfolio_query->the_post(); 
                     $thumb = get_the_post_thumbnail_url( null, 'large' );
                     if ( ! $thumb ) {
-                        $thumb = get_option( 'jjw_default_placeholder_portfolio', '' );
+                        $thumb = jjwz_get_option( 'jjw_default_placeholder_portfolio' );
                     }
                     $venue = get_post_meta( get_the_ID(), 'portfolio_venue', true ) ?: 'Premium Venue';
                 ?>

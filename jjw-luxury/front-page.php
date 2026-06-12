@@ -545,6 +545,9 @@ if ( $testimonials_q->have_posts() ) :
                     }
                     $avatar_url = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
                     if ( empty( $avatar_url ) ) {
+                        $avatar_url = jjwz_get_option( 'jjw_default_placeholder_testimonial' );
+                    }
+                    if ( empty( $avatar_url ) ) {
                         $avatar_url = get_template_directory_uri() . '/assets/images/placeholder-testimonial.png';
                     }
                     ?>
