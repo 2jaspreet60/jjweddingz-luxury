@@ -1,0 +1,498 @@
+/* ==========================================================================
+   JJ WEDDINGZ ADMIN OPTIONS PANEL STYLES
+   ========================================================================== */
+
+.jjwz-admin-wrap {
+    margin: 20px 20px 20px 0;
+    max-width: 1100px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Header Banner */
+.jjwz-admin-header {
+    background: #111111;
+    color: #ffffff;
+    padding: 30px 40px;
+    border-bottom: 3px solid #c9a96e;
+}
+
+.jjwz-admin-header__logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.jjwz-admin-header__logo svg {
+    flex-shrink: 0;
+    background: rgba(201, 169, 110, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
+.jjwz-admin-header__title {
+    color: #ffffff !important;
+    margin: 0 0 4px 0 !important;
+    font-size: 26px !important;
+    font-weight: 300 !important;
+    letter-spacing: -0.02em;
+}
+
+.jjwz-admin-header__sub {
+    margin: 0;
+    color: #a0aec0;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Tabs Navigation */
+.jjwz-tabs {
+    display: flex;
+    background: #f7fafc;
+    border-bottom: 1px solid #edf2f7;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.jjwz-tab {
+    display: block;
+    padding: 18px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.jjwz-tab:hover {
+    color: #1a202c;
+    background: rgba(0,0,0,0.02);
+}
+
+.jjwz-tab:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.jjwz-tab--active {
+    color: #c9a96e !important;
+    border-bottom-color: #c9a96e;
+    font-weight: 600;
+    background: #ffffff;
+}
+
+/* Content Panels */
+.jjwz-panel {
+    background: #ffffff;
+    padding: 40px;
+}
+
+.jjwz-tab-content {
+    animation: jjwzFadeIn 0.3s ease-out;
+}
+
+@keyframes jjwzFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.jjwz-section-title {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    margin: 0 0 10px 0 !important;
+    color: #1a202c;
+}
+
+.jjwz-section-desc {
+    color: #718096;
+    font-size: 14px;
+    margin: 0 0 30px 0;
+    line-height: 1.5;
+}
+
+/* Fields Grid & Groups */
+.jjwz-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+@media (max-width: 782px) {
+    .jjwz-fields-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.jjwz-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.jjwz-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jjwz-required {
+    color: #e53e3e;
+}
+
+.jjwz-secure-badge {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    font-size: 11px;
+    font-weight: normal;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.jjwz-input,
+.jjwz-select,
+.jjwz-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1a202c;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.jjwz-input:focus,
+.jjwz-select:focus,
+.jjwz-textarea:focus {
+    border-color: #c9a96e;
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+    outline: none;
+}
+
+.jjwz-textarea {
+    resize: vertical;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.jjwz-field-hint {
+    font-size: 12px;
+    color: #718096;
+    margin: 4px 0 0 0;
+}
+
+/* Custom Settings Controls */
+.jjwz-mode-switcher {
+    display: flex;
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .jjwz-mode-switcher {
+        flex-direction: column;
+    }
+}
+
+.jjwz-mode-option {
+    flex: 1;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: all 0.2s ease;
+}
+
+.jjwz-mode-option:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+.jjwz-mode-option input[type="radio"] {
+    margin-top: 3px;
+    margin-right: 0;
+}
+
+.jjwz-mode-option__content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.jjwz-mode-option__content strong {
+    font-size: 14px;
+    color: #1a202c;
+}
+
+.jjwz-mode-option__content span {
+    font-size: 12px;
+    color: #718096;
+    line-height: 1.4;
+}
+
+.jjwz-mode-option.is-selected {
+    border-color: #c9a96e;
+    background: rgba(201, 169, 110, 0.05);
+}
+
+.jjwz-preview-link {
+    background: #f7fafc;
+    border: 1px dashed #cbd5e0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #4a5568;
+}
+
+/* Notices & Alerts */
+.jjwz-notice {
+    padding: 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.jjwz-notice--info {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    border-left: 4px solid #3182ce;
+}
+
+.jjwz-notice--warning {
+    background: #fffaf0;
+    color: #dd6b20;
+    border-left: 4px solid #dd6b20;
+}
+
+/* Badges */
+.jjwz-badge {
+    background: #e2e8f0;
+    color: #4a5568;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.jjwz-badge--success {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.jjwz-badge--alt {
+    background: #feebc8;
+    color: #7b341e;
+}
+
+/* Payment Integrations */
+.jjwz-payment-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.jjwz-payment-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.jjwz-payment-logo {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.jjwz-payment-logo.razorpay {
+    color: #0c2b78;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.jjwz-payment-logo.razorpay::before {
+    content: "🔷";
+}
+
+.jjwz-payment-logo.cashfree {
+    color: #1f3b68;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.jjwz-payment-logo.cashfree::before {
+    content: "⚡";
+}
+
+/* Custom Checkbox Toggle */
+.jjwz-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.jjwz-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.jjwz-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.jjwz-toggle__slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.jjwz-toggle__slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+.jjwz-toggle input:checked + .jjwz-toggle__slider {
+    background-color: #c9a96e;
+}
+
+.jjwz-toggle input:checked + .jjwz-toggle__slider:before {
+    transform: translateX(20px);
+}
+
+/* CRM Dashboard */
+.jjwz-crm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.jjwz-leads-table-wrap {
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    overflow-x: auto;
+    background: #ffffff;
+}
+
+.jjwz-leads-table {
+    border: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.jjwz-leads-table th {
+    background: #f7fafc !important;
+    color: #4a5568 !important;
+    font-weight: 600 !important;
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    border-bottom: 2px solid #edf2f7 !important;
+}
+
+.jjwz-leads-table td {
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    color: #2d3748 !important;
+    border-bottom: 1px solid #edf2f7 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.jjwz-leads-table tr:hover td {
+    background: #fdfbf7 !important;
+}
+
+/* Seeder Tab Layout */
+.jjwz-seeder-status {
+    display: flex;
+    gap: 30px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.jjwz-seeder-status__item {
+    font-size: 14px;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Save Form Footer */
+.jjwz-form-footer {
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.jjwz-save-btn {
+    padding: 8px 24px !important;
+    height: auto !important;
+    font-size: 14px !important;
+    line-height: 2 !important;
+    font-weight: 600 !important;
+    background: #111 !important;
+    border-color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.jjwz-save-btn:hover {
+    background: #c9a96e !important;
+    border-color: #c9a96e !important;
+    color: #fff !important;
+}

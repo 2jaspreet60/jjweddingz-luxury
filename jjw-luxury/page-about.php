@@ -1,0 +1,230 @@
+<?php
+/**
+ * page-about.php — About Us Editorial Layout
+ * Template Name: About Us
+ *
+ * @package JJWeddingZ
+ */
+
+get_header();
+
+// Elementor Canvas safeguard check
+if ( function_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->db->is_built_with_elementor( get_the_ID() ) ) {
+    while ( have_posts() ) : the_post();
+        the_content();
+    endwhile;
+    get_footer();
+    return;
+}
+
+/* ─── Dynamic field values ────────────────────────────────────────────── */
+$post_id      = get_the_ID();
+$headline     = jjwz_get_option( 'jjwz_about_headline', 'Eleven Years of Uncompromising<br><em>Visual Excellence</em>', $post_id );
+$intro        = jjwz_get_option( 'jjwz_about_intro', '<p>Founded in 2013 by Jaspreet Singh, JJ WeddingZ Photography has spent over a decade establishing itself as the benchmark for luxury wedding, maternity, and newborn photography across Northern India. Operating dual creative branches from Delhi NCR and Amritsar, our team of highly trained visual artists, cinematographers, and post-production specialists brings an internationally refined aesthetic to every single project we undertake.</p>', $post_id );
+$founder_name = jjwz_get_option( 'jjwz_about_founder_name', 'Jaspreet Singh', $post_id );
+$founder_bio  = jjwz_get_option( 'jjwz_about_founder_bio', '<p>Jaspreet began his photography journey over 11 years ago, driven by an unwavering belief that true luxury imagery lies not in artificial perfection but in the authentic preservation of genuine human emotion. His philosophy is simple and non-negotiable: we protect your identity. Our editing methodology maintains 100% of your original facial features and natural skin tones — we reject face-swapping, skin-whitening filters, and synthetic AI enhancement entirely.</p><p>This commitment to authenticity has earned JJ WeddingZ a devoted clientele across Delhi NCR, Amritsar, and an expanding roster of international destination wedding commissions.</p>', $post_id );
+$founder_img  = jjwz_get_option( 'jjwz_about_founder_img', '', $post_id );
+$hero_img     = jjwz_get_option( 'jjwz_about_hero_img', '', $post_id );
+$gear_items   = jjwz_get_option( 'jjwz_about_gear', [], $post_id );
+$wa_link      = 'https://wa.me/' . preg_replace( '/[^0-9]/', '', jjwz_get_option( 'jjwz_whatsapp_number', '919876543210' ) );
+
+// Default gear if no ACF data
+if ( empty( $gear_items ) ) {
+    $gear_items = [
+        [ 'gear_name' => 'Nikon Z6 III',          'gear_desc' => 'Primary Still Photography — Full-Frame Mirrorless, 24.5MP BSI CMOS with Dual Card Slots for Instant Redundancy' ],
+        [ 'gear_name' => 'Sony FX3',              'gear_desc' => 'Cinema Videography — Full-Frame Cinema Line, 4K 120fps, S-Cinetone Color Science for Master Cinematography' ],
+        [ 'gear_name' => 'G Master Series Lenses', 'gear_desc' => 'Sony 24-70mm f/2.8 GM II & 85mm f/1.4 GM — Unmatched Bokeh Rendering and Optical Sharpness' ],
+        [ 'gear_name' => 'Nikon Nikkor Z Series',  'gear_desc' => 'Nikkor Z 50mm f/1.2 S & 70-200mm f/2.8 VR S — Compression Telephoto for Clean Separation and Bokeh' ],
+        [ 'gear_name' => 'Profoto Lighting',       'gear_desc' => 'Profoto B10X Plus & A10 Units — Off-Camera HSS Flash with Color-Calibrated Output' ],
+        [ 'gear_name' => 'DJI RS3 Pro Gimbal',     'gear_desc' => 'Motorised 3-Axis Stabilisation for Fluid Cinematic Movement Sequences' ],
+    ];
+}
+?>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ABOUT HERO
+     ═══════════════════════════════════════════════════════════ -->
+<section class="about-hero" aria-label="About hero">
+    <div class="about-hero__bg" aria-hidden="true">
+        <?php if ( $hero_img && isset( $hero_img['url'] ) ) : ?>
+            <img src="<?php echo esc_url( $hero_img['url'] ); ?>" alt="" class="about-hero__img" fetchpriority="high" decoding="sync">
+        <?php else : ?>
+            <div class="about-hero__gradient"></div>
+        <?php endif; ?>
+        <div class="about-hero__overlay"></div>
+    </div>
+    <div class="container about-hero__content">
+        <?php jjwz_breadcrumb(); ?>
+        <span class="eyebrow">Our Story</span>
+        <h1 class="about-hero__headline display-title"><?php echo wp_kses_post( $headline ); ?></h1>
+        <div class="about-hero__scroll-hint" aria-hidden="true">
+            <span class="scroll-line"></span><span class="scroll-text">Scroll</span>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BRAND NARRATIVE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="brand-narrative section" aria-label="Brand narrative">
+    <div class="container">
+        <div class="brand-narrative__grid">
+            <div class="brand-narrative__text" data-anim="fade-right">
+                <?php echo wp_kses_post( $intro ); ?>
+                <div class="brand-narrative__signature">
+                    <div class="brand-nar__signature-line"></div>
+                    <span>Jaspreet Singh, Founder &amp; Lead Photographer</span>
+                </div>
+            </div>
+            <div class="brand-narrative__stats" data-anim="fade-left">
+                <div class="brand-stat-card">
+                    <div class="brand-stat-card__number">11<span>+</span></div>
+                    <div class="brand-stat-card__label">Years of Excellence</div>
+                </div>
+                <div class="brand-stat-card">
+                    <div class="brand-stat-card__number">2</div>
+                    <div class="brand-stat-card__label">Branch Locations</div>
+                </div>
+                <div class="brand-stat-card">
+                    <div class="brand-stat-card__number">500<span>+</span></div>
+                    <div class="brand-stat-card__label">Weddings Documented</div>
+                </div>
+                <div class="brand-stat-card brand-stat-card--highlight">
+                    <div class="brand-stat-card__number">100<span>%</span></div>
+                    <div class="brand-stat-card__label">Identity Preserved</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOUNDER EDITORIAL PROFILE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="founder-profile section" style="background:var(--clr-cream);" aria-label="Founder profile">
+    <div class="container">
+        <div class="founder-profile__grid">
+            <div class="founder-profile__portrait" data-anim="fade-right">
+                <?php if ( $founder_img && isset( $founder_img['url'] ) ) : ?>
+                    <img src="<?php echo esc_url( $founder_img['url'] ); ?>"
+                         alt="<?php echo esc_attr( $founder_name ); ?> — Founder, JJ WeddingZ Photography"
+                         loading="lazy">
+                <?php else : ?>
+                    <div class="founder-profile__portrait-placeholder">
+                        <div class="founder-placeholder__icon">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,0.3)" stroke-width="0.75" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <p class="founder-placeholder__note">Portrait of <?php echo esc_html( $founder_name ); ?></p>
+                    </div>
+                <?php endif; ?>
+                <div class="founder-profile__name-tag">
+                    <strong><?php echo esc_html( $founder_name ); ?></strong>
+                    <span>Founder &amp; Lead Photographer</span>
+                    <span>11+ Years Experience</span>
+                </div>
+            </div>
+            <div class="founder-profile__bio" data-anim="fade-left">
+                <span class="eyebrow">Meet the Artist</span>
+                <h2 class="section-title"><?php echo esc_html( $founder_name ); ?></h2>
+                <div class="founder-bio__text lead">
+                    <?php echo wp_kses_post( $founder_bio ); ?>
+                </div>
+                <div class="founder-profile__values">
+                    <?php
+                    $values = [
+                        [ 'icon' => '🎯', 'title' => '100% Identity Retained',  'desc' => 'We never alter facial features, skin tone, or natural identity in post-production.' ],
+                        [ 'icon' => '🤐', 'title' => 'Client Discretion First', 'desc' => 'Your private moments remain private. Strict gallery confidentiality guaranteed.' ],
+                        [ 'icon' => '🌍', 'title' => 'Destination Ready',       'desc' => 'Passports always prepared. We travel across India and internationally.' ],
+                    ];
+                    foreach ( $values as $v ) :
+                    ?>
+                    <div class="founder-value-item">
+                        <div class="founder-value-item__icon"><?php echo $v['icon']; ?></div>
+                        <div>
+                            <strong class="founder-value-item__title"><?php echo esc_html( $v['title'] ); ?></strong>
+                            <p class="founder-value-item__desc"><?php echo esc_html( $v['desc'] ); ?></p>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     GEAR SHOWCASE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="gear-showcase section" aria-label="Camera equipment">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:3rem;">
+            <span class="eyebrow">Our Equipment</span>
+            <h2 class="section-title">Professional <em>Cinema &amp; Photography</em><br>Arsenal</h2>
+            <p class="lead" style="margin-top:1rem;margin-inline:auto;">Every piece of equipment is professionally maintained, insured, and configured with dual-slot recording for immediate on-site data redundancy.</p>
+        </div>
+        <div class="gear-grid">
+            <?php foreach ( $gear_items as $i => $gear ) : ?>
+            <div class="gear-card" data-anim="fade-up" data-anim-delay="<?php echo $i * 60; ?>">
+                <div class="gear-card__icon" aria-hidden="true">
+                    <?php if ( ! empty( $gear['gear_icon'] ) ) : ?>
+                        <img src="<?php echo esc_url( $gear['gear_icon'] ); ?>" alt="" loading="lazy">
+                    <?php else : ?>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--clr-gold)" stroke-width="1" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <?php endif; ?>
+                </div>
+                <h3 class="gear-card__name"><?php echo esc_html( $gear['gear_name'] ); ?></h3>
+                <p class="gear-card__desc"><?php echo esc_html( $gear['gear_desc'] ); ?></p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BRAND TIMELINE
+     ═══════════════════════════════════════════════════════════ -->
+<section class="brand-timeline section" style="background:var(--clr-obsidian);" aria-label="Brand journey">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:3.5rem;">
+            <span class="eyebrow" style="color:var(--clr-gold);">Our Journey</span>
+            <h2 class="section-title" style="color:var(--clr-warm-white);">Eleven Years of<br><em>Defining Moments</em></h2>
+        </div>
+        <div class="timeline">
+            <?php
+            $milestones = [
+                [ 'year' => '2013', 'title' => 'Founded in Amritsar',               'desc' => 'JJ WeddingZ Photography established by Jaspreet Singh with a singular focus on authentic, emotion-driven wedding documentation.' ],
+                [ 'year' => '2016', 'title' => 'Delhi NCR Branch Launch',           'desc' => 'Rapid client demand from Delhi and NCR necessitated the launch of a dedicated metropolitan branch, bringing our services to India\'s capital region.' ],
+                [ 'year' => '2018', 'title' => 'Cinematic Department Established',  'desc' => 'Full cinema-grade videography services added using Sony FX3 systems, expanding our offer to include sweeping wedding films.' ],
+                [ 'year' => '2020', 'title' => 'Maternity & Newborn Studio Launch', 'desc' => 'A dedicated, sanitized maternity and newborn photography studio established with medical-grade safety protocols.' ],
+                [ 'year' => '2022', 'title' => 'International Destination Commissions', 'desc' => 'First international destination wedding assignments accepted. JJ WeddingZ now travels globally.' ],
+                [ 'year' => '2024', 'title' => '500+ Weddings Milestone',           'desc' => 'Crossing the 500 premium weddings threshold, JJ WeddingZ cements its status as Northern India\'s most trusted luxury photography house.' ],
+            ];
+            foreach ( $milestones as $m ) :
+            ?>
+            <div class="timeline-item" data-anim="fade-up">
+                <div class="timeline-item__year"><?php echo esc_html( $m['year'] ); ?></div>
+                <div class="timeline-item__connector"><span class="timeline-dot"></span></div>
+                <div class="timeline-item__content">
+                    <h3 class="timeline-item__title"><?php echo esc_html( $m['title'] ); ?></h3>
+                    <p class="timeline-item__desc"><?php echo esc_html( $m['desc'] ); ?></p>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CTA
+     ═══════════════════════════════════════════════════════════ -->
+<section class="about-cta section--sm" aria-label="Booking CTA">
+    <div class="container text-center">
+        <span class="eyebrow">Begin Your Story</span>
+        <h2 class="section-title" style="margin-bottom:1.5rem;">Ready to Create Something<br><em>Timeless Together?</em></h2>
+        <a href="<?php echo esc_url( $wa_link ); ?>" class="btn btn--primary" id="about-wa-cta" target="_blank" rel="noopener noreferrer">
+            Inquire About Your Date
+        </a>
+    </div>
+</section>
+
+<?php get_footer(); ?>
