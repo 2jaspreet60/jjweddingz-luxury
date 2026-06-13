@@ -355,6 +355,12 @@ class JJWZ_Service_Importer_Exporter {
 
             // Save service metadata
             update_post_meta( $post_id, 'svc_icon', sanitize_text_field( $s['icon'] ?? '📸' ) );
+            update_post_meta( $post_id, 'svc_small_icon', sanitize_text_field( $s['small_icon'] ?? ( $s['icon'] ?? '📸' ) ) );
+            if ( ! empty( $s['thumbnail'] ) ) {
+                update_post_meta( $post_id, 'svc_thumbnail', $s['thumbnail'] );
+            }
+            update_post_meta( $post_id, 'svc_featured', ! empty( $s['featured'] ) ? '1' : '0' );
+            update_post_meta( $post_id, 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0 );
             update_post_meta( $post_id, 'svc_brand', sanitize_text_field( $s['brand'] ?? 'both' ) );
             update_post_meta( $post_id, 'svc_starting_price', sanitize_text_field( $s['price'] ?? '' ) );
             update_post_meta( $post_id, 'svc_short_desc', $short_desc );
@@ -414,7 +420,13 @@ class JJWZ_Service_Importer_Exporter {
             // Sync ACF Field Groups if active
             if ( function_exists( 'update_field' ) ) {
                 update_field( 'svc_icon', $s['icon'] ?? '📸', $post_id );
+                update_field( 'svc_small_icon', $s['small_icon'] ?? ( $s['icon'] ?? '📸' ), $post_id );
+                if ( ! empty( $s['thumbnail'] ) ) {
+                    update_field( 'svc_thumbnail', $s['thumbnail'], $post_id );
+                }
                 update_field( 'svc_brand', $s['brand'] ?? 'both', $post_id );
+                update_field( 'svc_featured', ! empty( $s['featured'] ) ? 1 : 0, $post_id );
+                update_field( 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0, $post_id );
                 update_field( 'svc_starting_price', $s['price'] ?? '', $post_id );
                 update_field( 'svc_short_desc', $short_desc, $post_id );
                 update_field( 'svc_seo_content', $generic_content, $post_id );
@@ -622,7 +634,11 @@ class JJWZ_Service_Importer_Exporter {
                     'name'              => get_the_title(),
                     'slug'              => $slug,
                     'icon'              => get_post_meta( $post_id, 'svc_icon', true ) ?: '📸',
+                    'small_icon'        => get_post_meta( $post_id, 'svc_small_icon', true ) ?: get_post_meta( $post_id, 'svc_icon', true ) ?: '📸',
+                    'thumbnail'         => get_post_meta( $post_id, 'svc_thumbnail', true ),
                     'brand'             => get_post_meta( $post_id, 'svc_brand', true ) ?: 'both',
+                    'featured'          => get_post_meta( $post_id, 'svc_featured', true ) === '1',
+                    'display_order'     => (int) get_post_meta( $post_id, 'svc_display_order', true ),
                     'price'             => get_post_meta( $post_id, 'svc_starting_price', true ),
                     'focus_keywords'    => get_post_meta( $post_id, 'svc_focus_keywords', true ),
                     'seo_title'         => get_post_meta( $post_id, 'svc_seo_title', true ),

@@ -451,7 +451,8 @@ def generate_city_text(name, city_name, contexts):
 
 json_data = []
 csv_headers = [
-    'Service Name', 'Slug', 'Service Icon', 'Brand Context', 'Starting Price', 'Focus Keywords', 
+    'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
+    'Homepage Featured', 'Display Order', 'Starting Price', 'Focus Keywords', 
     'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
     'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
     'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -460,7 +461,7 @@ csv_headers = [
 ]
 csv_rows = []
 
-for s in services:
+for idx, s in enumerate(services):
     name = s['name']
     slug = s['slug']
     icon = s['icon']
@@ -470,6 +471,13 @@ for s in services:
     short_desc = s['short_description']
     brand = s['brand']
     price = s['price']
+    
+    # Define featured status and order
+    # Feature first 4 services on homepage: Wedding, Pre-Wedding, Destination, Cinematography
+    featured = True if idx < 4 else False
+    display_order = (idx + 1) * 10
+    small_icon = icon
+    thumbnail = "" # empty default image reference, falls back to cover/hero
     
     generic_content = generate_generic_text(name, kw, s['keywords_context'])
     
@@ -497,11 +505,11 @@ for s in services:
     ]
     
     service_faqs = []
-    for idx, t in enumerate(faq_topics):
+    for f_idx, t in enumerate(faq_topics):
         service_faqs.append({
             'question': t['Q'],
             'answer': t['A'],
-            'order': idx + 1
+            'order': f_idx + 1
         })
         
     raw_price = int(price.replace('₹', '').replace(',', ''))
@@ -537,11 +545,15 @@ for s in services:
         'name': name,
         'slug': slug,
         'icon': icon,
+        'small_icon': small_icon,
+        'thumbnail': thumbnail,
         'focus_keywords': kw,
         'seo_title': seo_title,
         'meta_description': meta_desc,
         'short_description': short_desc,
         'brand': brand,
+        'featured': featured,
+        'display_order': display_order,
         'price': price,
         'generic_content': generic_content,
         'features': s['features'],
@@ -567,7 +579,8 @@ for s in services:
     json_data.append(json_item)
     
     csv_rows.append([
-        name, slug, icon, brand, price, kw, seo_title, meta_desc, short_desc, generic_content,
+        name, slug, icon, small_icon, thumbnail, brand, featured, display_order, price, kw,
+        seo_title, meta_desc, short_desc, generic_content,
         "\n".join(s['features']), "\n".join(s['process']),
         amritsar_title, amritsar_meta, amritsar_content, amritsar_cta, json.dumps(service_faqs, ensure_ascii=False),
         delhi_title, delhi_meta, delhi_content, delhi_cta, json.dumps(service_faqs, ensure_ascii=False),

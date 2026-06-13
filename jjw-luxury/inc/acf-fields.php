@@ -75,6 +75,8 @@ function jjwz_register_acf_fields() {
        ───────────────────────────────────────────────────────────────────── */
     $service_fields = [
         [ 'key' => 'field_svc_icon',          'label' => 'Icon Emoji',            'name' => 'svc_icon',         'type' => 'text', 'placeholder' => '💍' ],
+        [ 'key' => 'field_svc_small_icon',    'label' => 'Small Icon (Emoji/SVG)', 'name' => 'svc_small_icon',   'type' => 'text', 'placeholder' => '💍' ],
+        [ 'key' => 'field_svc_thumbnail',     'label' => 'Thumbnail Image',       'name' => 'svc_thumbnail',    'type' => 'image', 'return_format' => 'array' ],
         [ 'key' => 'field_svc_brand',         'label' => 'Service Brand',         'name' => 'svc_brand',        'type' => 'select', 'choices' => [ 'jjw' => 'JJ WeddingZ', 'tbs' => 'The Baby StudioZ', 'both' => 'Both Brands' ], 'default_value' => 'both' ],
         [ 'key' => 'field_svc_hero_image',    'label' => 'Hero Image',            'name' => 'svc_hero_image',   'type' => 'image', 'return_format' => 'array' ],
         [ 'key' => 'field_svc_cover_image',   'label' => 'Cover Image',           'name' => 'svc_cover_image',  'type' => 'image', 'return_format' => 'array' ],

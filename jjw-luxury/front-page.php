@@ -265,40 +265,66 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                 $i = 0;
                 while ( $services_q->have_posts() ) : $services_q->the_post();
                     $post_id    = get_the_ID();
-                    $icon       = jjwz_get_option( 'svc_icon', '💍', $post_id );
-                    $short_desc = jjwz_get_option( 'svc_short_desc', '', $post_id );
+                    
+                    // Retrieve Small Icon
+                    $small_icon = get_post_meta( $post_id, 'svc_small_icon', true );
+                    if ( empty( $small_icon ) ) {
+                        $small_icon = get_post_meta( $post_id, 'svc_icon', true ) ?: '💍';
+                    }
+                    
+                    // Retrieve Thumbnail
+                    $thumbnail_img = get_post_meta( $post_id, 'svc_thumbnail', true );
+                    if ( empty( $thumbnail_img ) ) {
+                        $thumbnail_img = get_post_meta( $post_id, 'svc_cover_image', true );
+                    }
+                    if ( empty( $thumbnail_img ) ) {
+                        $thumbnail_img = get_post_meta( $post_id, 'svc_hero_image', true );
+                    }
+                    
+                    $thumb_url = '';
+                    if ( is_array( $thumbnail_img ) && ! empty( $thumbnail_img['url'] ) ) {
+                        $thumb_url = $thumbnail_img['url'];
+                    } elseif ( is_numeric( $thumbnail_img ) ) {
+                        $thumb_url = wp_get_attachment_image_url( $thumbnail_img, 'medium_large' );
+                    } elseif ( is_string( $thumbnail_img ) && $thumbnail_img ) {
+                        $thumb_url = $thumbnail_img;
+                    }
+                    if ( ! $thumb_url ) {
+                        $thumb_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+                    }
+                    if ( ! $thumb_url ) {
+                        $thumb_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+                    }
+                    
+                    $starting_price = get_post_meta( $post_id, 'svc_starting_price', true );
+                    $short_desc = get_post_meta( $post_id, 'svc_short_desc', true );
                     if ( empty( $short_desc ) ) {
                         $short_desc = wp_trim_words( get_the_excerpt(), 18 );
                     }
                     ?>
-                    <div class="service-card" data-anim="fade-up" data-anim-delay="<?php echo $i * 80; ?>">
-                        <div class="service-card__icon"><?php echo esc_html( $icon ); ?></div>
-                        <h3 class="service-card__title"><?php the_title(); ?></h3>
-                        <p class="service-card__desc"><?php echo esc_html( $short_desc ); ?></p>
-                        <a href="<?php the_permalink(); ?>" class="service-card__link btn btn--ghost">Learn More</a>
+                    <div class="luxury-compact-card" data-anim="fade-up" data-anim-delay="<?php echo $i * 80; ?>">
+                        <div class="luxury-compact-card__media">
+                            <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" class="luxury-compact-card__img" loading="lazy">
+                            <div class="luxury-compact-card__overlay"></div>
+                            <div class="luxury-compact-card__icon"><?php echo esc_html( $small_icon ); ?></div>
+                        </div>
+                        <div class="luxury-compact-card__body">
+                            <h3 class="luxury-compact-card__title"><?php the_title(); ?></h3>
+                            <p class="luxury-compact-card__desc"><?php echo esc_html( $short_desc ); ?></p>
+                            <?php if ( $starting_price ) : ?>
+                                <span class="luxury-compact-card__price"><?php echo esc_html( $starting_price ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="luxury-compact-card__footer">
+                            <a href="<?php the_permalink(); ?>" class="luxury-compact-card__link">
+                                Explore Service <span class="arrow">&rarr;</span>
+                            </a>
+                        </div>
                     </div>
                     <?php
                     $i++;
                 endwhile;
                 wp_reset_postdata();
-            else :
-                // Default placeholders if CPT is empty
-                $default_services = [
-                    [ 'icon' => '💍', 'title' => 'Luxury Wedding Photography', 'desc' => 'Candid, documentary, and editorial wedding coverage that captures pure, unscripted emotion.',            'url' => home_url('/services/wedding-photography') ],
-                    [ 'icon' => '🎬', 'title' => 'Pre-Wedding Storytelling',   'desc' => 'Fine-art pre-wedding shoots at iconic locations that immortalize your unique love story.',              'url' => home_url('/services/pre-wedding') ],
-                    [ 'icon' => '🎥', 'title' => 'Cinematography & Films',     'desc' => 'Sweeping cinematic films in 16:9 wide and 9:16 vertical formats — crafted for generations.',             'url' => home_url('/services/cinematography') ],
-                    [ 'icon' => '👶', 'title' => 'Maternity & Newborn',        'desc' => 'Gentle, safe, and emotionally rich maternity and newborn sessions with medical-grade sanitization.',     'url' => home_url('/services/maternity-newborn') ],
-                ];
-                foreach ( $default_services as $i => $svc ) :
-                ?>
-                <div class="service-card" data-anim="fade-up" data-anim-delay="<?php echo $i * 80; ?>">
-                    <div class="service-card__icon"><?php echo $svc['icon']; ?></div>
-                    <h3 class="service-card__title"><?php echo esc_html( $svc['title'] ); ?></h3>
-                    <p class="service-card__desc"><?php echo esc_html( $svc['desc'] ); ?></p>
-                    <a href="<?php echo esc_url( $svc['url'] ); ?>" class="service-card__link btn btn--ghost">Learn More</a>
-                </div>
-                <?php
-                endforeach;
             endif;
             ?>
         </div>
