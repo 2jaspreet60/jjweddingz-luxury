@@ -36,6 +36,7 @@ add_action( 'plugins_loaded', function() {
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-faq.php';
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-portfolio.php';
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-services.php';
+    require_once JJWZ_CORE_DIR . 'includes/class-service-importer-exporter.php';
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-films.php';
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-packages.php';
     require_once JJWZ_CORE_DIR . 'includes/class-cpt-testimonials.php';
@@ -201,8 +202,8 @@ add_action( 'admin_init', function() {
 add_action( 'init', 'jjwz_add_rewrite_rules' );
 function jjwz_add_rewrite_rules() {
     add_rewrite_rule(
-        '^([a-z0-9-]+)-photographer-in-([a-z0-9-]+)/?$',
-        'index.php?jjwz_service_slug=$matches[1]&jjwz_location_slug=$matches[2]',
+        '^([a-z0-9-]+)-(photographer|photoshoot|cinematographer)-in-([a-z0-9-]+)/?$',
+        'index.php?jjwz_service_slug=$matches[1]&jjwz_location_slug=$matches[3]',
         'top'
     );
 }

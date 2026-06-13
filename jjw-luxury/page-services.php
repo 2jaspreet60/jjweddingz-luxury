@@ -1,9 +1,10 @@
 <?php
 /**
- * page-services.php — Premium Services Page
+ * page-services.php — Premium Services Dynamic Archive Page
  * Template Name: Services
  *
  * @package JJWeddingZ
+ * @version 1.2.0
  */
 
 get_header();
@@ -17,175 +18,273 @@ if ( function_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->db-
     return;
 }
 
-/* ─── Dynamic field values ────────────────────────────────────────────── */
 $post_id        = get_the_ID();
 $page_headline  = jjwz_get_option( 'jjwz_services_headline', 'Our <em>Premium Services</em>', $post_id );
-$service_blocks = jjwz_get_option( 'jjwz_service_blocks', [], $post_id );
-$wa_link        = 'https://wa.me/' . preg_replace( '/[^0-9]/', '', jjwz_get_option( 'jjwz_whatsapp_number', '919876543210' ) );
+$page_desc      = jjwz_get_option( 'jjwz_services_sub', 'Exquisite visual storytelling across distinct photography disciplines. Meticulously documented with natural compositions and true color science.', $post_id );
 
-// Default service blocks when no ACF data
-if ( empty( $service_blocks ) ) {
-    $service_blocks = [
+// Multi-brand context lookup
+$active_brand = get_option( 'jjw_active_brand', 'jjw' );
+
+// Query all services ordered by display order
+$services_query = new WP_Query( [
+    'post_type'      => 'jjwz_service',
+    'posts_per_page' => -1,
+    'post_status'    => 'publish',
+    'meta_key'       => 'svc_display_order',
+    'orderby'        => 'meta_value_num',
+    'order'          => 'ASC',
+    'meta_query'     => [
+        'relation' => 'OR',
         [
-            'svc_title' => 'Luxury Wedding Photography',
-            'svc_desc'  => '<p>Selecting a wedding photographer is one of the most vital decisions you will make. Wedding photography has evolved; candid moments are now the staple of a complete wedding story. Our discreet professionals capture emotions in their purest forms while you and your guests remain completely immersed in the celebration.</p><p>We cover all wedding functions — Sanchao, Mehendi, Sangeet, Anand Karaj, and the Reception — with a full documentary approach that preserves every laugh, every tear, and every quiet in-between moment that makes your story uniquely yours.</p>',
-            'svc_image' => null,
-            'svc_slug'  => 'wedding-photography',
+            'key'     => 'svc_brand',
+            'value'   => $active_brand,
+            'compare' => '=',
         ],
         [
-            'svc_title' => 'Pre-Wedding Storytelling',
-            'svc_desc'  => '<p>A pre-wedding shoot immortalizes your love story in a place close to your heart, away from prying eyes. It is not just about taking pictures; it is about telling your unique narrative in a way that makes you most comfortable. This session helps you build rapport with our team, ensuring absolute ease on the big day.</p><p>From the spiritual grandeur of Amritsar\'s heritage sites to the architectural majesty of Lutyens\' Delhi, we craft conceptual fine-art sessions that mirror international editorial publications.</p>',
-            'svc_image' => null,
-            'svc_slug'  => 'pre-wedding',
+            'key'     => 'svc_brand',
+            'value'   => 'both',
+            'compare' => '=',
         ],
         [
-            'svc_title' => 'Cinematography & Films',
-            'svc_desc'  => '<p>Wedding cinematography is the art of documenting a marriage through a highly cinematic lens. Our creative team utilizes advanced lighting, diverse camera angles, and seamless editing to craft sweeping visual narratives. We deliver standard wide formats and optimized 9:16 vertical reels engineered to captivate audiences.</p><p>Shot on Sony FX3 cinema systems with G Master optics, our films feature authentic colour science, dynamic range, and Dolby-compatible audio — a true heirloom that will move generations.</p>',
-            'svc_image' => null,
-            'svc_slug'  => 'cinematography',
-        ],
-        [
-            'svc_title' => 'Maternity & Baby Shoots (Newborn)',
-            'svc_desc'  => '<p>The journey to parenthood is magical, fleeting, and deeply personal. Our maternity and newborn photography services are designed with the utmost care, patience, and safety in mind. We capture the serene beauty of your pregnancy and the delicate, precious first days of your baby\'s life.</p><p>Our dedicated studio maintains medical-grade sanitization protocols and precise climate control to ensure your newborn\'s complete safety and comfort throughout every session.</p>',
-            'svc_image' => null,
-            'svc_slug'  => 'maternity-newborn',
-        ],
-    ];
+            'key'     => 'svc_brand',
+            'compare' => 'NOT EXISTS',
+        ]
+    ]
+] );
+?>
+
+<style>
+/* Service Archive Specific Styles */
+.services-section {
+    background-color: var(--clr-ivory);
+    padding-bottom: var(--sp-5xl);
+}
+.services-luxury-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--sp-xl);
+    margin-top: var(--sp-2xl);
+}
+.luxury-service-card {
+    background: var(--clr-warm-white);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    border: 1px solid var(--clr-border);
+    position: relative;
+}
+.luxury-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--clr-gold);
+}
+.luxury-service-card__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--clr-border);
+}
+.luxury-service-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+.luxury-service-card:hover .luxury-service-card__img {
+    transform: scale(1.06);
+}
+.luxury-service-card__icon {
+    position: absolute;
+    bottom: var(--sp-md);
+    right: var(--sp-md);
+    background: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(8px);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 2;
+}
+.luxury-service-card__body {
+    padding: var(--sp-xl);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.luxury-service-card__title {
+    font-size: var(--text-xl);
+    font-weight: 500;
+    color: var(--clr-obsidian);
+    margin-bottom: var(--sp-sm);
+    line-height: 1.25;
+}
+.luxury-service-card__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--clr-mist);
+    line-height: 1.6;
+    margin-bottom: var(--sp-lg);
+    flex-grow: 1;
+}
+.luxury-service-card__footer {
+    padding: var(--sp-xl);
+    padding-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+}
+.luxury-service-card__price {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--clr-gold);
+}
+.luxury-service-card__links {
+    display: flex;
+    gap: var(--sp-md);
+    align-items: center;
+}
+.luxury-service-card__link-more {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--clr-obsidian);
+    letter-spacing: 0.05em;
+    transition: color var(--transition-fast);
+}
+.luxury-service-card__link-more:hover {
+    color: var(--clr-gold);
+}
+.luxury-service-card__link-portfolio {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--clr-mist);
+    border-bottom: 1px dotted var(--clr-mist);
+    transition: all var(--transition-fast);
+}
+.luxury-service-card__link-portfolio:hover {
+    color: var(--clr-gold);
+    border-bottom-color: var(--clr-gold);
 }
 
-$service_icons = [ '💍', '🎬', '🎥', '👶' ];
-?>
+@media (max-width: 768px) {
+    .services-luxury-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <!-- ═══════════════════════════════════════════════════════════
      SERVICES HERO
      ═══════════════════════════════════════════════════════════ -->
-<section class="services-hero" aria-label="Services hero">
-    <div class="container services-hero__inner">
+<section class="services-hero" aria-label="Services hero" style="background: var(--clr-cream); padding-block: var(--sp-4xl);">
+    <div class="container services-hero__inner text-center">
         <?php jjwz_breadcrumb(); ?>
-        <span class="eyebrow">What We Do</span>
-        <h1 class="services-hero__headline display-title"><?php echo wp_kses_post( $page_headline ); ?></h1>
-        <p class="lead services-hero__sub" style="margin-top:1.5rem;">Four distinct disciplines. One unwavering philosophy: authentic, unretouched, emotionally true visual storytelling.</p>
+        <span class="eyebrow">Our Photography Disciplines</span>
+        <h1 class="services-hero__headline display-title" style="margin-bottom: var(--sp-md);"><?php echo wp_kses_post( $page_headline ); ?></h1>
+        <p class="lead services-hero__sub" style="margin-inline: auto; max-width: 750px;"><?php echo esc_html( $page_desc ); ?></p>
     </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
-     SERVICE QUICK NAV
+     SERVICES DYNAMIC GRID
      ═══════════════════════════════════════════════════════════ -->
-<nav class="services-quick-nav" aria-label="Jump to service">
+<section class="services-section section" aria-label="Photography services collections">
     <div class="container">
-        <ul class="services-quick-nav__list">
-            <?php foreach ( $service_blocks as $i => $svc ) : ?>
-            <li>
-                <a href="#service-<?php echo $i + 1; ?>" class="services-quick-nav__link" id="quick-nav-<?php echo $i + 1; ?>">
-                    <span><?php echo $service_icons[ $i ] ?? '📸'; ?></span>
-                    <?php echo esc_html( $svc['svc_title'] ); ?>
-                </a>
-            </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-</nav>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SERVICE BLOCKS
-     ═══════════════════════════════════════════════════════════ -->
-<?php foreach ( $service_blocks as $idx => $svc ) :
-    $is_even = ( $idx % 2 === 0 );
-    $img     = isset( $svc['svc_image']['url'] ) ? $svc['svc_image']['url']  : null;
-    $img_alt = isset( $svc['svc_image']['alt'] ) ? $svc['svc_image']['alt']  : esc_html( $svc['svc_title'] );
-    $slug    = $svc['svc_slug'] ?? '';
-    $anchor  = 'service-' . ( $idx + 1 );
-?>
-<section class="service-block section <?php echo $is_even ? 'service-block--default' : 'service-block--alt'; ?>"
-         id="<?php echo esc_attr( $anchor ); ?>"
-         aria-label="<?php echo esc_attr( $svc['svc_title'] ); ?>">
-    <div class="container">
-        <div class="service-block__grid <?php echo $is_even ? '' : 'service-block__grid--reversed'; ?>">
-
-            <!-- Text Content -->
-            <div class="service-block__text" data-anim="fade-right">
-                <span class="service-block__number eyebrow"><?php echo str_pad( $idx + 1, 2, '0', STR_PAD_LEFT ); ?></span>
-                <h2 class="service-block__title section-title"><?php echo esc_html( $svc['svc_title'] ); ?></h2>
-                <div class="service-block__desc lead">
-                    <?php echo wp_kses_post( $svc['svc_desc'] ); ?>
-                </div>
-                <div class="service-block__features">
-                    <?php
-                    $feature_sets = [
-                        [ 'Full Function Coverage (Sanchao to Reception)', 'Pre-Event Consultation', 'Dual-Card Backup on Every Unit', 'Delivery: 6–8 Weeks' ],
-                        [ 'Custom Concept Development', 'Location Scouting Included', 'Multiple Outfit Changes', 'Premium Editing & Colour Grading' ],
-                        [ '4K Cinema Quality Footage', 'Sony FX3 Cinema Systems', 'Cinematic Colour Grading', '16:9 Wide + 9:16 Vertical Reels' ],
-                        [ 'Medical-Grade Sanitized Studio', 'Climate-Controlled Environment', 'Certified Newborn Posing', 'Premium Props & Wraps' ],
-                    ];
-                    $features = $feature_sets[ $idx ] ?? [];
-                    foreach ( $features as $feat ) :
-                    ?>
-                    <div class="service-feature-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--clr-gold)" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span><?php echo esc_html( $feat ); ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="service-block__ctas">
-                    <a href="<?php echo esc_url( $wa_link ); ?>"
-                       class="btn btn--primary" id="svc-inquire-<?php echo $idx + 1; ?>"
-                       target="_blank" rel="noopener noreferrer">
-                        Inquire About This Service
-                    </a>
-                    <?php if ( $slug ) : ?>
-                    <a href="<?php echo esc_url( home_url( '/services/' . $slug ) ); ?>"
-                       class="btn btn--ghost" id="svc-more-<?php echo $idx + 1; ?>">
-                        Full Details
-                    </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Image / Placeholder -->
-            <div class="service-block__media" data-anim="fade-left">
-                <div class="service-block__image-wrap">
-                    <?php 
-                    $service_img_url = $img;
-                    if ( empty( $service_img_url ) ) {
-                        $service_img_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+        
+        <?php if ( $services_query->have_posts() ) : ?>
+            <div class="services-luxury-grid">
+                <?php while ( $services_query->have_posts() ) : $services_query->the_post(); 
+                    $curr_post_id = get_the_ID();
+                    $slug         = get_post_field( 'post_name', $curr_post_id );
+                    $icon         = get_post_meta( $curr_post_id, 'svc_icon', true ) ?: '📸';
+                    $price        = get_post_meta( $curr_post_id, 'svc_starting_price', true );
+                    $short_desc   = get_post_meta( $curr_post_id, 'svc_short_desc', true ) ?: get_the_excerpt();
+                    
+                    // Fetch Cover Image or fallback to Hero or Placeholder
+                    $cover_img = get_post_meta( $curr_post_id, 'svc_cover_image', true );
+                    if ( empty( $cover_img ) ) {
+                        $cover_img = get_post_meta( $curr_post_id, 'svc_hero_image', true );
                     }
-                    if ( empty( $service_img_url ) ) {
-                        $service_img_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+                    
+                    $cover_url = '';
+                    if ( is_array( $cover_img ) && ! empty( $cover_img['url'] ) ) {
+                        $cover_url = $cover_img['url'];
+                    } elseif ( is_numeric( $cover_img ) ) {
+                        $cover_url = wp_get_attachment_image_url( $cover_img, 'large' );
+                    } elseif ( is_string( $cover_img ) && $cover_img ) {
+                        $cover_url = $cover_img;
                     }
-                    ?>
-                    <img src="<?php echo esc_url( $service_img_url ); ?>"
-                         alt="<?php echo esc_attr( $img_alt ); ?>"
-                         loading="<?php echo $idx === 0 ? 'eager' : 'lazy'; ?>"
-                         class="service-block__img">
-                    <div class="service-block__image-tag">
-                        <span><?php echo esc_html( $svc['svc_title'] ); ?></span>
-                    </div>
-                </div>
-            </div>
+                    
+                    if ( ! $cover_url ) {
+                        $cover_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+                    }
+                    if ( ! $cover_url ) {
+                        $cover_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+                    }
 
-        </div>
+                    $portfolio_link = home_url( '/service-category/' . $slug . '/' );
+                ?>
+                <article class="luxury-service-card">
+                    <div>
+                        <div class="luxury-service-card__media">
+                            <img src="<?php echo esc_url( $cover_url ); ?>" alt="<?php the_title_attribute(); ?>" class="luxury-service-card__img" loading="lazy">
+                            <div class="luxury-service-card__icon"><?php echo esc_html( $icon ); ?></div>
+                        </div>
+                        <div class="luxury-service-card__body">
+                            <h2 class="luxury-service-card__title"><?php the_title(); ?></h2>
+                            <p class="luxury-service-card__desc"><?php echo esc_html( wp_strip_all_tags( $short_desc ) ); ?></p>
+                        </div>
+                    </div>
+                    
+                    <div class="luxury-service-card__footer">
+                        <?php if ( $price ) : ?>
+                            <span class="luxury-service-card__price"><?php echo esc_html( $price ); ?></span>
+                        <?php else : ?>
+                            <span></span>
+                        <?php endif; ?>
+                        
+                        <div class="luxury-service-card__links">
+                            <a href="<?php the_permalink(); ?>" class="luxury-service-card__link-more">Learn More</a>
+                            <a href="<?php echo esc_url( $portfolio_link ); ?>" class="luxury-service-card__link-portfolio">View Portfolio</a>
+                        </div>
+                    </div>
+                </article>
+                <?php endwhile; wp_reset_postdata(); ?>
+            </div>
+        <?php else : ?>
+            <div class="text-center" style="padding: 4rem 2rem;">
+                <p class="lead">No dynamic photography services registered yet. Please check back later or run the installer notice in WP Admin.</p>
+            </div>
+        <?php endif; ?>
+
     </div>
 </section>
-
-<?php if ( $idx < count( $service_blocks ) - 1 ) : ?>
-<div class="services-divider" aria-hidden="true"><span class="services-divider__line"></span></div>
-<?php endif; ?>
-
-<?php endforeach; ?>
 
 <!-- ═══════════════════════════════════════════════════════════
      WHY CHOOSE US
      ═══════════════════════════════════════════════════════════ -->
-<section class="why-us section" style="background:var(--clr-cream);" aria-label="Why choose us">
+<section class="why-us section" style="background:var(--clr-cream); border-top: 1px solid var(--clr-border);" aria-label="Why choose us">
     <div class="container">
-        <div class="text-center" style="margin-bottom:3rem;">
-            <span class="eyebrow">Why JJ WeddingZ</span>
-            <h2 class="section-title">The <em>Difference</em> Is<br>in the Detail</h2>
+        <div class="text-center" style="margin-bottom:4rem;">
+            <span class="eyebrow">Why JJ WeddingZ Difference</span>
+            <h2 class="section-title">The <em>Unwavering Standards</em> of<br>Our Creative Process</h2>
         </div>
         <div class="why-us__grid">
             <?php
             $reasons = [
-                [ 'icon' => '🛡️', 'title' => 'Identity Protection Guarantee',  'desc' => 'We sign a formal pledge: zero face-swapping, zero skin whitening, zero artificial identity alteration. Your face, your story.' ],
+                [ 'icon' => '🛡️', 'title' => '100% Identity Protection',  'desc' => 'We sign a formal pledge: zero face-swapping, zero skin whitening, zero artificial identity alteration. Your face, your story.' ],
                 [ 'icon' => '💾', 'title' => 'Dual-Card Data Redundancy',       'desc' => 'All camera units record to two memory cards simultaneously. Your memories are protected from the moment of capture.' ],
                 [ 'icon' => '🎯', 'title' => 'Limited Client Roster',           'desc' => 'We accept a strictly limited number of commissions per season to guarantee every client receives our complete dedication.' ],
                 [ 'icon' => '✈️', 'title' => 'Destination Wedding Ready',       'desc' => 'Two branches, one vision — and passports always ready. We travel across India and internationally for your love story.' ],
@@ -205,7 +304,7 @@ $service_icons = [ '💍', '🎬', '🎥', '👶' ];
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
-     FULL FAQ — BOTH CATEGORIES
+     DYNAMIC FAQ COMPONENT
      ═══════════════════════════════════════════════════════════ -->
 <section class="services-faq section" aria-label="Services FAQ">
     <div class="container">
@@ -216,7 +315,7 @@ $service_icons = [ '💍', '🎬', '🎥', '👶' ];
 
         <div class="services-faq__tabs" role="tablist" aria-label="FAQ categories">
             <button class="faq-tab-btn is-active" data-tab="wedding" role="tab" aria-selected="true" id="faq-tab-wedding">Wedding &amp; Pre-Wedding</button>
-            <button class="faq-tab-btn" data-tab="maternity" role="tab" aria-selected="false" id="faq-tab-maternity">Maternity, Baby &amp; Newborn</button>
+            <button class="faq-tab-btn" data-tab="maternity" role="tab" aria-selected="false" id="faq-tab-maternity">Maternity &amp; Baby Shoots</button>
         </div>
 
         <div class="services-faq__panels">

@@ -73,23 +73,104 @@ function jjwz_register_acf_fields() {
     /* ─────────────────────────────────────────────────────────────────────
        3. SERVICES POST TYPE FIELDS
        ───────────────────────────────────────────────────────────────────── */
+    $service_fields = [
+        [ 'key' => 'field_svc_icon',          'label' => 'Icon Emoji',            'name' => 'svc_icon',         'type' => 'text', 'placeholder' => '💍' ],
+        [ 'key' => 'field_svc_brand',         'label' => 'Service Brand',         'name' => 'svc_brand',        'type' => 'select', 'choices' => [ 'jjw' => 'JJ WeddingZ', 'tbs' => 'The Baby StudioZ', 'both' => 'Both Brands' ], 'default_value' => 'both' ],
+        [ 'key' => 'field_svc_hero_image',    'label' => 'Hero Image',            'name' => 'svc_hero_image',   'type' => 'image', 'return_format' => 'array' ],
+        [ 'key' => 'field_svc_cover_image',   'label' => 'Cover Image',           'name' => 'svc_cover_image',  'type' => 'image', 'return_format' => 'array' ],
+        [ 'key' => 'field_svc_gallery',       'label' => 'Service Gallery',       'name' => 'svc_gallery',      'type' => 'gallery', 'return_format' => 'array' ],
+        [ 'key' => 'field_svc_short_desc',    'label' => 'Short Description',     'name' => 'svc_short_desc',   'type' => 'textarea', 'rows' => 3 ],
+        [ 'key' => 'field_svc_seo_content',   'label' => 'Full SEO Content',      'name' => 'svc_seo_content',  'type' => 'wysiwyg' ],
+        [ 'key' => 'field_svc_pricing_title', 'label' => 'Pricing Section Title', 'name' => 'svc_pricing_title', 'type' => 'text', 'placeholder' => 'Exclusive Packages' ],
+        [ 'key' => 'field_svc_pricing_desc',  'label' => 'Pricing Section Desc',  'name' => 'svc_pricing_desc',  'type' => 'textarea', 'rows' => 3 ],
+        [ 'key' => 'field_svc_starting_price','label' => 'Starting Price Label',  'name' => 'svc_starting_price', 'type' => 'text', 'placeholder' => 'Starting from ₹75,000' ],
+        [ 'key' => 'field_svc_packages',      'label' => 'Map Dynamic Packages',  'name' => 'svc_packages',     'type' => 'post_object', 'post_type' => [ 'jjwz_package' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
+        [ 'key' => 'field_svc_faqs',          'label' => 'Map Related FAQs',      'name' => 'svc_faqs',         'type' => 'post_object', 'post_type' => [ 'jjwz_faq' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
+        [ 'key' => 'field_svc_featured',      'label' => 'Featured on Home',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
+        [ 'key' => 'field_svc_display_order', 'label' => 'Display Order',         'name' => 'svc_display_order','type' => 'number', 'default_value' => 0 ],
+        [ 'key' => 'field_svc_key_highlights','label' => 'Key Highlights',        'name' => 'svc_key_highlights', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 highlight per line' ],
+        [ 'key' => 'field_svc_features_list', 'label' => 'Features List',         'name' => 'svc_features_list', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 feature per line' ],
+        [ 'key' => 'field_svc_process_steps', 'label' => 'Process Steps',         'name' => 'svc_process_steps', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 step per line' ],
+        [ 'key' => 'field_svc_seo_title',     'label' => 'Service SEO Title',     'name' => 'svc_seo_title',    'type' => 'text' ],
+        [ 'key' => 'field_svc_seo_desc',      'label' => 'Service SEO Meta Desc', 'name' => 'svc_seo_desc',     'type' => 'textarea', 'rows' => 3 ],
+        [ 'key' => 'field_svc_focus_keywords','label' => 'Focus Keywords',        'name' => 'svc_focus_keywords','type' => 'text' ],
+    ];
+
+    // Dynamic city fields
+    $cities = [
+        'amritsar' => 'Amritsar',
+        'delhi'    => 'Delhi NCR',
+    ];
+    $branches_raw = get_option( 'jjw_branches', '[]' );
+    $branches = json_decode( $branches_raw, true ) ?: [];
+    foreach ( $branches as $b ) {
+        if ( ! empty( $b['name'] ) ) {
+            $city_slug = sanitize_title( $b['name'] );
+            if ( ! isset( $cities[ $city_slug ] ) ) {
+                $cities[ $city_slug ] = $b['name'];
+            }
+        }
+    }
+    
+    $future_cities = [
+        'ludhiana' => 'Ludhiana',
+        'jalandhar' => 'Jalandhar',
+        'chandigarh' => 'Chandigarh',
+        'mohali' => 'Mohali',
+        'patiala' => 'Patiala',
+        'bathinda' => 'Bathinda'
+    ];
+    foreach ( $future_cities as $slug => $name ) {
+        if ( ! isset( $cities[ $slug ] ) ) {
+            $cities[ $slug ] = $name;
+        }
+    }
+
+    foreach ( $cities as $slug => $name ) {
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_tab',
+            'label' => '📍 ' . $name . ' Overrides',
+            'type'  => 'tab',
+        ];
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_content',
+            'label' => $name . ' Local Content',
+            'name'  => 'svc_' . $slug . '_content',
+            'type'  => 'wysiwyg',
+        ];
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_seo_title',
+            'label' => $name . ' SEO Title',
+            'name'  => 'svc_' . $slug . '_seo_title',
+            'type'  => 'text',
+        ];
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_meta_desc',
+            'label' => $name . ' Meta Description',
+            'name'  => 'svc_' . $slug . '_meta_desc',
+            'type'  => 'textarea',
+            'rows'  => 3,
+        ];
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_cta',
+            'label' => $name . ' Local CTA',
+            'name'  => 'svc_' . $slug . '_cta',
+            'type'  => 'wysiwyg',
+        ];
+        $service_fields[] = [
+            'key'   => 'field_svc_' . $slug . '_faqs',
+            'label' => $name . ' Local FAQs (JSON)',
+            'name'  => 'svc_' . $slug . '_faqs',
+            'type'  => 'textarea',
+            'rows'  => 6,
+            'placeholder' => '[{"question": "...", "answer": "..."}]',
+        ];
+    }
+
     acf_add_local_field_group( [
         'key'    => 'group_jjwz_service',
         'title'  => 'Service Fields',
-        'fields' => [
-            [ 'key' => 'field_svc_icon',         'label' => 'Icon Emoji',            'name' => 'svc_icon',         'type' => 'text', 'placeholder' => '💍' ],
-            [ 'key' => 'field_svc_hero_image',   'label' => 'Hero Image',            'name' => 'svc_hero_image',   'type' => 'image', 'return_format' => 'array' ],
-            [ 'key' => 'field_svc_gallery',      'label' => 'Service Gallery',       'name' => 'svc_gallery',      'type' => 'gallery', 'return_format' => 'array' ],
-            [ 'key' => 'field_svc_short_desc',   'label' => 'Short Description',     'name' => 'svc_short_desc',   'type' => 'textarea', 'rows' => 3 ],
-            [ 'key' => 'field_svc_seo_content',  'label' => 'Full SEO Content',      'name' => 'svc_seo_content',  'type' => 'wysiwyg' ],
-            [ 'key' => 'field_svc_pricing_title','label' => 'Pricing Section Title', 'name' => 'svc_pricing_title', 'type' => 'text', 'placeholder' => 'Exclusive Packages' ],
-            [ 'key' => 'field_svc_pricing_desc', 'label' => 'Pricing Section Desc',  'name' => 'svc_pricing_desc',  'type' => 'textarea', 'rows' => 3 ],
-            [ 'key' => 'field_svc_faqs',         'label' => 'Map Related FAQs',      'name' => 'svc_faqs',         'type' => 'post_object', 'post_type' => [ 'jjwz_faq' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
-            [ 'key' => 'field_svc_featured',     'label' => 'Featured on Home',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
-            [ 'key' => 'field_svc_display_order','label' => 'Display Order',         'name' => 'svc_display_order','type' => 'number', 'default_value' => 0 ],
-            [ 'key' => 'field_svc_seo_title',    'label' => 'Service SEO Title',     'name' => 'svc_seo_title',    'type' => 'text' ],
-            [ 'key' => 'field_svc_seo_desc',     'label' => 'Service SEO Meta Desc', 'name' => 'svc_seo_desc',     'type' => 'textarea', 'rows' => 3 ],
-        ],
+        'fields' => $service_fields,
         'location' => [ [ [ 'param' => 'post_type', 'operator' => '==', 'value' => 'jjwz_service' ] ] ],
     ] );
 
@@ -115,6 +196,7 @@ function jjwz_register_acf_fields() {
             [ 'key' => 'field_portfolio_status',       'label' => 'Production Status',   'name' => 'portfolio_status',       'type' => 'select', 'choices' => [ 'scheduled' => 'Scheduled', 'shot' => 'Shot', 'edited' => 'Edited', 'delivered' => 'Delivered' ], 'default_value' => 'delivered' ],
             [ 'key' => 'field_portfolio_featured',     'label' => 'Featured Story',      'name' => 'portfolio_featured',     'type' => 'true_false', 'ui' => 1 ],
             [ 'key' => 'field_portfolio_display_order','label' => 'Display Order',       'name' => 'portfolio_display_order','type' => 'number', 'default_value' => 0 ],
+            [ 'key' => 'field_portfolio_services',      'label' => 'Explicit Service Mapping', 'name' => 'portfolio_services',     'type' => 'post_object', 'post_type' => [ 'jjwz_service' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
         ],
         'location' => [ [ [ 'param' => 'post_type', 'operator' => '==', 'value' => 'jjwz_portfolio' ] ] ],
     ] );
@@ -148,6 +230,7 @@ function jjwz_register_acf_fields() {
             [ 'key' => 'field_package_album_included',     'label' => 'Physical Album Include','name' => 'package_album_included',     'type' => 'true_false', 'ui' => 1 ],
             [ 'key' => 'field_package_delivery_timeline', 'label' => 'Delivery Timeline',    'name' => 'package_delivery_timeline', 'type' => 'text', 'placeholder' => '6-8 weeks' ],
             [ 'key' => 'field_package_featured',          'label' => 'Featured Package',     'name' => 'package_featured',          'type' => 'true_false', 'ui' => 1 ],
+            [ 'key' => 'field_package_service',           'label' => 'Map to Service',       'name' => 'package_service',           'type' => 'post_object', 'post_type' => [ 'jjwz_service' ], 'allow_null' => 1, 'multiple' => 0, 'return_format' => 'id' ],
         ],
         'location' => [ [ [ 'param' => 'post_type', 'operator' => '==', 'value' => 'jjwz_package' ] ] ],
     ] );
