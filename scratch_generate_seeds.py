@@ -452,7 +452,7 @@ def generate_city_text(name, city_name, contexts):
 json_data = []
 csv_headers = [
     'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
-    'Homepage Featured', 'Display Order', 'Starting Price', 'Focus Keywords', 
+    'Homepage Featured', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
     'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
     'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
     'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -460,6 +460,54 @@ csv_headers = [
     'Packages JSON'
 ]
 csv_rows = []
+
+# Reorder the services array to requested display sequence:
+slug_order = [
+    'wedding-photography',
+    'wedding-cinematography',
+    'pre-wedding-photography',
+    'destination-wedding-photography',
+    'maternity-photoshoot',
+    'newborn-photoshoot',
+    'baby-photoshoot',
+    'cake-smash-photoshoot',
+    'first-birthday-photoshoot',
+    'kids-photography',
+    'family-photography',
+    'anniversary-photoshoot',
+    'couple-photoshoot',
+    'studio-photography',
+    'outdoor-photography'
+]
+
+category_groups = {
+    'wedding-photography': 'wedding',
+    'wedding-cinematography': 'wedding',
+    'pre-wedding-photography': 'wedding',
+    'destination-wedding-photography': 'wedding',
+    'couple-photoshoot': 'wedding',
+    'maternity-photoshoot': 'maternity',
+    'newborn-photoshoot': 'maternity',
+    'baby-photoshoot': 'maternity',
+    'cake-smash-photoshoot': 'family',
+    'first-birthday-photoshoot': 'family',
+    'kids-photography': 'family',
+    'family-photography': 'family',
+    'anniversary-photoshoot': 'family',
+    'studio-photography': 'commercial',
+    'outdoor-photography': 'commercial'
+}
+
+service_by_slug = { s['slug']: s for s in services }
+ordered_services = []
+for slug in slug_order:
+    if slug in service_by_slug:
+        ordered_services.append(service_by_slug[slug])
+for s in services:
+    if s['slug'] not in slug_order:
+        ordered_services.append(s)
+
+services = ordered_services
 
 for idx, s in enumerate(services):
     name = s['name']
@@ -473,11 +521,12 @@ for idx, s in enumerate(services):
     price = s['price']
     
     # Define featured status and order
-    # Feature first 4 services on homepage: Wedding, Pre-Wedding, Destination, Cinematography
+    # Feature first 4 services on homepage: Wedding, Cinematography, Pre-Wedding, Destination
     featured = True if idx < 4 else False
     display_order = (idx + 1) * 10
     small_icon = icon
     thumbnail = "" # empty default image reference, falls back to cover/hero
+    category_group = category_groups.get(slug, 'wedding')
     
     generic_content = generate_generic_text(name, kw, s['keywords_context'])
     
@@ -554,6 +603,7 @@ for idx, s in enumerate(services):
         'brand': brand,
         'featured': featured,
         'display_order': display_order,
+        'category_group': category_group,
         'price': price,
         'generic_content': generic_content,
         'features': s['features'],
@@ -579,7 +629,7 @@ for idx, s in enumerate(services):
     json_data.append(json_item)
     
     csv_rows.append([
-        name, slug, icon, small_icon, thumbnail, brand, featured, display_order, price, kw,
+        name, slug, icon, small_icon, thumbnail, brand, featured, display_order, category_group, price, kw,
         seo_title, meta_desc, short_desc, generic_content,
         "\n".join(s['features']), "\n".join(s['process']),
         amritsar_title, amritsar_meta, amritsar_content, amritsar_cta, json.dumps(service_faqs, ensure_ascii=False),

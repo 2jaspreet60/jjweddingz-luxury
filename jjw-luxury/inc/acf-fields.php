@@ -66,6 +66,12 @@ function jjwz_register_acf_fields() {
             [ 'key' => 'field_jjwz_wa_api_endpoint',   'label' => 'API Endpoint',         'name' => 'jjwz_wa_api_endpoint',   'type' => 'url', 'conditional_logic' => [ [ [ 'field' => 'field_jjwz_whatsapp_mode', 'operator' => '==', 'value' => 'api' ] ] ] ],
             [ 'key' => 'field_jjwz_wa_bearer_token',   'label' => 'Bearer Auth Token',    'name' => 'jjwz_wa_bearer_token',   'type' => 'password', 'conditional_logic' => [ [ [ 'field' => 'field_jjwz_whatsapp_mode', 'operator' => '==', 'value' => 'api' ] ] ] ],
             [ 'key' => 'field_jjwz_wa_json_payload',   'label' => 'JSON Payload Template','name' => 'jjwz_wa_json_payload',   'type' => 'textarea', 'conditional_logic' => [ [ [ 'field' => 'field_jjwz_whatsapp_mode', 'operator' => '==', 'value' => 'api' ] ] ] ],
+
+            /* — Services Archive Hero Fields — */
+            [ 'key' => 'field_services_archive_hero_image', 'label' => 'Services Archive Hero Image', 'name' => 'services_archive_hero_image', 'type' => 'image', 'return_format' => 'array' ],
+            [ 'key' => 'field_services_archive_eyebrow',   'label' => 'Services Archive Eyebrow',   'name' => 'services_archive_eyebrow',   'type' => 'text', 'default_value' => 'OUR SERVICES' ],
+            [ 'key' => 'field_services_archive_title',     'label' => 'Services Archive Title',     'name' => 'services_archive_title',     'type' => 'text', 'default_value' => 'Luxury Photography & Films' ],
+            [ 'key' => 'field_services_archive_subtitle',  'label' => 'Services Archive Subtitle',  'name' => 'services_archive_subtitle',  'type' => 'text', 'default_value' => 'Crafted for Every Milestone' ],
         ],
         'location' => [ [ [ 'param' => 'options_page', 'operator' => '==', 'value' => 'jjwz-options' ] ] ],
     ] );
@@ -78,6 +84,30 @@ function jjwz_register_acf_fields() {
         [ 'key' => 'field_svc_small_icon',    'label' => 'Small Icon (Emoji/SVG)', 'name' => 'svc_small_icon',   'type' => 'text', 'placeholder' => '💍' ],
         [ 'key' => 'field_svc_thumbnail',     'label' => 'Thumbnail Image',       'name' => 'svc_thumbnail',    'type' => 'image', 'return_format' => 'array' ],
         [ 'key' => 'field_svc_brand',         'label' => 'Service Brand',         'name' => 'svc_brand',        'type' => 'select', 'choices' => [ 'jjw' => 'JJ WeddingZ', 'tbs' => 'The Baby StudioZ', 'both' => 'Both Brands' ], 'default_value' => 'both' ],
+        [
+            'key' => 'field_svc_category_group',
+            'label' => 'Service Category Group',
+            'name' => 'svc_category_group',
+            'type' => 'select',
+            'choices' => [
+                'wedding'    => 'Wedding Services',
+                'maternity'  => 'Maternity & Newborn',
+                'family'     => 'Family & Kids',
+                'commercial' => 'Commercial',
+            ],
+            'allow_null' => 1,
+            'default_value' => 'wedding',
+        ],
+        [
+            'key' => 'field_svc_locations',
+            'label' => 'Service Locations',
+            'name' => 'svc_locations',
+            'type' => 'post_object',
+            'post_type' => [ 'jjwz_location' ],
+            'allow_null' => 1,
+            'multiple' => 1,
+            'return_format' => 'id',
+        ],
         [ 'key' => 'field_svc_hero_image',    'label' => 'Hero Image',            'name' => 'svc_hero_image',   'type' => 'image', 'return_format' => 'array' ],
         [ 'key' => 'field_svc_cover_image',   'label' => 'Cover Image',           'name' => 'svc_cover_image',  'type' => 'image', 'return_format' => 'array' ],
         [ 'key' => 'field_svc_gallery',       'label' => 'Service Gallery',       'name' => 'svc_gallery',      'type' => 'gallery', 'return_format' => 'array' ],
@@ -88,6 +118,30 @@ function jjwz_register_acf_fields() {
         [ 'key' => 'field_svc_starting_price','label' => 'Starting Price Label',  'name' => 'svc_starting_price', 'type' => 'text', 'placeholder' => 'Starting from ₹75,000' ],
         [ 'key' => 'field_svc_packages',      'label' => 'Map Dynamic Packages',  'name' => 'svc_packages',     'type' => 'post_object', 'post_type' => [ 'jjwz_package' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
         [ 'key' => 'field_svc_faqs',          'label' => 'Map Related FAQs',      'name' => 'svc_faqs',         'type' => 'post_object', 'post_type' => [ 'jjwz_faq' ], 'allow_null' => 1, 'multiple' => 1, 'return_format' => 'id' ],
+        [
+            'key' => 'field_svc_faq_repeater',
+            'label' => 'Service FAQ Repeater',
+            'name' => 'svc_faq_repeater',
+            'type' => 'repeater',
+            'layout' => 'row',
+            'button_label' => 'Add FAQ Item',
+            'sub_fields' => [
+                [
+                    'key' => 'field_svc_faq_question',
+                    'label' => 'Question',
+                    'name' => 'faq_question',
+                    'type' => 'text',
+                    'required' => 1,
+                ],
+                [
+                    'key' => 'field_svc_faq_answer',
+                    'label' => 'Answer',
+                    'name' => 'faq_answer',
+                    'type' => 'wysiwyg',
+                    'required' => 1,
+                ]
+            ]
+        ],
         [ 'key' => 'field_svc_featured',      'label' => 'Featured on Home',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
         [ 'key' => 'field_svc_display_order', 'label' => 'Display Order',         'name' => 'svc_display_order','type' => 'number', 'default_value' => 0 ],
         [ 'key' => 'field_svc_key_highlights','label' => 'Key Highlights',        'name' => 'svc_key_highlights', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 highlight per line' ],

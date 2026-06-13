@@ -368,6 +368,37 @@ class JJWZ_Service_Importer_Exporter {
             update_post_meta( $post_id, 'svc_seo_title', $seo_title );
             update_post_meta( $post_id, 'svc_seo_desc', $seo_desc );
             update_post_meta( $post_id, 'svc_focus_keywords', $keywords );
+            
+            // Refined fields: category group
+            update_post_meta( $post_id, 'svc_category_group', sanitize_text_field( $s['category_group'] ?? 'wedding' ) );
+
+            // Refined fields: Locations link
+            $location_ids = [];
+            $delhi_loc = get_page_by_path( 'delhi-ncr-studio', OBJECT, 'jjwz_location' );
+            if ( ! $delhi_loc ) { $delhi_loc = get_page_by_path( 'delhi', OBJECT, 'jjwz_location' ); }
+            $amritsar_loc = get_page_by_path( 'amritsar-studio', OBJECT, 'jjwz_location' );
+            if ( ! $amritsar_loc ) { $amritsar_loc = get_page_by_path( 'amritsar', OBJECT, 'jjwz_location' ); }
+            if ( $delhi_loc ) { $location_ids[] = $delhi_loc->ID; }
+            if ( $amritsar_loc ) { $location_ids[] = $amritsar_loc->ID; }
+            update_post_meta( $post_id, 'svc_locations', $location_ids );
+
+            // Refined fields: FAQ repeater
+            $faq_repeater_data = [];
+            if ( ! empty( $s['faqs'] ) ) {
+                $f_idx = 0;
+                foreach ( $s['faqs'] as $faq ) {
+                    $q = self::resolve_placeholders( $faq['question'] );
+                    $a = self::resolve_placeholders( $faq['answer'] );
+                    update_post_meta( $post_id, 'svc_faq_repeater_' . $f_idx . '_faq_question', $q );
+                    update_post_meta( $post_id, 'svc_faq_repeater_' . $f_idx . '_faq_answer', $a );
+                    $faq_repeater_data[] = [
+                        'faq_question' => $q,
+                        'faq_answer'   => $a,
+                    ];
+                    $f_idx++;
+                }
+                update_post_meta( $post_id, 'svc_faq_repeater', $f_idx );
+            }
 
             $features_text = is_array( $s['features'] ) ? implode( "\n", $s['features'] ) : $s['features'];
             $process_text  = is_array( $s['process'] ) ? implode( "\n", $s['process'] ) : $s['process'];
@@ -425,6 +456,9 @@ class JJWZ_Service_Importer_Exporter {
                     update_field( 'svc_thumbnail', $s['thumbnail'], $post_id );
                 }
                 update_field( 'svc_brand', $s['brand'] ?? 'both', $post_id );
+                update_field( 'svc_category_group', $s['category_group'] ?? 'wedding', $post_id );
+                update_field( 'svc_locations', $location_ids, $post_id );
+                update_field( 'svc_faq_repeater', $faq_repeater_data, $post_id );
                 update_field( 'svc_featured', ! empty( $s['featured'] ) ? 1 : 0, $post_id );
                 update_field( 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0, $post_id );
                 update_field( 'svc_starting_price', $s['price'] ?? '', $post_id );
@@ -639,6 +673,7 @@ class JJWZ_Service_Importer_Exporter {
                     'brand'             => get_post_meta( $post_id, 'svc_brand', true ) ?: 'both',
                     'featured'          => get_post_meta( $post_id, 'svc_featured', true ) === '1',
                     'display_order'     => (int) get_post_meta( $post_id, 'svc_display_order', true ),
+                    'category_group'    => get_post_meta( $post_id, 'svc_category_group', true ) ?: 'wedding',
                     'price'             => get_post_meta( $post_id, 'svc_starting_price', true ),
                     'focus_keywords'    => get_post_meta( $post_id, 'svc_focus_keywords', true ),
                     'seo_title'         => get_post_meta( $post_id, 'svc_seo_title', true ),
@@ -678,7 +713,8 @@ class JJWZ_Service_Importer_Exporter {
             header( 'Content-Disposition: attachment; filename=jjw-services-export-' . date( 'Y-m-d' ) . '.csv' );
             
             $csv_headers = [
-                'Service Name', 'Slug', 'Service Icon', 'Brand Context', 'Starting Price', 'Focus Keywords', 
+                'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
+                'Homepage Featured', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
                 'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
                 'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
                 'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -694,7 +730,12 @@ class JJWZ_Service_Importer_Exporter {
                     $item['name'],
                     $item['slug'],
                     $item['icon'],
+                    $item['small_icon'],
+                    $item['thumbnail'],
                     $item['brand'],
+                    $item['featured'] ? '1' : '0',
+                    $item['display_order'],
+                    $item['category_group'],
                     $item['price'],
                     $item['focus_keywords'],
                     $item['seo_title'],

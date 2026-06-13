@@ -1973,7 +1973,41 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-xl);
-  margin-top: var(--sp-2xl);
+  margin-top: var(--sp-md);
+}
+
+.services-archive-group {
+  margin-bottom: var(--sp-3xl);
+}
+
+.services-archive-group__header {
+  border-bottom: 1px solid var(--clr-border);
+  padding-bottom: var(--sp-xs);
+  margin-bottom: var(--sp-md);
+  text-align: left;
+}
+
+.services-archive-group__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--clr-obsidian);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  padding-bottom: var(--sp-xs);
+}
+
+.services-archive-group__title::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: var(--clr-gold);
 }
 
 .luxury-compact-card {
