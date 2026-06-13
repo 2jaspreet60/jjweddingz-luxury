@@ -452,7 +452,7 @@ def generate_city_text(name, city_name, contexts):
 json_data = []
 csv_headers = [
     'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
-    'Homepage Featured', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
+    'Homepage Featured', 'Show on Homepage', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
     'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
     'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
     'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -523,6 +523,7 @@ for idx, s in enumerate(services):
     # Define featured status and order
     # Feature first 4 services on homepage: Wedding, Cinematography, Pre-Wedding, Destination
     featured = True if idx < 4 else False
+    show_on_homepage = True if idx < 8 else False
     display_order = (idx + 1) * 10
     small_icon = icon
     thumbnail = "" # empty default image reference, falls back to cover/hero
@@ -602,6 +603,7 @@ for idx, s in enumerate(services):
         'short_description': short_desc,
         'brand': brand,
         'featured': featured,
+        'show_on_homepage': show_on_homepage,
         'display_order': display_order,
         'category_group': category_group,
         'price': price,
@@ -629,7 +631,10 @@ for idx, s in enumerate(services):
     json_data.append(json_item)
     
     csv_rows.append([
-        name, slug, icon, small_icon, thumbnail, brand, featured, display_order, category_group, price, kw,
+        name, slug, icon, small_icon, thumbnail, brand,
+        '1' if featured else '0',
+        '1' if show_on_homepage else '0',
+        display_order, category_group, price, kw,
         seo_title, meta_desc, short_desc, generic_content,
         "\n".join(s['features']), "\n".join(s['process']),
         amritsar_title, amritsar_meta, amritsar_content, amritsar_cta, json.dumps(service_faqs, ensure_ascii=False),

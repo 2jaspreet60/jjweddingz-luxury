@@ -280,6 +280,9 @@ class JJWZ_Service_Importer_Exporter {
                     'slug'              => $item['Slug'] ?? '',
                     'icon'              => $item['Service Icon'] ?? '📸',
                     'brand'             => $item['Brand Context'] ?? 'both',
+                    'featured'          => ( $item['Homepage Featured'] ?? '0' ) === '1',
+                    'show_on_homepage'  => ( $item['Show on Homepage'] ?? '0' ) === '1',
+                    'display_order'     => (int) ( $item['Display Order'] ?? 0 ),
                     'price'             => $item['Starting Price'] ?? '',
                     'focus_keywords'    => $item['Focus Keywords'] ?? '',
                     'seo_title'         => $item['SEO Title'] ?? '',
@@ -360,6 +363,7 @@ class JJWZ_Service_Importer_Exporter {
                 update_post_meta( $post_id, 'svc_thumbnail', $s['thumbnail'] );
             }
             update_post_meta( $post_id, 'svc_featured', ! empty( $s['featured'] ) ? '1' : '0' );
+            update_post_meta( $post_id, 'svc_show_on_homepage', ! empty( $s['show_on_homepage'] ) ? '1' : '0' );
             update_post_meta( $post_id, 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0 );
             update_post_meta( $post_id, 'svc_brand', sanitize_text_field( $s['brand'] ?? 'both' ) );
             update_post_meta( $post_id, 'svc_starting_price', sanitize_text_field( $s['price'] ?? '' ) );
@@ -460,6 +464,7 @@ class JJWZ_Service_Importer_Exporter {
                 update_field( 'svc_locations', $location_ids, $post_id );
                 update_field( 'svc_faq_repeater', $faq_repeater_data, $post_id );
                 update_field( 'svc_featured', ! empty( $s['featured'] ) ? 1 : 0, $post_id );
+                update_field( 'svc_show_on_homepage', ! empty( $s['show_on_homepage'] ) ? 1 : 0, $post_id );
                 update_field( 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0, $post_id );
                 update_field( 'svc_starting_price', $s['price'] ?? '', $post_id );
                 update_field( 'svc_short_desc', $short_desc, $post_id );
@@ -672,6 +677,7 @@ class JJWZ_Service_Importer_Exporter {
                     'thumbnail'         => get_post_meta( $post_id, 'svc_thumbnail', true ),
                     'brand'             => get_post_meta( $post_id, 'svc_brand', true ) ?: 'both',
                     'featured'          => get_post_meta( $post_id, 'svc_featured', true ) === '1',
+                    'show_on_homepage'  => get_post_meta( $post_id, 'svc_show_on_homepage', true ) === '1',
                     'display_order'     => (int) get_post_meta( $post_id, 'svc_display_order', true ),
                     'category_group'    => get_post_meta( $post_id, 'svc_category_group', true ) ?: 'wedding',
                     'price'             => get_post_meta( $post_id, 'svc_starting_price', true ),
@@ -714,7 +720,7 @@ class JJWZ_Service_Importer_Exporter {
             
             $csv_headers = [
                 'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
-                'Homepage Featured', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
+                'Homepage Featured', 'Show on Homepage', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
                 'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
                 'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
                 'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -734,6 +740,7 @@ class JJWZ_Service_Importer_Exporter {
                     $item['thumbnail'],
                     $item['brand'],
                     $item['featured'] ? '1' : '0',
+                    $item['show_on_homepage'] ? '1' : '0',
                     $item['display_order'],
                     $item['category_group'],
                     $item['price'],

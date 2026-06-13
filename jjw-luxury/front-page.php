@@ -227,106 +227,133 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
-     SECTION 5 — SERVICES GRID
+     SECTION 5 — SERVICES CAROUSEL
      ═══════════════════════════════════════════════════════════ -->
 <section class="services-overview section" aria-label="Our services">
     <div class="container">
-        <div class="section-header text-center">
-            <span class="eyebrow">What We Offer</span>
-            <h2 class="section-title">Crafted for <em>Every Milestone</em></h2>
+        <div class="services-carousel__header">
+            <div class="services-carousel__header-left">
+                <span class="eyebrow">What We Offer</span>
+                <h2 class="section-title">Crafted for <em>Every Milestone</em></h2>
+            </div>
+            <div class="services-carousel__nav" aria-label="Services navigation">
+                <button class="services-carousel__btn" id="services-prev" aria-label="Previous services">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button class="services-carousel__btn" id="services-next" aria-label="Next services">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
         </div>
-        <div class="services-grid">
-            <?php
-            $services_args = [
-                'post_type'      => 'jjwz_service',
-                'posts_per_page' => -1,
-                'post_status'    => 'publish',
-                'orderby'        => 'meta_value_num',
-                'meta_key'       => 'svc_display_order',
-                'order'          => 'ASC',
-            ];
-            
-            // Try featured CPTs first
-            $services_q = new WP_Query( array_merge( $services_args, [
-                'meta_query' => [
-                    [
-                        'key'     => 'svc_featured',
-                        'value'   => '1',
-                        'compare' => '=',
-                    ]
-                ]
-            ] ) );
 
-            if ( ! $services_q->have_posts() ) {
-                $services_q = new WP_Query( $services_args );
-            }
-
-            if ( $services_q->have_posts() ) :
-                $i = 0;
-                while ( $services_q->have_posts() ) : $services_q->the_post();
-                    $post_id    = get_the_ID();
-                    
-                    // Retrieve Small Icon
-                    $small_icon = get_post_meta( $post_id, 'svc_small_icon', true );
-                    if ( empty( $small_icon ) ) {
-                        $small_icon = get_post_meta( $post_id, 'svc_icon', true ) ?: '💍';
-                    }
-                    
-                    // Retrieve Thumbnail
-                    $thumbnail_img = get_post_meta( $post_id, 'svc_thumbnail', true );
-                    if ( empty( $thumbnail_img ) ) {
-                        $thumbnail_img = get_post_meta( $post_id, 'svc_cover_image', true );
-                    }
-                    if ( empty( $thumbnail_img ) ) {
-                        $thumbnail_img = get_post_meta( $post_id, 'svc_hero_image', true );
-                    }
-                    
-                    $thumb_url = '';
-                    if ( is_array( $thumbnail_img ) && ! empty( $thumbnail_img['url'] ) ) {
-                        $thumb_url = $thumbnail_img['url'];
-                    } elseif ( is_numeric( $thumbnail_img ) ) {
-                        $thumb_url = wp_get_attachment_image_url( $thumbnail_img, 'medium_large' );
-                    } elseif ( is_string( $thumbnail_img ) && $thumbnail_img ) {
-                        $thumb_url = $thumbnail_img;
-                    }
-                    if ( ! $thumb_url ) {
-                        $thumb_url = jjwz_get_option( 'jjw_default_placeholder_service' );
-                    }
-                    if ( ! $thumb_url ) {
-                        $thumb_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
-                    }
-                    
-                    $starting_price = get_post_meta( $post_id, 'svc_starting_price', true );
-                    $short_desc = get_post_meta( $post_id, 'svc_short_desc', true );
-                    if ( empty( $short_desc ) ) {
-                        $short_desc = wp_trim_words( get_the_excerpt(), 18 );
-                    }
-                    ?>
-                    <div class="luxury-compact-card" data-anim="fade-up" data-anim-delay="<?php echo $i * 80; ?>">
-                        <div class="luxury-compact-card__media">
-                            <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" class="luxury-compact-card__img" loading="lazy">
-                            <div class="luxury-compact-card__overlay"></div>
-                            <div class="luxury-compact-card__icon"><?php echo esc_html( $small_icon ); ?></div>
-                        </div>
-                        <div class="luxury-compact-card__body">
-                            <h3 class="luxury-compact-card__title"><?php the_title(); ?></h3>
-                            <p class="luxury-compact-card__desc"><?php echo esc_html( $short_desc ); ?></p>
-                            <?php if ( $starting_price ) : ?>
-                                <span class="luxury-compact-card__price"><?php echo esc_html( $starting_price ); ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="luxury-compact-card__footer">
-                            <a href="<?php the_permalink(); ?>" class="luxury-compact-card__link">
-                                Explore Service <span class="arrow">&rarr;</span>
-                            </a>
-                        </div>
-                    </div>
+        <div class="services-carousel" id="services-carousel">
+            <div class="services-carousel__viewport" id="services-viewport">
+                <div class="services-carousel__track" id="services-track" aria-live="polite">
                     <?php
-                    $i++;
-                endwhile;
-                wp_reset_postdata();
-            endif;
-            ?>
+                    $services_args = [
+                        'post_type'      => 'jjwz_service',
+                        'posts_per_page' => -1,
+                        'post_status'    => 'publish',
+                        'orderby'        => 'meta_value_num',
+                        'meta_key'       => 'svc_display_order',
+                        'order'          => 'ASC',
+                    ];
+                    
+                    // Display services marked "Show on Homepage" OR "Featured Service"
+                    $services_q = new WP_Query( array_merge( $services_args, [
+                        'meta_query' => [
+                            'relation' => 'OR',
+                            [
+                                'key'     => 'svc_featured',
+                                'value'   => '1',
+                                'compare' => '=',
+                            ],
+                            [
+                                'key'     => 'svc_show_on_homepage',
+                                'value'   => '1',
+                                'compare' => '=',
+                            ]
+                        ]
+                    ] ) );
+
+                    // Fallback to first 8 active services if none matched
+                    if ( ! $services_q->have_posts() ) {
+                        $services_q = new WP_Query( array_merge( $services_args, [
+                            'posts_per_page' => 8,
+                        ] ) );
+                    }
+
+                    if ( $services_q->have_posts() ) :
+                        $i = 0;
+                        while ( $services_q->have_posts() ) : $services_q->the_post();
+                            $post_id    = get_the_ID();
+                            
+                            // Retrieve Small Icon
+                            $small_icon = get_post_meta( $post_id, 'svc_small_icon', true );
+                            if ( empty( $small_icon ) ) {
+                                $small_icon = get_post_meta( $post_id, 'svc_icon', true ) ?: '💍';
+                            }
+                            
+                            // Retrieve Thumbnail
+                            $thumbnail_img = get_post_meta( $post_id, 'svc_thumbnail', true );
+                            if ( empty( $thumbnail_img ) ) {
+                                $thumbnail_img = get_post_meta( $post_id, 'svc_cover_image', true );
+                            }
+                            if ( empty( $thumbnail_img ) ) {
+                                $thumbnail_img = get_post_meta( $post_id, 'svc_hero_image', true );
+                            }
+                            
+                            $thumb_url = '';
+                            if ( is_array( $thumbnail_img ) && ! empty( $thumbnail_img['url'] ) ) {
+                                $thumb_url = $thumbnail_img['url'];
+                            } elseif ( is_numeric( $thumbnail_img ) ) {
+                                $thumb_url = wp_get_attachment_image_url( $thumbnail_img, 'medium_large' );
+                            } elseif ( is_string( $thumbnail_img ) && $thumbnail_img ) {
+                                $thumb_url = $thumbnail_img;
+                            }
+                            if ( ! $thumb_url ) {
+                                $thumb_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+                            }
+                            if ( ! $thumb_url ) {
+                                $thumb_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+                            }
+                            
+                            $starting_price = get_post_meta( $post_id, 'svc_starting_price', true );
+                            $short_desc = get_post_meta( $post_id, 'svc_short_desc', true );
+                            if ( empty( $short_desc ) ) {
+                                $short_desc = wp_trim_words( get_the_excerpt(), 18 );
+                            }
+                            ?>
+                            <div class="services-carousel__slide">
+                                <div class="luxury-compact-card">
+                                    <div class="luxury-compact-card__media">
+                                        <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" class="luxury-compact-card__img" loading="lazy">
+                                        <div class="luxury-compact-card__overlay"></div>
+                                        <div class="luxury-compact-card__icon"><?php echo esc_html( $small_icon ); ?></div>
+                                    </div>
+                                    <div class="luxury-compact-card__body">
+                                        <h3 class="luxury-compact-card__title"><?php the_title(); ?></h3>
+                                        <p class="luxury-compact-card__desc"><?php echo esc_html( $short_desc ); ?></p>
+                                        <?php if ( $starting_price ) : ?>
+                                            <span class="luxury-compact-card__price"><?php echo esc_html( $starting_price ); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="luxury-compact-card__footer">
+                                        <a href="<?php the_permalink(); ?>" class="luxury-compact-card__link btn btn--primary-gold">
+                                            Explore Service <span class="arrow">&rarr;</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                            $i++;
+                        endwhile;
+                        wp_reset_postdata();
+                    endif;
+                    ?>
+                </div>
+            </div>
+            <div class="services-carousel__dots" id="services-dots" aria-hidden="true"></div>
         </div>
     </div>
 </section>

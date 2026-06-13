@@ -450,3 +450,140 @@ const on = (el, ev, fn, opts = {}) => el && el.addEventListener(ev, fn, opts);
     });
 })();
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   12. SERVICES CAROUSEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function servicesCarousel() {
+    const carousel = $('#services-carousel');
+    if (!carousel) return;
+    
+    const viewport = $('#services-viewport', carousel);
+    const track = $('#services-track', carousel);
+    const prevBtn = $('#services-prev');
+    const nextBtn = $('#services-next');
+    const dotsWrap = $('#services-dots', carousel);
+    
+    if (!viewport || !track) return;
+    
+    const slides = $$('.services-carousel__slide', track);
+    if (!slides.length) return;
+    
+    let current = 0;
+    
+    function getMaxIndex() {
+        if (!slides.length) return 0;
+        const slideWidth = slides[0].getBoundingClientRect().width;
+        const containerWidth = viewport.getBoundingClientRect().width;
+        const V = Math.round(containerWidth / slideWidth) || 1;
+        return Math.max(0, slides.length - V);
+    }
+    
+    function updateDots() {
+        if (!dotsWrap) return;
+        dotsWrap.innerHTML = '';
+        const maxIndex = getMaxIndex();
+        
+        if (maxIndex <= 0) {
+            dotsWrap.style.display = 'none';
+            return;
+        }
+        dotsWrap.style.display = 'flex';
+        
+        for (let i = 0; i <= maxIndex; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'services-carousel__dot' + (i === current ? ' is-active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            on(dot, 'click', () => {
+                current = i;
+                slide();
+            });
+            dotsWrap.appendChild(dot);
+        }
+    }
+    
+    function slide() {
+        const maxIndex = getMaxIndex();
+        if (current > maxIndex) current = maxIndex;
+        if (current < 0) current = 0;
+        
+        const slideWidth = slides[0].getBoundingClientRect().width;
+        const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
+        
+        const translation = -current * (slideWidth + gap);
+        track.style.transform = `translateX(${translation}px)`;
+        
+        // Update dots active class
+        const dots = $$('.services-carousel__dot', dotsWrap);
+        dots.forEach((dot, idx) => {
+            dot.classList.toggle('is-active', idx === current);
+        });
+        
+        // Disable/enable arrows
+        if (prevBtn) prevBtn.disabled = (current === 0);
+        if (nextBtn) nextBtn.disabled = (current === maxIndex);
+    }
+    
+    // Set up listeners
+    if (prevBtn) {
+        on(prevBtn, 'click', () => {
+            if (current > 0) {
+                current--;
+                slide();
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        on(nextBtn, 'click', () => {
+            const maxIndex = getMaxIndex();
+            if (current < maxIndex) {
+                current++;
+                slide();
+            }
+        });
+    }
+    
+    // Touch gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    on(track, 'touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    on(track, 'touchend', e => {
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        const diffY = e.changedTouches[0].clientY - touchStartY;
+        
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+            const maxIndex = getMaxIndex();
+            if (diffX < 0) {
+                if (current < maxIndex) {
+                    current++;
+                    slide();
+                }
+            } else {
+                if (current > 0) {
+                    current--;
+                    slide();
+                }
+            }
+        }
+    }, { passive: true });
+    
+    // Handle resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            updateDots();
+            slide();
+        }, 100);
+    });
+    
+    // Initialize
+    updateDots();
+    slide();
+})();
+

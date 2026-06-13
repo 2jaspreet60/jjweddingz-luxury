@@ -142,7 +142,8 @@ function jjwz_register_acf_fields() {
                 ]
             ]
         ],
-        [ 'key' => 'field_svc_featured',      'label' => 'Featured on Home',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
+        [ 'key' => 'field_svc_featured',      'label' => 'Featured Service',      'name' => 'svc_featured',     'type' => 'true_false', 'ui' => 1 ],
+        [ 'key' => 'field_svc_show_on_homepage', 'label' => 'Show on Homepage',   'name' => 'svc_show_on_homepage', 'type' => 'true_false', 'ui' => 1 ],
         [ 'key' => 'field_svc_display_order', 'label' => 'Display Order',         'name' => 'svc_display_order','type' => 'number', 'default_value' => 0 ],
         [ 'key' => 'field_svc_key_highlights','label' => 'Key Highlights',        'name' => 'svc_key_highlights', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 highlight per line' ],
         [ 'key' => 'field_svc_features_list', 'label' => 'Features List',         'name' => 'svc_features_list', 'type' => 'textarea', 'rows' => 4, 'placeholder' => '1 feature per line' ],
