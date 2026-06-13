@@ -484,16 +484,70 @@ function generate_city_text( $name, $city_name, $landmarks, $context ) {
         
         $p2 = "Operating a luxury photography house in the capital region requires exceptional logistical planning and technical adaptiveness. The ambient light of Delhi NCR is highly variable, affected by seasonal changes and metropolitan textures. To capture pristine imagery, our Delhi crew leverages a combination of natural golden-hour sunlight and advanced, color-balanced off-camera lighting arrays. When shooting inside elite venues like Taj Palace Delhi, The Leela Ambience Gurugram, or ITC Maurya, we sync our flash units to match the ambient warm light of the ballrooms, ensuring skin tones remain natural and free of distracting color casts. This meticulous approach to lighting allows us to deliver high-resolution files that maintain incredible detail across highlights and deep shadows alike.";
         
-        $p3 = "Our Delhi NCR branch serves Gurugram, Noida, South Delhi, Aerocity, and surrounding areas, delivering a seamless, premium client experience from the initial consultation to the final gallery delivery. Whether you are hosting a grand wedding gala at a luxury farmhouse or scheduling an intimate milestone photoshoot in our professional studio, we apply the same strict standards of safety, privacy, and artistic integrity. We offer a strict 100% Identity Promise, guaranteeing your photographs will feature zero artificial face-swapping or skin whitening, preserving your true essence. Contact our Delhi NCR studio today to discuss custom shoot concepts, verify date availability, and begin planning your visual legacy.";
+        $p3 = "Our Delhi NCR branch serves Gurugram, Noida, South Delhi, Aerocity, and surrounding areas, delivering a seamless, premium client experience from the initial consultation to the final gallery delivery. Whether you are hosting a grand wedding gala at a luxury farmhouse or scheduling an intimate milestone photoshoot in our professional studio, we apply the same strict standards of safety, privacy, and artistic integrity. We offer a strict 100% Identity Promise, guaranteeing your photographs will feature zero artificial face-swapping or skin whitening, preserving your true essence. Contact our Delhi NCR studio today to discuss custom shoot concepts, verify date availability and begin planning your visual legacy.";
     }
 
     return implode("\n\n", [$p1, $p2, $p3]);
 }
 
+$slug_order = [
+    'wedding-photography',
+    'wedding-cinematography',
+    'pre-wedding-photography',
+    'destination-wedding-photography',
+    'maternity-photoshoot',
+    'newborn-photoshoot',
+    'baby-photoshoot',
+    'cake-smash-photoshoot',
+    'first-birthday-photoshoot',
+    'kids-photography',
+    'family-photography',
+    'anniversary-photoshoot',
+    'couple-photoshoot',
+    'studio-photography',
+    'outdoor-photography'
+];
+
+$category_groups = [
+    'wedding-photography' => 'wedding',
+    'wedding-cinematography' => 'wedding',
+    'pre-wedding-photography' => 'wedding',
+    'destination-wedding-photography' => 'wedding',
+    'couple-photoshoot' => 'wedding',
+    'maternity-photoshoot' => 'maternity',
+    'newborn-photoshoot' => 'maternity',
+    'baby-photoshoot' => 'maternity',
+    'cake-smash-photoshoot' => 'family',
+    'first-birthday-photoshoot' => 'family',
+    'kids-photography' => 'family',
+    'family-photography' => 'family',
+    'anniversary-photoshoot' => 'family',
+    'studio-photography' => 'commercial',
+    'outdoor-photography' => 'commercial'
+];
+
+$service_by_slug = [];
+foreach ( $services as $s ) {
+    $service_by_slug[ $s['slug'] ] = $s;
+}
+$ordered_services = [];
+foreach ( $slug_order as $slug ) {
+    if ( isset( $service_by_slug[ $slug ] ) ) {
+        $ordered_services[] = $service_by_slug[ $slug ];
+    }
+}
+foreach ( $services as $s ) {
+    if ( ! in_array( $s['slug'], $slug_order ) ) {
+        $ordered_services[] = $s;
+    }
+}
+$services = $ordered_services;
+
 // Generate the JSON and CSV seeds
 $json_data = [];
 $csv_headers = [
-    'Service Name', 'Slug', 'Service Icon', 'Brand Context', 'Starting Price', 'Focus Keywords', 
+    'Service Name', 'Slug', 'Service Icon', 'Small Icon', 'Thumbnail Image', 'Brand Context', 
+    'Homepage Featured', 'Show on Homepage', 'Display Order', 'Category Group', 'Starting Price', 'Focus Keywords', 
     'SEO Title', 'Meta Description', 'Short Description', 'Full Generic Content', 
     'Features List', 'Process Steps', 'Amritsar Title', 'Amritsar Meta Description', 
     'Amritsar Content', 'Amritsar CTA', 'Amritsar FAQs',
@@ -502,7 +556,7 @@ $csv_headers = [
 ];
 $csv_rows = [];
 
-foreach ( $services as $s ) {
+foreach ( $services as $idx => $s ) {
     $name = $s['name'];
     $slug = $s['slug'];
     $icon = $s['icon'];
@@ -512,6 +566,13 @@ foreach ( $services as $s ) {
     $short_desc = $s['short_description'];
     $brand = $s['brand'];
     $price = $s['price'];
+    
+    $featured = ( $idx < 4 ) ? true : false;
+    $show_on_homepage = ( $idx < 8 ) ? true : false;
+    $display_order = ( $idx + 1 ) * 10;
+    $small_icon = $icon;
+    $thumbnail = "";
+    $category_group = $category_groups[ $slug ] ?? 'wedding';
     
     // Generate text contents
     $generic_content = generate_generic_text($name, $kw, $s['keywords_context']);
@@ -529,7 +590,6 @@ foreach ( $services as $s ) {
     $delhi_cta = "<p>Plan your editorial " . strtolower($name) . " session in Delhi NCR. Get in touch with our metropolitan branch to discuss locations, custom styling guidelines, and package options.</p>";
     
     // FAQs (8-12 FAQs per service)
-    $faqs = [];
     $faq_topics = [
         ['Q' => 'What is your turnaround time for final photos?', 'A' => 'We deliver a highlight gallery within 7 days of the shoot. The complete, fully edited digital collection is delivered within 6 to 8 weeks, ensuring high-end retouching standards.'],
         ['Q' => 'What is your policy on RAW / unedited files?', 'A' => 'To maintain our brand standards and editorial quality, we do not release raw or unedited files. Every photograph in your gallery is carefully culled, color-balanced, and polished.'],
@@ -545,20 +605,20 @@ foreach ( $services as $s ) {
     
     // Convert FAQs to structured array
     $service_faqs = [];
-    foreach ($faq_topics as $idx => $t) {
+    foreach ($faq_topics as $f_idx => $t) {
         $service_faqs[] = [
             'question' => str_replace('{service}', strtolower($name), $t['Q']),
             'answer' => str_replace('{service}', strtolower($name), $t['A']),
-            'order' => $idx + 1
+            'order' => $f_idx + 1
         ];
     }
     
-    // Dynamic Packages (2 packages per service)
+    $raw_price = (int) str_replace([ '₹', ',' ], '', $price);
     $packages = [
         [
             'name' => 'Editorial Collection',
             'price' => $price,
-            'description' => 'A sophisticated coverage package designed for premium digital delivery and basic print needs.',
+            'description' => 'A sophisticated ' . strtolower($name) . ' package designed for premium digital delivery and basic print needs.',
             'features' => [
                 'Up to 4 hours of dedicated on-location session coverage',
                 'Fully retouched high-resolution digital files',
@@ -569,8 +629,8 @@ foreach ( $services as $s ) {
         ],
         [
             'name' => 'Royal Heirloom Collection',
-            'price' => '₹' . number_format(intval(str_replace(['₹', ','], '', $price)) * 1.6),
-            'description' => 'Our signature full-service collection providing absolute coverage, comprehensive styling, and custom physical legacy albums.',
+            'price' => '₹' . number_format($raw_price * 1.6),
+            'description' => 'Our signature full-service ' . strtolower($name) . ' collection providing absolute coverage, comprehensive styling, and custom physical legacy albums.',
             'features' => [
                 'Full day session coverage (up to 8 hours)',
                 'Complete high-resolution digital archive with print release',
@@ -587,11 +647,17 @@ foreach ( $services as $s ) {
         'name' => $name,
         'slug' => $slug,
         'icon' => $icon,
+        'small_icon' => $small_icon,
+        'thumbnail' => $thumbnail,
         'focus_keywords' => $kw,
         'seo_title' => $seo_title,
         'meta_description' => $meta_desc,
         'short_description' => $short_desc,
         'brand' => $brand,
+        'featured' => $featured,
+        'show_on_homepage' => $show_on_homepage,
+        'display_order' => $display_order,
+        'category_group' => $category_group,
         'price' => $price,
         'generic_content' => $generic_content,
         'features' => $s['features'],
@@ -603,14 +669,14 @@ foreach ( $services as $s ) {
             'meta_description' => $amritsar_meta,
             'content' => $amritsar_content,
             'cta' => $amritsar_cta,
-            'faqs' => $service_faqs // standard FAQ set for Amritsar
+            'faqs' => $service_faqs
         ],
         'delhi' => [
             'seo_title' => $delhi_title,
             'meta_description' => $delhi_meta,
             'content' => $delhi_content,
             'cta' => $delhi_cta,
-            'faqs' => $service_faqs // standard FAQ set for Delhi
+            'faqs' => $service_faqs
         ]
     ];
     
@@ -621,7 +687,13 @@ foreach ( $services as $s ) {
         $name,
         $slug,
         $icon,
+        $small_icon,
+        $thumbnail,
         $brand,
+        $featured ? '1' : '0',
+        $show_on_homepage ? '1' : '0',
+        $display_order,
+        $category_group,
         $price,
         $kw,
         $seo_title,

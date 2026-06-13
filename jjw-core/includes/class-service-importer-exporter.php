@@ -283,6 +283,7 @@ class JJWZ_Service_Importer_Exporter {
                     'featured'          => ( $item['Homepage Featured'] ?? '0' ) === '1',
                     'show_on_homepage'  => ( $item['Show on Homepage'] ?? '0' ) === '1',
                     'display_order'     => (int) ( $item['Display Order'] ?? 0 ),
+                    'category_group'    => $item['Category Group'] ?? '',
                     'price'             => $item['Starting Price'] ?? '',
                     'focus_keywords'    => $item['Focus Keywords'] ?? '',
                     'seo_title'         => $item['SEO Title'] ?? '',
@@ -362,9 +363,18 @@ class JJWZ_Service_Importer_Exporter {
             if ( ! empty( $s['thumbnail'] ) ) {
                 update_post_meta( $post_id, 'svc_thumbnail', $s['thumbnail'] );
             }
-            update_post_meta( $post_id, 'svc_featured', ! empty( $s['featured'] ) ? '1' : '0' );
-            update_post_meta( $post_id, 'svc_show_on_homepage', ! empty( $s['show_on_homepage'] ) ? '1' : '0' );
-            update_post_meta( $post_id, 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0 );
+            $featured_val = ! empty( $s['featured'] ) ? '1' : '0';
+            $show_on_homepage_val = ! empty( $s['show_on_homepage'] ) ? '1' : '0';
+            $display_order_val = isset( $s['display_order'] ) ? (int) $s['display_order'] : 0;
+            
+            $category_group_val = sanitize_text_field( $s['category_group'] ?? '' );
+            if ( empty( $category_group_val ) ) {
+                $category_group_val = self::get_category_group_by_slug( $slug );
+            }
+
+            update_post_meta( $post_id, 'svc_featured', $featured_val );
+            update_post_meta( $post_id, 'svc_show_on_homepage', $show_on_homepage_val );
+            update_post_meta( $post_id, 'svc_display_order', $display_order_val );
             update_post_meta( $post_id, 'svc_brand', sanitize_text_field( $s['brand'] ?? 'both' ) );
             update_post_meta( $post_id, 'svc_starting_price', sanitize_text_field( $s['price'] ?? '' ) );
             update_post_meta( $post_id, 'svc_short_desc', $short_desc );
@@ -372,9 +382,7 @@ class JJWZ_Service_Importer_Exporter {
             update_post_meta( $post_id, 'svc_seo_title', $seo_title );
             update_post_meta( $post_id, 'svc_seo_desc', $seo_desc );
             update_post_meta( $post_id, 'svc_focus_keywords', $keywords );
-            
-            // Refined fields: category group
-            update_post_meta( $post_id, 'svc_category_group', sanitize_text_field( $s['category_group'] ?? 'wedding' ) );
+            update_post_meta( $post_id, 'svc_category_group', $category_group_val );
 
             // Refined fields: Locations link
             $location_ids = [];
@@ -460,12 +468,12 @@ class JJWZ_Service_Importer_Exporter {
                     update_field( 'svc_thumbnail', $s['thumbnail'], $post_id );
                 }
                 update_field( 'svc_brand', $s['brand'] ?? 'both', $post_id );
-                update_field( 'svc_category_group', $s['category_group'] ?? 'wedding', $post_id );
+                update_field( 'svc_category_group', $category_group_val, $post_id );
                 update_field( 'svc_locations', $location_ids, $post_id );
                 update_field( 'svc_faq_repeater', $faq_repeater_data, $post_id );
-                update_field( 'svc_featured', ! empty( $s['featured'] ) ? 1 : 0, $post_id );
-                update_field( 'svc_show_on_homepage', ! empty( $s['show_on_homepage'] ) ? 1 : 0, $post_id );
-                update_field( 'svc_display_order', isset( $s['display_order'] ) ? (int) $s['display_order'] : 0, $post_id );
+                update_field( 'svc_featured', ( $featured_val === '1' ? 1 : 0 ), $post_id );
+                update_field( 'svc_show_on_homepage', ( $show_on_homepage_val === '1' ? 1 : 0 ), $post_id );
+                update_field( 'svc_display_order', $display_order_val, $post_id );
                 update_field( 'svc_starting_price', $s['price'] ?? '', $post_id );
                 update_field( 'svc_short_desc', $short_desc, $post_id );
                 update_field( 'svc_seo_content', $generic_content, $post_id );
@@ -764,9 +772,33 @@ class JJWZ_Service_Importer_Exporter {
                     json_encode( $item['packages'], JSON_UNESCAPED_UNICODE )
                 ] );
             }
-            fclose( $fp);
+            fclose( $fp );
             exit;
         }
+    }
+
+    /**
+     * Helper mapping service slugs to their default category group
+     */
+    public static function get_category_group_by_slug( string $slug ): string {
+        $map = [
+            'wedding-photography'             => 'wedding',
+            'wedding-cinematography'          => 'wedding',
+            'pre-wedding-photography'         => 'wedding',
+            'destination-wedding-photography' => 'wedding',
+            'couple-photoshoot'               => 'wedding',
+            'maternity-photoshoot'            => 'maternity',
+            'newborn-photoshoot'              => 'maternity',
+            'baby-photoshoot'                 => 'maternity',
+            'cake-smash-photoshoot'           => 'family',
+            'first-birthday-photoshoot'       => 'family',
+            'kids-photography'                => 'family',
+            'family-photography'              => 'family',
+            'anniversary-photoshoot'          => 'family',
+            'studio-photography'              => 'commercial',
+            'outdoor-photography'             => 'commercial'
+        ];
+        return $map[ $slug ] ?? 'wedding';
     }
 }
 new JJWZ_Service_Importer_Exporter();

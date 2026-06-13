@@ -254,12 +254,9 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                         'post_type'      => 'jjwz_service',
                         'posts_per_page' => -1,
                         'post_status'    => 'publish',
-                        'orderby'        => 'meta_value_num',
-                        'meta_key'       => 'svc_display_order',
-                        'order'          => 'ASC',
                     ];
                     
-                    // Display services marked "Show on Homepage" OR "Featured Service"
+                    // Priority A: Display services marked "Show on Homepage" OR "Featured Service"
                     $services_q = new WP_Query( array_merge( $services_args, [
                         'meta_query' => [
                             'relation' => 'OR',
@@ -276,17 +273,58 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                         ]
                     ] ) );
 
-                    // Fallback to first 8 active services if none matched
-                    if ( ! $services_q->have_posts() ) {
-                        $services_q = new WP_Query( array_merge( $services_args, [
-                            'posts_per_page' => 8,
-                        ] ) );
+                    $services_posts = [];
+                    $is_fallback = false;
+
+                    if ( $services_q->have_posts() ) {
+                        $services_posts = $services_q->posts;
                     }
 
-                    if ( $services_q->have_posts() ) :
+                    // Priority B: Fallback to first 8 active services if none matched
+                    if ( empty( $services_posts ) ) {
+                        $is_fallback = true;
+                        $fallback_q = new WP_Query( array_merge( $services_args, [
+                            'posts_per_page' => 8,
+                        ] ) );
+                        if ( $fallback_q->have_posts() ) {
+                            $services_posts = $fallback_q->posts;
+                        }
+                    }
+
+                    // Priority C: Sort retrieved services in PHP to handle missing svc_display_order
+                    if ( ! empty( $services_posts ) ) {
+                        usort( $services_posts, function( $a, $b ) {
+                            $order_a = get_post_meta( $a->ID, 'svc_display_order', true );
+                            $order_b = get_post_meta( $b->ID, 'svc_display_order', true );
+                            
+                            $val_a = ( $order_a !== '' && $order_a !== false ) ? (int) $order_a : PHP_INT_MAX;
+                            $val_b = ( $order_b !== '' && $order_b !== false ) ? (int) $order_b : PHP_INT_MAX;
+                            
+                            if ( $val_a !== $val_b ) {
+                                return $val_a <=> $val_b;
+                            }
+                            
+                            // Fallback: menu_order ASC
+                            if ( $a->menu_order !== $b->menu_order ) {
+                                return $a->menu_order <=> $b->menu_order;
+                            }
+                            
+                            // Fallback: title ASC
+                            return strcasecmp( $a->post_title, $b->post_title );
+                        } );
+                    }
+
+                    // Visual Fallback: Show notice to admins if fallback is active
+                    if ( $is_fallback && current_user_can( 'manage_options' ) && ! empty( $services_posts ) ) {
+                        echo '<div class="services-carousel__admin-notice" style="width: 100%; background: #fff8e5; border-left: 4px solid #ffb900; padding: 12px 16px; margin-bottom: 24px; color: #444; font-family: sans-serif; font-size: 14px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">';
+                        echo '<strong>💍 Admin Notice:</strong> No homepage services selected. Default services are being displayed.';
+                        echo '</div>';
+                    }
+
+                    if ( ! empty( $services_posts ) ) :
                         $i = 0;
-                        while ( $services_q->have_posts() ) : $services_q->the_post();
-                            $post_id    = get_the_ID();
+                        foreach ( $services_posts as $post ) :
+                            $post_id = $post->ID;
                             
                             // Retrieve Small Icon
                             $small_icon = get_post_meta( $post_id, 'svc_small_icon', true );
@@ -321,25 +359,25 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                             $starting_price = get_post_meta( $post_id, 'svc_starting_price', true );
                             $short_desc = get_post_meta( $post_id, 'svc_short_desc', true );
                             if ( empty( $short_desc ) ) {
-                                $short_desc = wp_trim_words( get_the_excerpt(), 18 );
+                                $short_desc = wp_trim_words( get_the_excerpt( $post ), 18 );
                             }
                             ?>
                             <div class="services-carousel__slide">
                                 <div class="luxury-compact-card">
                                     <div class="luxury-compact-card__media">
-                                        <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" class="luxury-compact-card__img" loading="lazy">
+                                        <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( get_the_title( $post_id ) ); ?>" class="luxury-compact-card__img" loading="lazy">
                                         <div class="luxury-compact-card__overlay"></div>
                                         <div class="luxury-compact-card__icon"><?php echo esc_html( $small_icon ); ?></div>
                                     </div>
                                     <div class="luxury-compact-card__body">
-                                        <h3 class="luxury-compact-card__title"><?php the_title(); ?></h3>
+                                        <h3 class="luxury-compact-card__title"><?php echo esc_html( get_the_title( $post_id ) ); ?></h3>
                                         <p class="luxury-compact-card__desc"><?php echo esc_html( $short_desc ); ?></p>
                                         <?php if ( $starting_price ) : ?>
                                             <span class="luxury-compact-card__price"><?php echo esc_html( $starting_price ); ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="luxury-compact-card__footer">
-                                        <a href="<?php the_permalink(); ?>" class="luxury-compact-card__link btn btn--primary-gold">
+                                        <a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>" class="luxury-compact-card__link btn btn--primary-gold">
                                             Explore Service <span class="arrow">&rarr;</span>
                                         </a>
                                     </div>
@@ -347,8 +385,7 @@ if ( ! function_exists( 'jjwz_get_vimeo_id' ) ) {
                             </div>
                             <?php
                             $i++;
-                        endwhile;
-                        wp_reset_postdata();
+                        endforeach;
                     endif;
                     ?>
                 </div>

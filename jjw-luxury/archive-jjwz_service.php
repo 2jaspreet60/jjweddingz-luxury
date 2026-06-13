@@ -31,31 +31,11 @@ if ( ! $hero_bg_url ) {
 
 $active_brand = get_option( 'jjw_active_brand', 'jjw' );
 
-// Query active services matching brand context, sorted by display order ASC
+// Query active services
 $services_query = new WP_Query( [
     'post_type'      => 'jjwz_service',
     'posts_per_page' => -1,
     'post_status'    => 'publish',
-    'meta_key'       => 'svc_display_order',
-    'orderby'        => 'meta_value_num',
-    'order'          => 'ASC',
-    'meta_query'     => [
-        'relation' => 'OR',
-        [
-            'key'     => 'svc_brand',
-            'value'   => $active_brand,
-            'compare' => '=',
-        ],
-        [
-            'key'     => 'svc_brand',
-            'value'   => 'both',
-            'compare' => '=',
-        ],
-        [
-            'key'     => 'svc_brand',
-            'compare' => 'NOT EXISTS',
-        ]
-    ]
 ] );
 
 $grouped_services = [
@@ -83,61 +63,92 @@ $slug_category_map = [
     'outdoor-photography'             => 'commercial',
 ];
 
+$services_posts = [];
 if ( $services_query->have_posts() ) {
-    while ( $services_query->have_posts() ) {
-        $services_query->the_post();
-        $pid = get_the_ID();
-        $slug = get_post_field( 'post_name', $pid );
-        
-        $cat = get_post_meta( $pid, 'svc_category_group', true );
-        if ( empty( $cat ) ) {
-            $cat = $slug_category_map[ $slug ] ?? 'wedding';
-        }
-        
-        $small_icon = get_post_meta( $pid, 'svc_small_icon', true );
-        if ( empty( $small_icon ) ) {
-            $small_icon = get_post_meta( $pid, 'svc_icon', true ) ?: '📸';
-        }
-        
-        $thumb_img = get_post_meta( $pid, 'svc_thumbnail', true );
-        if ( empty( $thumb_img ) ) {
-            $thumb_img = get_post_meta( $pid, 'svc_cover_image', true );
-        }
-        if ( empty( $thumb_img ) ) {
-            $thumb_img = get_post_meta( $pid, 'svc_hero_image', true );
-        }
-        
-        $thumb_url = '';
-        if ( is_array( $thumb_img ) && ! empty( $thumb_img['url'] ) ) {
-            $thumb_url = $thumb_img['url'];
-        } elseif ( is_numeric( $thumb_img ) ) {
-            $thumb_url = wp_get_attachment_image_url( $thumb_img, 'medium_large' );
-        } elseif ( is_string( $thumb_img ) && $thumb_img ) {
-            $thumb_url = $thumb_img;
-        }
-        if ( ! $thumb_url ) {
-            $thumb_url = jjwz_get_option( 'jjw_default_placeholder_service' );
-        }
-        if ( ! $thumb_url ) {
-            $thumb_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
-        }
-        
-        $price = get_post_meta( $pid, 'svc_starting_price', true );
-        $excerpt = get_post_meta( $pid, 'svc_short_desc', true ) ?: get_the_excerpt();
-        
-        if ( isset( $grouped_services[ $cat ] ) ) {
-            $grouped_services[ $cat ][] = [
-                'ID'         => $pid,
-                'title'      => get_the_title(),
-                'permalink'  => get_permalink(),
-                'thumb_url'  => $thumb_url,
-                'small_icon' => $small_icon,
-                'price'      => $price,
-                'excerpt'    => wp_trim_words( wp_strip_all_tags( $excerpt ), 18 ),
-            ];
+    foreach ( $services_query->posts as $post ) {
+        $brand = get_post_meta( $post->ID, 'svc_brand', true );
+        if ( empty( $brand ) || $brand === 'both' || $brand === $active_brand ) {
+            $services_posts[] = $post;
         }
     }
-    wp_reset_postdata();
+}
+
+// PHP Sorting: Sort by display order, fallback to title if display order is missing
+if ( ! empty( $services_posts ) ) {
+    usort( $services_posts, function( $a, $b ) {
+        $order_a = get_post_meta( $a->ID, 'svc_display_order', true );
+        $order_b = get_post_meta( $b->ID, 'svc_display_order', true );
+        
+        $val_a = ( $order_a !== '' && $order_a !== false ) ? (int) $order_a : PHP_INT_MAX;
+        $val_b = ( $order_b !== '' && $order_b !== false ) ? (int) $order_b : PHP_INT_MAX;
+        
+        if ( $val_a !== $val_b ) {
+            return $val_a <=> $val_b;
+        }
+        
+        // Fallback: title ASC
+        return strcasecmp( $a->post_title, $b->post_title );
+    } );
+}
+
+foreach ( $services_posts as $post ) {
+    $pid = $post->ID;
+    $slug = $post->post_name;
+    
+    $cat = get_post_meta( $pid, 'svc_category_group', true );
+    if ( empty( $cat ) || ! isset( $grouped_services[ $cat ] ) ) {
+        // Fallback using core plugin static helper
+        $cat = class_exists( 'JJWZ_Service_Importer_Exporter' )
+            ? JJWZ_Service_Importer_Exporter::get_category_group_by_slug( $slug )
+            : ( $slug_category_map[ $slug ] ?? 'wedding' );
+    }
+    if ( ! isset( $grouped_services[ $cat ] ) ) {
+        $cat = 'wedding';
+    }
+    
+    $small_icon = get_post_meta( $pid, 'svc_small_icon', true );
+    if ( empty( $small_icon ) ) {
+        $small_icon = get_post_meta( $pid, 'svc_icon', true ) ?: '📸';
+    }
+    
+    $thumb_img = get_post_meta( $pid, 'svc_thumbnail', true );
+    if ( empty( $thumb_img ) ) {
+        $thumb_img = get_post_meta( $pid, 'svc_cover_image', true );
+    }
+    if ( empty( $thumb_img ) ) {
+        $thumb_img = get_post_meta( $pid, 'svc_hero_image', true );
+    }
+    
+    $thumb_url = '';
+    if ( is_array( $thumb_img ) && ! empty( $thumb_img['url'] ) ) {
+        $thumb_url = $thumb_img['url'];
+    } elseif ( is_numeric( $thumb_img ) ) {
+        $thumb_url = wp_get_attachment_image_url( $thumb_img, 'medium_large' );
+    } elseif ( is_string( $thumb_img ) && $thumb_img ) {
+        $thumb_url = $thumb_img;
+    }
+    if ( ! $thumb_url ) {
+        $thumb_url = jjwz_get_option( 'jjw_default_placeholder_service' );
+    }
+    if ( ! $thumb_url ) {
+        $thumb_url = get_template_directory_uri() . '/assets/images/placeholder-category-default.png';
+    }
+    
+    $price = get_post_meta( $pid, 'svc_starting_price', true );
+    $excerpt = get_post_meta( $pid, 'svc_short_desc', true );
+    if ( empty( $excerpt ) ) {
+        $excerpt = get_the_excerpt( $post );
+    }
+    
+    $grouped_services[ $cat ][] = [
+        'ID'         => $pid,
+        'title'      => get_the_title( $pid ),
+        'permalink'  => get_permalink( $pid ),
+        'thumb_url'  => $thumb_url,
+        'small_icon' => $small_icon,
+        'price'      => $price,
+        'excerpt'    => wp_trim_words( wp_strip_all_tags( $excerpt ), 18 ),
+    ];
 }
 
 $category_labels = [
