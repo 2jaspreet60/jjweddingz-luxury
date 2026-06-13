@@ -48,12 +48,12 @@ add_action( 'plugins_loaded', function() {
     require_once JJWZ_CORE_DIR . 'includes/class-gallery-access.php';
     require_once JJWZ_CORE_DIR . 'includes/class-seo-schema.php';
 
-    // Future placeholders
-    require_once JJWZ_CORE_DIR . 'includes/crm/class-crm-placeholder.php';
-    require_once JJWZ_CORE_DIR . 'includes/finance/class-finance-placeholder.php';
+    // Load Active modules
+    require_once JJWZ_CORE_DIR . 'includes/crm/class-crm-manager.php';
+    require_once JJWZ_CORE_DIR . 'includes/finance/class-finance-manager.php';
     require_once JJWZ_CORE_DIR . 'includes/gallery/class-gallery-placeholder.php';
-    require_once JJWZ_CORE_DIR . 'includes/automation/class-automation-placeholder.php';
-    require_once JJWZ_CORE_DIR . 'includes/client-portal/class-client-portal-placeholder.php';
+    require_once JJWZ_CORE_DIR . 'includes/automation/class-whatsapp-automation.php';
+    require_once JJWZ_CORE_DIR . 'includes/client-portal/class-client-portal.php';
 
     // Instantiate all modules
     new JJWZ_Image_Processor();
@@ -74,11 +74,7 @@ add_action( 'plugins_loaded', function() {
     new JJWZ_SEO_Schema();
 
     // Future placeholders instantiation
-    new JJWZ_CRM_Placeholder();
-    new JJWZ_Finance_Placeholder();
     new JJWZ_Gallery_Placeholder();
-    new JJWZ_Automation_Placeholder();
-    new JJWZ_Client_Portal_Placeholder();
 } );
 
 /* ═══════════════════════════════════════════════════════════════════════════

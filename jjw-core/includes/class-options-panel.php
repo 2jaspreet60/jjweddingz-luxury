@@ -70,7 +70,17 @@ class JJWZ_Options_Panel {
     public function render_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) { return; }
 
-        $tab = sanitize_key( $_GET['jjwz_tab'] ?? 'brand' );
+        $tab = sanitize_key( $_GET['jjwz_tab'] ?? '' );
+        if ( empty( $tab ) ) {
+            $page = sanitize_key( $_GET['page'] ?? '' );
+            if ( $page === $this->menu_slug . '-crm' ) {
+                $tab = 'crm';
+            } elseif ( $page === $this->menu_slug . '-seeder' ) {
+                $tab = 'seeder';
+            } else {
+                $tab = 'brand';
+            }
+        }
 
         // Show save notification
         if ( isset( $_GET['jjwz_saved'] ) ) {
@@ -452,6 +462,29 @@ class JJWZ_Options_Panel {
                               ><?php echo esc_textarea( get_option( 'jjwz_wa_json_payload', '' ) ); ?></textarea>
                 </div>
             </div>
+
+            <!-- Customizable Message Templates -->
+            <div class="jjwz-payment-section" style="margin-top:2rem; border-top:1px solid #edf2f7; padding-top:1.5rem;">
+                <div class="jjwz-payment-section__header" style="margin-bottom:1.5rem;">
+                    <strong style="font-size:16px; display:block; margin-bottom:5px;">💬 Customizable WhatsApp Message Templates</strong>
+                    <p class="jjwz-section-desc" style="margin:0; font-size:13px; color:#718096;">Customize the text sent for each system action. Supports tags: <code>{{name}}</code>, <code>{{phone}}</code>, <code>{{service}}</code>, <code>{{brand}}</code>, <code>{{date}}</code>, <code>{{price}}</code>, <code>{{venue}}</code>, <code>{{milestone}}</code>, <code>{{portal_link}}</code>, <code>{{access_key}}</code>.</p>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr; gap:20px;">
+                    <?php
+                    $wa_templates = class_exists( 'JJWZ_WhatsApp_Automation' ) ? JJWZ_WhatsApp_Automation::get_default_templates() : [];
+                    foreach ( $wa_templates as $tmpl_key => $tmpl_info ) :
+                        $opt_name = 'jjwz_wa_template_' . $tmpl_key;
+                        $value = get_option( $opt_name, $tmpl_info['default'] );
+                    ?>
+                    <div class="jjwz-field-group">
+                        <label for="<?php echo esc_attr( $opt_name ); ?>" class="jjwz-label" style="font-weight:600; display:block; margin-bottom:5px;">
+                            <?php echo esc_html( $tmpl_info['label'] ); ?> (<code><?php echo esc_html( $tmpl_key ); ?></code>)
+                        </label>
+                        <textarea id="<?php echo esc_attr( $opt_name ); ?>" name="<?php echo esc_attr( $opt_name ); ?>" class="jjwz-textarea" rows="2" style="width:100%;" placeholder="<?php echo esc_attr( $tmpl_info['default'] ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
         <?php
     }
@@ -490,56 +523,11 @@ class JJWZ_Options_Panel {
     /* ─── CRM TAB ────────────────────────────────────────────────────────── */
 
     private function render_crm_tab(): void {
-        global $wpdb;
-        $table  = $wpdb->prefix . 'jjwz_leads';
-        $leads  = [];
-        if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) === $table ) {
-            $leads  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY created_at DESC LIMIT 100", ARRAY_A );
+        if ( class_exists( 'JJWZ_CRM_Manager' ) ) {
+            JJWZ_CRM_Manager::render_dashboard();
+        } else {
+            echo '<div class="notice notice-error"><p>CRM Manager class not found.</p></div>';
         }
-        ?>
-        <div class="jjwz-tab-content">
-            <div class="jjwz-crm-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h2 class="jjwz-section-title" style="margin:0;">📊 CRM & Lead Management</h2>
-                <a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=jjwz_export_leads&nonce=' . wp_create_nonce( 'jjwz_export_leads' ) ) ); ?>"
-                   class="button button-primary">📥 Export to CSV</a>
-            </div>
-
-            <div class="jjwz-leads-table-wrap">
-                <table class="wp-list-table widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Service</th>
-                            <th>Event Date</th>
-                            <th>Message</th>
-                            <th>Source</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ( ! empty( $leads ) ) : ?>
-                            <?php foreach ( $leads as $lead ) : ?>
-                            <tr>
-                                <td><?php echo esc_html( date( 'M j, Y g:i A', strtotime( $lead['created_at'] ) ) ); ?></td>
-                                <td><?php echo esc_html( $lead['name'] ?? '—' ); ?></td>
-                                <td><?php echo esc_html( $lead['email'] ?? '—' ); ?></td>
-                                <td><?php echo esc_html( $lead['phone'] ?? '—' ); ?></td>
-                                <td><?php echo esc_html( $lead['service'] ?? '—' ); ?></td>
-                                <td><?php echo esc_html( $lead['event_date'] ?? '—' ); ?></td>
-                                <td><?php echo wp_kses_post( wp_trim_words( $lead['message'] ?? '', 12, '…' ) ); ?></td>
-                                <td><?php echo esc_html( $lead['source'] ?? 'Website' ); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else : ?>
-                            <tr><td colspan="8" style="text-align:center;padding:2rem;color:#888;">No leads yet. Contact form submissions will appear here.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <?php
     }
 
     /* ─── SEEDER TAB ─────────────────────────────────────────────────────── */
@@ -1129,6 +1117,16 @@ class JJWZ_Options_Panel {
             update_option( 'jjw_service_city_seo', wp_json_encode( $sanitized_seo ) );
         }
 
+        // Save WhatsApp Templates
+        if ( class_exists( 'JJWZ_WhatsApp_Automation' ) ) {
+            foreach ( JJWZ_WhatsApp_Automation::get_default_templates() as $tmpl_key => $tmpl_info ) {
+                $opt_name = 'jjwz_wa_template_' . $tmpl_key;
+                if ( isset( $_POST[ $opt_name ] ) ) {
+                    update_option( $opt_name, sanitize_textarea_field( $_POST[ $opt_name ] ) );
+                }
+            }
+        }
+
         if ( 'service_city_seo' === $tab ) {
             flush_rewrite_rules();
         }
@@ -1480,6 +1478,314 @@ class JJWZ_Options_Panel {
                     }
                 });
             }
+
+            // --- CRM Lead Modals & Actions ---
+            const addLeadModal = document.getElementById('jjwz-add-lead-modal');
+            const editLeadModal = document.getElementById('jjwz-edit-lead-modal');
+            const tasksModal = document.getElementById('jjwz-tasks-modal');
+
+            // Open Add Lead modal
+            jQuery('body').on('click', '.jjwz-open-add-lead', function() {
+                if (addLeadModal) addLeadModal.style.display = 'flex';
+            });
+
+            // Open Edit Lead modal
+            jQuery('body').on('click', '.jjwz-open-lead-edit', function() {
+                const leadDataAttr = this.getAttribute('data-lead');
+                if (!leadDataAttr || !editLeadModal) return;
+                try {
+                    const lead = JSON.parse(leadDataAttr);
+                    const form = editLeadModal.querySelector('form');
+                    if (form) {
+                        form.querySelector('[name="lead_id"]').value = lead.id;
+                        form.querySelector('[name="name"]').value = lead.name || '';
+                        form.querySelector('[name="email"]').value = lead.email || '';
+                        form.querySelector('[name="phone"]').value = lead.phone || '';
+                        form.querySelector('[name="city"]').value = lead.city || '';
+                        form.querySelector('[name="brand"]').value = lead.brand || 'JJ WeddingZ';
+                        form.querySelector('[name="service"]').value = lead.service || '';
+                        form.querySelector('[name="event_type"]').value = lead.event_type || '';
+                        form.querySelector('[name="venue"]').value = lead.venue || '';
+                        form.querySelector('[name="package_selected"]').value = lead.package_selected || '';
+                        form.querySelector('[name="budget"]').value = lead.budget || '';
+                        form.querySelector('[name="event_date"]').value = lead.event_date || '';
+                        form.querySelector('[name="status"]').value = lead.status || 'New Lead';
+                        form.querySelector('[name="message"]').value = lead.message || '';
+                    }
+                    editLeadModal.style.display = 'flex';
+                } catch (e) {
+                    console.error('Error parsing lead JSON:', e);
+                }
+            });
+
+            // Open Tasks modal
+            jQuery('body').on('click', '.jjwz-open-lead-tasks', function() {
+                const leadId = this.getAttribute('data-lead-id');
+                const leadName = this.getAttribute('data-lead-name');
+                if (!leadId || !tasksModal) return;
+
+                document.getElementById('jjwz-tasks-lead-id').value = leadId;
+                document.getElementById('jjwz-modal-lead-name').textContent = leadName || 'Lead';
+                
+                // Show loading state
+                const tbody = document.getElementById('jjwz-tasks-list-body');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#718096;">Loading tasks...</td></tr>';
+                
+                tasksModal.style.display = 'flex';
+
+                // Fetch tasks via AJAX
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_get_lead_tasks',
+                    lead_id: leadId
+                }, function(res) {
+                    if (res.success) {
+                        renderTasksInModal(res.data.tasks);
+                    } else {
+                        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#e53e3e;">Error loading tasks: ' + (res.data.message || 'Unknown error') + '</td></tr>';
+                    }
+                });
+            });
+
+            // Close modals handler
+            jQuery('body').on('click', '.jjwz-close-modal, .jjwz-close-modal-btn', function() {
+                if (addLeadModal) addLeadModal.style.display = 'none';
+                if (editLeadModal) editLeadModal.style.display = 'none';
+                if (tasksModal) tasksModal.style.display = 'none';
+            });
+
+            // Close modal by clicking outside content
+            window.addEventListener('click', function(e) {
+                if (e.target === addLeadModal) addLeadModal.style.display = 'none';
+                if (e.target === editLeadModal) editLeadModal.style.display = 'none';
+                if (e.target === tasksModal) tasksModal.style.display = 'none';
+            });
+
+            // Task list rendering helper
+            function renderTasksInModal(tasks) {
+                const tbody = document.getElementById('jjwz-tasks-list-body');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                if (!tasks || tasks.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#a0aec0;">No tasks found. Add one above!</td></tr>';
+                    return;
+                }
+                tasks.forEach(t => {
+                    const isChecked = t.status === 'Completed' ? 'checked' : '';
+                    const labelStyle = t.status === 'Completed' ? 'text-decoration:line-through;color:#a0aec0;' : '';
+                    const priorityColor = {
+                        'Low': '#718096',
+                        'Medium': '#3182ce',
+                        'High': '#dd6b20',
+                        'Urgent': '#e53e3e'
+                    }[t.priority] || '#718096';
+                    
+                    const row = `
+                    <tr id="jjwz-task-row-\${t.id}">
+                        <td style="padding:8px 5px;text-align:center;">
+                            <input type="checkbox" class="jjwz-toggle-task" data-task-id="\${t.id}" \${isChecked}>
+                        </td>
+                        <td style="padding:8px 5px; \${labelStyle}">
+                            \${t.task_title}
+                        </td>
+                        <td style="padding:8px 5px;font-size:12px;color:#4a5568;">
+                            \${t.assignee}
+                        </td>
+                        <td style="padding:8px 5px;font-size:12px;color:#718096;">
+                            \${t.due_date}
+                        </td>
+                        <td style="padding:8px 5px;">
+                            <span style="background:\${priorityColor};color:#fff;font-size:10px;padding:2px 5px;border-radius:3px;font-weight:600;">\${t.priority}</span>
+                        </td>
+                        <td style="padding:8px 5px;text-align:right;">
+                            <button type="button" class="button button-link-delete jjwz-delete-task" data-task-id="\${t.id}" style="font-size:11px;color:#e53e3e;padding:0;background:none;border:none;">Delete</button>
+                        </td>
+                    </tr>`;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            // Submit Add Lead form
+            jQuery('#jjwz-manual-lead-form').on('submit', function(e) {
+                e.preventDefault();
+                const form = jQuery(this);
+                const data = form.serialize() + '&action=jjwz_add_manual_lead';
+                const submitBtn = form.find('button[type="submit"]');
+                submitBtn.prop('disabled', true).text('Saving...');
+
+                jQuery.post(ajaxurl, data, function(res) {
+                    submitBtn.prop('disabled', false).text('Save Lead');
+                    if (res.success) {
+                        alert(res.data.message || 'Lead saved!');
+                        if (addLeadModal) addLeadModal.style.display = 'none';
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to save lead.'));
+                    }
+                });
+            });
+
+            // Submit Edit Lead form
+            jQuery('#jjwz-edit-lead-form').on('submit', function(e) {
+                e.preventDefault();
+                const form = jQuery(this);
+                const data = form.serialize() + '&action=jjwz_update_lead';
+                const submitBtn = form.find('button[type="submit"]');
+                submitBtn.prop('disabled', true).text('Updating...');
+
+                jQuery.post(ajaxurl, data, function(res) {
+                    submitBtn.prop('disabled', false).text('Update Lead');
+                    if (res.success) {
+                        alert(res.data.message || 'Lead updated!');
+                        if (editLeadModal) editLeadModal.style.display = 'none';
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to update lead.'));
+                    }
+                });
+            });
+
+            // Submit Add Task form
+            jQuery('#jjwz-add-task-form').on('submit', function(e) {
+                e.preventDefault();
+                const form = jQuery(this);
+                const data = form.serialize() + '&action=jjwz_add_lead_task';
+                const submitBtn = form.find('button[type="submit"]');
+                const leadId = document.getElementById('jjwz-tasks-lead-id').value;
+                submitBtn.prop('disabled', true).text('Add...');
+
+                jQuery.post(ajaxurl, data, function(res) {
+                    submitBtn.prop('disabled', false).text('Add');
+                    if (res.success) {
+                        form.find('[name="task_title"]').val('');
+                        renderTasksInModal(res.data.tasks);
+                        updateTasksCounterOnRow(leadId, res.data.tasks);
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to add task.'));
+                    }
+                });
+            });
+
+            // Toggle task check status
+            jQuery(document).on('change', '.jjwz-toggle-task', function() {
+                const chk = jQuery(this);
+                const taskId = chk.data('task-id');
+                const status = chk.is(':checked') ? 'Completed' : 'Pending';
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_toggle_lead_task',
+                    task_id: taskId,
+                    status: status
+                }, function(res) {
+                    if (res.success) {
+                        renderTasksInModal(res.data.tasks);
+                        updateTasksCounterOnRow(res.data.lead_id, res.data.tasks);
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to update task.'));
+                        chk.prop('checked', !chk.is(':checked')); // revert
+                    }
+                });
+            });
+
+            // Delete task handler
+            jQuery(document).on('click', '.jjwz-delete-task', function() {
+                const btn = jQuery(this);
+                const taskId = btn.data('task-id');
+                if (!confirm('Are you sure you want to delete this task?')) return;
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_delete_lead_task',
+                    task_id: taskId
+                }, function(res) {
+                    if (res.success) {
+                        renderTasksInModal(res.data.tasks);
+                        updateTasksCounterOnRow(res.data.lead_id, res.data.tasks);
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to delete task.'));
+                    }
+                });
+            });
+
+            // Update tasks count helper
+            function updateTasksCounterOnRow(leadId, tasks) {
+                const pendingTasks = tasks.filter(t => t.status === 'Pending').length;
+                const row = document.getElementById('jjwz-lead-row-' + leadId);
+                if (row) {
+                    const btn = row.querySelector('.jjwz-open-lead-tasks');
+                    if (btn) {
+                        btn.textContent = '📋 Tasks (' + pendingTasks + ')';
+                    }
+                }
+            }
+
+            // Inline Lead Updates: stage change
+            jQuery(document).on('change', '.jjwz-crm-stage-select', function() {
+                const select = jQuery(this);
+                const leadId = select.data('lead-id');
+                const status = select.val();
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_update_lead',
+                    lead_id: leadId,
+                    status: status
+                }, function(res) {
+                    if (!res.success) {
+                        alert('Error updating status: ' + (res.data.message || 'Unknown error'));
+                    }
+                });
+            });
+
+            // Inline Lead Updates: follow-up date change
+            jQuery(document).on('change', '.jjwz-crm-followup-input', function() {
+                const input = jQuery(this);
+                const leadId = input.data('lead-id');
+                const dateVal = input.val();
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_update_lead',
+                    lead_id: leadId,
+                    follow_up_date: dateVal
+                }, function(res) {
+                    if (!res.success) {
+                        alert('Error updating follow-up date: ' + (res.data.message || 'Unknown error'));
+                    }
+                });
+            });
+
+            // Inline Lead Updates: assignee change
+            jQuery(document).on('change', '.jjwz-crm-assignee-select', function() {
+                const select = jQuery(this);
+                const leadId = select.data('lead-id');
+                const userId = select.val();
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_update_lead',
+                    lead_id: leadId,
+                    assigned_user: userId
+                }, function(res) {
+                    if (!res.success) {
+                        alert('Error updating assignee: ' + (res.data.message || 'Unknown error'));
+                    }
+                });
+            });
+
+            // Delete Lead handler
+            jQuery(document).on('click', '.jjwz-crm-delete-lead', function() {
+                const btn = jQuery(this);
+                const leadId = btn.data('lead-id');
+                if (!confirm('Are you sure you want to delete this lead? This will also delete all linked tasks.')) return;
+
+                jQuery.post(ajaxurl, {
+                    action: 'jjwz_delete_lead',
+                    lead_id: leadId
+                }, function(res) {
+                    if (res.success) {
+                        const row = document.getElementById('jjwz-lead-row-' + leadId);
+                        if (row) row.remove();
+                    } else {
+                        alert('Error: ' + (res.data.message || 'Failed to delete lead.'));
+                    }
+                });
+            });
         });
         JS;
     }

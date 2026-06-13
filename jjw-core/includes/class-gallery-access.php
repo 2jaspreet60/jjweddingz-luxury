@@ -144,18 +144,48 @@ class JJWZ_Gallery_Access {
     public function render_gallery_meta_box( \WP_Post $post ): void {
         wp_nonce_field( 'jjwz_save_gallery_meta', 'jjwz_gallery_meta_nonce' );
 
-        $access_key  = get_post_meta( $post->ID, 'gallery_access_key', true );
-        $client_name = get_post_meta( $post->ID, 'gallery_client_name', true );
-        $event_date  = get_post_meta( $post->ID, 'gallery_event_date', true );
-        $enable_dl   = get_post_meta( $post->ID, 'gallery_enable_dl', true );
+        $access_key      = get_post_meta( $post->ID, 'gallery_access_key', true );
+        $client_name     = get_post_meta( $post->ID, 'gallery_client_name', true );
+        $event_date      = get_post_meta( $post->ID, 'gallery_event_date', true );
+        $brand           = get_post_meta( $post->ID, 'gallery_brand', true ) ?: 'JJ WeddingZ';
+        $status          = get_post_meta( $post->ID, 'gallery_status', true ) ?: 'Raw Backed Up';
+        $expiry          = get_post_meta( $post->ID, 'gallery_expiry', true );
+        $dl_expiry       = get_post_meta( $post->ID, 'gallery_download_expiry', true );
+        $enable_dl       = get_post_meta( $post->ID, 'gallery_enable_dl', true );
         if ( $enable_dl === '' ) { $enable_dl = '1'; }
 
         $image_ids_str = get_post_meta( $post->ID, '_jjwz_gallery_images', true );
         $image_ids     = $image_ids_str ? array_filter( array_map( 'intval', explode( ',', $image_ids_str ) ) ) : [];
+
+        $statuses = [
+            'Raw Backed Up', 'Culling', 'Color Grading', 'High-End Retouching',
+            'Shoot Completed', 'Album Designing', 'Album Approved', 'Album Printing', 'Album Delivered',
+            'Ready for Delivery'
+        ];
         ?>
         <div class="jjwz-meta-box-wrap" style="padding:10px 0;">
             <p style="color:#666;margin-bottom:15px;"><?php esc_html_e( 'Configure secure gallery access. These metadata settings act as a native uploader fallback when ACF Pro is not installed.', 'jjweddingz' ); ?></p>
             <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><label for="gallery_brand"><?php esc_html_e( 'Studio Brand', 'jjweddingz' ); ?></label></th>
+                    <td>
+                        <select name="gallery_brand" id="gallery_brand" style="width:250px;">
+                            <option value="JJ WeddingZ" <?php selected( $brand, 'JJ WeddingZ' ); ?>>JJ WeddingZ</option>
+                            <option value="The Baby StudioZ" <?php selected( $brand, 'The Baby StudioZ' ); ?>>The Baby StudioZ</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gallery_status"><?php esc_html_e( 'Photography Workflow Status', 'jjweddingz' ); ?></label></th>
+                    <td>
+                        <select name="gallery_status" id="gallery_status" style="width:250px;">
+                            <?php foreach ( $statuses as $st ) : ?>
+                                <option value="<?php echo esc_attr( $st ); ?>" <?php selected( $status, $st ); ?>><?php echo esc_html( $st ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="description"><?php esc_html_e( 'The active workflow stage rendered on the client timeline.', 'jjweddingz' ); ?></p>
+                    </td>
+                </tr>
                 <tr>
                     <th scope="row"><label for="gallery_access_key"><?php esc_html_e( 'Access Key (Password)', 'jjweddingz' ); ?> <span style="color:#d94f4f;">*</span></label></th>
                     <td>
@@ -173,6 +203,20 @@ class JJWZ_Gallery_Access {
                     <th scope="row"><label for="gallery_event_date"><?php esc_html_e( 'Event Date', 'jjweddingz' ); ?></label></th>
                     <td>
                         <input type="text" name="gallery_event_date" id="gallery_event_date" value="<?php echo esc_attr( $event_date ); ?>" class="regular-text" placeholder="e.g. December 12, 2026">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gallery_expiry"><?php esc_html_e( 'Gallery Expiry Date', 'jjweddingz' ); ?></label></th>
+                    <td>
+                        <input type="date" name="gallery_expiry" id="gallery_expiry" value="<?php echo esc_attr( $expiry ); ?>">
+                        <p class="description"><?php esc_html_e( 'After this date, the client will be blocked from viewing the portal.', 'jjweddingz' ); ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gallery_download_expiry"><?php esc_html_e( 'Download Expiry Date', 'jjweddingz' ); ?></label></th>
+                    <td>
+                        <input type="date" name="gallery_download_expiry" id="gallery_download_expiry" value="<?php echo esc_attr( $dl_expiry ); ?>">
+                        <p class="description"><?php esc_html_e( 'After this date, downloading high-resolution media is disabled.', 'jjweddingz' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -220,19 +264,25 @@ class JJWZ_Gallery_Access {
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) { return; }
         if ( ! current_user_can( 'edit_post', $post_id ) ) { return; }
 
-        if ( isset( $_POST['gallery_access_key'] ) ) {
-            update_post_meta( $post_id, 'gallery_access_key', sanitize_text_field( $_POST['gallery_access_key'] ) );
-        }
-        if ( isset( $_POST['gallery_client_name'] ) ) {
-            update_post_meta( $post_id, 'gallery_client_name', sanitize_text_field( $_POST['gallery_client_name'] ) );
-        }
-        if ( isset( $_POST['gallery_event_date'] ) ) {
-            update_post_meta( $post_id, 'gallery_event_date', sanitize_text_field( $_POST['gallery_event_date'] ) );
+        $fields = [
+            'gallery_access_key', 'gallery_client_name', 'gallery_event_date',
+            'gallery_brand', 'gallery_status', 'gallery_expiry', 'gallery_download_expiry',
+            '_jjwz_gallery_images'
+        ];
+
+        // Status transition WhatsApp trigger check
+        $old_status = get_post_meta( $post_id, 'gallery_status', true ) ?: 'Raw Backed Up';
+
+        foreach ( $fields as $f ) {
+            if ( isset( $_POST[ $f ] ) ) {
+                update_post_meta( $post_id, $f, sanitize_text_field( $_POST[ $f ] ) );
+            }
         }
         update_post_meta( $post_id, 'gallery_enable_dl', isset( $_POST['gallery_enable_dl'] ) ? '1' : '0' );
 
-        if ( isset( $_POST['_jjwz_gallery_images'] ) ) {
-            update_post_meta( $post_id, '_jjwz_gallery_images', sanitize_text_field( $_POST['_jjwz_gallery_images'] ) );
+        $new_status = get_post_meta( $post_id, 'gallery_status', true );
+        if ( $new_status !== $old_status ) {
+            do_action( 'jjwz_gallery_status_changed', $post_id, $new_status, $old_status );
         }
     }
 

@@ -19,6 +19,15 @@ class JJWZ_CRM_Forms {
         add_action( 'wp_ajax_nopriv_jjwz_submit_lead', [ $this, 'handle_lead_submission' ] );
         add_action( 'wp_ajax_jjwz_submit_lead',        [ $this, 'handle_lead_submission' ] );
         add_action( 'wp_enqueue_scripts',               [ $this, 'enqueue_form_assets' ] );
+        add_action( 'admin_init',                      [ $this, 'maybe_upgrade_db' ] );
+    }
+
+    public function maybe_upgrade_db(): void {
+        $db_version = get_option( 'jjwz_db_version', '1.0' );
+        if ( version_compare( $db_version, '2.0', '<' ) ) {
+            self::create_leads_table();
+            update_option( 'jjwz_db_version', '2.0' );
+        }
     }
 
     /* ─── Create Database Table ──────────────────────────────────────────── */
@@ -26,26 +35,53 @@ class JJWZ_CRM_Forms {
     public static function create_leads_table(): void {
         global $wpdb;
         $table      = $wpdb->prefix . 'jjwz_leads';
+        $tasks_table = $wpdb->prefix . 'jjwz_tasks';
         $charset    = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$table} (
-            id          BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            name        VARCHAR(150)        NOT NULL DEFAULT '',
-            email       VARCHAR(200)        NOT NULL DEFAULT '',
-            phone       VARCHAR(30)         NOT NULL DEFAULT '',
-            service     VARCHAR(100)        NOT NULL DEFAULT '',
-            event_date  VARCHAR(50)         NOT NULL DEFAULT '',
-            message     TEXT,
-            source      VARCHAR(200)        NOT NULL DEFAULT '',
-            ip_address  VARCHAR(45)         NOT NULL DEFAULT '',
-            created_at  DATETIME            NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
+        // Standard WP format: two spaces between PRIMARY KEY and keys, uppercase field declarations,
+        // and one field per line.
+        $sql = "CREATE TABLE {$table} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            name varchar(150) NOT NULL DEFAULT '',
+            email varchar(200) NOT NULL DEFAULT '',
+            phone varchar(30) NOT NULL DEFAULT '',
+            service varchar(100) NOT NULL DEFAULT '',
+            event_date varchar(50) NOT NULL DEFAULT '',
+            message text,
+            source varchar(200) NOT NULL DEFAULT '',
+            ip_address varchar(45) NOT NULL DEFAULT '',
+            status varchar(50) NOT NULL DEFAULT 'New Lead',
+            city varchar(100) NOT NULL DEFAULT '',
+            budget varchar(50) NOT NULL DEFAULT '0',
+            notes text,
+            assigned_user bigint(20) unsigned NOT NULL DEFAULT 0,
+            follow_up_date date DEFAULT NULL,
+            event_type varchar(100) NOT NULL DEFAULT '',
+            venue varchar(255) NOT NULL DEFAULT '',
+            package_selected varchar(150) NOT NULL DEFAULT '',
+            brand varchar(50) NOT NULL DEFAULT 'JJ WeddingZ',
+            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
             KEY idx_email (email),
             KEY idx_created (created_at)
         ) {$charset};";
 
+        $tasks_sql = "CREATE TABLE {$tasks_table} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            lead_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            task_title varchar(255) NOT NULL DEFAULT '',
+            assigned_to bigint(20) unsigned NOT NULL DEFAULT 0,
+            due_date date DEFAULT NULL,
+            priority varchar(20) NOT NULL DEFAULT 'Medium',
+            status varchar(20) NOT NULL DEFAULT 'Pending',
+            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY idx_lead (lead_id)
+        ) {$charset};";
+
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
+        dbDelta( $tasks_sql );
     }
 
     /* ─── Enqueue Contact Form Assets ───────────────────────────────────── */
